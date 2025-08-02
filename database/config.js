@@ -1,9 +1,13 @@
-const { findOne } = require('./index');
+const { findOne, updateOne } = require('./index');
 
-const configCollection = 'catCoinPlayers';
+const configCollection = 'Config';
 
 async function getTasksConfig(configKey = 'tasks') {
     return await findOne(configCollection, { configKey });
 }
 
-module.exports = { getTasksConfig };
+async function updateTasksConfig(updates, configKey = 'tasks') {
+    return await updateOne(configCollection, { configKey }, updates);
+}
+
+module.exports = { getTasksConfig, updateTasksConfig };

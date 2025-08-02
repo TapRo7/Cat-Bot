@@ -1,5 +1,6 @@
 const { Events, ActivityType } = require('discord.js');
 const { connectToDatabase, setupDatabase } = require('../database/index');
+const { startTasks } = require('../taskRunner');
 
 module.exports = {
     name: Events.ClientReady,
@@ -16,5 +17,7 @@ module.exports = {
         console.log(`Client Ready! Logged in as ${client.user.tag}`);
         client.user.setPresence({ status: 'dnd' });
         client.user.setActivity('Cat Videos', { type: ActivityType.Watching });
+
+        startTasks(client);
     }
 };

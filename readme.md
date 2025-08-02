@@ -7,3 +7,5 @@ The variables required are as following:
 - CLIENT_ID
 - MONGO_URI
 - CAT_API_KEY
+- WELCOME_CHANNEL_ID
+- DAILY_CAT_CHANNEL_ID
