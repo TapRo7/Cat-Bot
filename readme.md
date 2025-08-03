@@ -9,3 +9,4 @@ The variables required are as following:
 - CAT_API_KEY
 - WELCOME_CHANNEL_ID
 - DAILY_CAT_CHANNEL_ID
+- WHITELISTED_USERS (Arrays)
