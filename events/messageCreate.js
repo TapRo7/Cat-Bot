@@ -1,13 +1,53 @@
 const { Events, MediaGalleryBuilder, SeparatorSpacingSize, ContainerBuilder, MessageFlags, ButtonStyle } = require('discord.js');
+const { getCatCoinsUser, updateCatCoinsUser } = require('../database/catCoins');
 require('dotenv').config();
 
 const whitelistedUsers = JSON.parse(process.env.WHITELISTED_USERS);
+const catCoinEmoji = '<:CatCoin:1401235223831642133>';
+const luckyMessageCoins = 100;
+
+function chance(numerator, denominator) {
+    return Math.random() < numerator / denominator;
+}
 
 module.exports = {
     name: Events.MessageCreate,
     async execute(message) {
         if (message.author.bot) return;
+
+        if (message.channel.id === '1399797703092994100') {
+            if (chance(1, 1000)) {
+                const userData = await getCatCoinsUser(message.author.id);
+
+                if (!userData) {
+                    return;
+                }
+
+                const coins = userData.coins;
+                const newCoins = coins + luckyMessageCoins;
+
+                const updatedUserData = {
+                    coins: newCoins
+                };
+
+                const updated = await updateCatCoinsUser(message.author.id, updatedUserData);
+
+                if (updated) {
+                    return await message.reply({ content: `Congratulations! You hit a 0.1% chance lucky message, you\'ve been rewarded **${luckyMessageCoins} Cat Coins** ${catCoinEmoji}` });
+                }
+            }
+        }
+
+
+        // Admin Commands below this
         if (!whitelistedUsers.includes(message.author.id)) return;
+
+        if (message.content.includes('-msg')) {
+            await message.delete();
+
+            const newContent = message.content.replace('-msg', '').trim();
+            await message.channel.send({ content: newContent });
+        }
 
         if (message.content === '-embed') {
             const rulesImageGallery = new MediaGalleryBuilder()
