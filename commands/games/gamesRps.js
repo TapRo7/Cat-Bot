@@ -178,6 +178,8 @@ module.exports = async (interaction) => {
                 max: 2
             });
 
+            let pendingUpdates = 2;
+
             rpsChoiceCollector.on('collect', async slctInt => {
                 await messageEditLocker.acquire('edit', async () => {
                     const selection = slctInt.values[0];
@@ -195,12 +197,18 @@ module.exports = async (interaction) => {
                     challengeContainer.spliceComponents(4, 1, matchLogsTextDisplay);
                     await challengeMessage.edit({ components: [challengeContainer] });
                 });
+
+                pendingUpdates--;
             });
 
             rpsChoiceCollector.on('end', async (collected, reason) => {
                 if (reason === 'time') {
                     await challengeMessage.edit({ components: [NoSelectionTimeoutContainer] });
                 } else if (reason === 'limit') {
+                    while (pendingUpdates > 0) {
+                        await new Promise(resolve => setTimeout(resolve, 10));
+                    }
+
                     const winningChoice = await rpsWinner(challengerChoice, targetChoice);
                     let winningUser;
                     let losingUser;

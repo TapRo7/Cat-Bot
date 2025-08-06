@@ -1,5 +1,7 @@
 const { Events, MessageFlags, Collection } = require('discord.js');
 
+const expectedNoHandlers = ['acceptRps', 'rejectRps', 'rpsChoice'];
+
 module.exports = {
     name: Events.InteractionCreate,
     async execute(interaction) {
@@ -64,7 +66,9 @@ module.exports = {
             const handler = interaction.client.buttons.get(interaction.customId);
             if (!handler) {
                 await interaction.deferUpdate();
-                console.log(`No handler found for Button Custom ID: ${interaction.customId}`);
+                if (!expectedNoHandlers.includes(interaction.customId)) {
+                    console.log(`No handler found for Button Custom ID: ${interaction.customId}`);
+                }
                 return;
             }
 
@@ -83,7 +87,9 @@ module.exports = {
             const handler = interaction.client.modals.get(interaction.customId);
 
             if (!handler) {
-                console.log(`No handler found for Modal Custom ID: ${interaction.customId}`);
+                if (!expectedNoHandlers.includes(interaction.customId)) {
+                    console.log(`No handler found for Modal Custom ID: ${interaction.customId}`);
+                }
                 return;
             }
 
@@ -103,7 +109,9 @@ module.exports = {
 
             if (!handler) {
                 await interaction.deferUpdate();
-                console.log(`No handler found for Select Custom ID: ${interaction.customId}`);
+                if (!expectedNoHandlers.includes(interaction.customId)) {
+                    console.log(`No handler found for Select Custom ID: ${interaction.customId}`);
+                }
                 return;
             }
 
