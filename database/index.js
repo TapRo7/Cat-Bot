@@ -33,43 +33,91 @@ function getCollection(name) {
 
 // CRUD Helpers
 async function insertOne(collectionName, document) {
-    const collection = getCollection(collectionName);
-    const result = await collection.insertOne(document);
-    return result.acknowledged;
+    try {
+        const collection = getCollection(collectionName);
+        const result = await collection.insertOne(document);
+        return result.acknowledged;
+    } catch (error) {
+        console.error(error);
+        return 0;
+    }
 }
 
 async function findOne(collectionName, filter) {
-    const collection = getCollection(collectionName);
-    return await collection.findOne(filter);
+    try {
+        const collection = getCollection(collectionName);
+        return await collection.findOne(filter);
+    } catch (error) {
+        console.error(error);
+        return 0;
+    }
 }
 
 async function deleteOne(collectionName, filter) {
-    const collection = getCollection(collectionName);
-    const result = await collection.deleteOne(filter);
-    return result.deletedCount > 0;
+    try {
+        const collection = getCollection(collectionName);
+        const result = await collection.deleteOne(filter);
+        return result.deletedCount > 0;
+    } catch (error) {
+        console.error(error);
+        return 0;
+    }
 }
 
 async function updateOne(collectionName, filter, update, upsert = false) {
-    const collection = getCollection(collectionName);
-    const result = await collection.updateOne(filter, { $set: update }, { upsert: upsert });
+    try {
+        const collection = getCollection(collectionName);
+        const result = await collection.updateOne(filter, { $set: update }, { upsert: upsert });
 
-    if (result.upsertedCount > 0) {
-        return result.upsertedCount;
-    } else if (result.modifiedCount > 0) {
-        return result.modifiedCount;
-    } else {
+        if (result.upsertedCount > 0) {
+            return result.upsertedCount;
+        } else if (result.modifiedCount > 0) {
+            return result.modifiedCount;
+        } else {
+            return 0;
+        }
+    } catch (error) {
+        console.error(error);
+        return 0;
+    }
+}
+
+async function customUpdateOne(collectionName, filter, update) {
+    try {
+        const collection = getCollection(collectionName);
+        const result = await collection.updateOne(filter, update);
+
+        if (result.upsertedCount > 0) {
+            return result.upsertedCount;
+        } else if (result.modifiedCount > 0) {
+            return result.modifiedCount;
+        } else {
+            return 0;
+        }
+    } catch (error) {
+        console.error(error);
         return 0;
     }
 }
 
 async function findAll(collectionName) {
-    const collection = getCollection(collectionName);
-    return await collection.find().toArray();
+    try {
+        const collection = getCollection(collectionName);
+        return await collection.find().toArray();
+    } catch (error) {
+        console.error(error);
+        return 0;
+    }
 }
 
 async function find(collectionName, filter) {
-    const collection = getCollection(collectionName);
-    return await collection.find(filter).toArray();
+    try {
+        const collection = getCollection(collectionName);
+        return await collection.find(filter).toArray();
+    } catch (error) {
+        console.error(error);
+        return 0;
+    }
 }
 
-module.exports = { connectToDatabase, getCollection, setupDatabase, insertOne, findOne, deleteOne, updateOne, findAll, find };
+module.exports = { connectToDatabase, getCollection, setupDatabase, insertOne, findOne, deleteOne, updateOne, customUpdateOne, findAll, find };

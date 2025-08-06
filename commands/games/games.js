@@ -19,10 +19,6 @@ module.exports = {
     async execute(interaction) {
         await interaction.deferReply();
 
-        if (interaction.user.id !== '533692379777990656') {
-            return await interaction.editReply('No perms');
-        }
-
         const sub = interaction.options.getSubcommand();
 
         switch (sub) {

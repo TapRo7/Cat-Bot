@@ -31,12 +31,10 @@ const rest = new REST().setToken(token);
     try {
         console.log(`Started refreshing ${commands.length} application (/) commands.`);
 
-        // Un-Comment the block of code below and run this file if your bot has old synced commands that need to be unsynced.
-
-        //const data = await rest.put(
-        //    Routes.applicationCommands(clientId),
-        //    { body: [] }
-        //);
+        await rest.put(
+            Routes.applicationCommands(clientId),
+            { body: [] }
+        );
 
         const data = await rest.put(
             Routes.applicationCommands(clientId),

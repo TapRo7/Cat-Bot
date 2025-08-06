@@ -8,5 +8,10 @@ The variables required are as following:
 - MONGO_URI
 - CAT_API_KEY
 - WELCOME_CHANNEL_ID
+- GENERAL_CHAT_ID
 - DAILY_CAT_CHANNEL_ID
-- WHITELISTED_USERS (Arrays)
+- WHITELISTED_USERS (Array)
+- CRITICAL_ERROR_WEBHOOK
+
+## First Time Setup
+- Run `node deployCommands.js` after setting environment variables

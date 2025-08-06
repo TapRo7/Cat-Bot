@@ -63,6 +63,7 @@ module.exports = {
         else if (interaction.isButton()) {
             const handler = interaction.client.buttons.get(interaction.customId);
             if (!handler) {
+                await interaction.deferUpdate();
                 console.log(`No handler found for Button Custom ID: ${interaction.customId}`);
                 return;
             }
@@ -101,6 +102,7 @@ module.exports = {
             const handler = interaction.client.selects.get(interaction.customId);
 
             if (!handler) {
+                await interaction.deferUpdate();
                 console.log(`No handler found for Select Custom ID: ${interaction.customId}`);
                 return;
             }

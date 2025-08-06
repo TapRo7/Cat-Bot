@@ -3,6 +3,7 @@ const { getCatCoinsUser, updateCatCoinsUser } = require('../database/catCoins');
 require('dotenv').config();
 
 const whitelistedUsers = JSON.parse(process.env.WHITELISTED_USERS);
+const generalChatId = process.env.GENERAL_CHAT_ID;
 const catCoinEmoji = '<:CatCoin:1401235223831642133>';
 const luckyMessageCoins = 100;
 
@@ -15,27 +16,31 @@ module.exports = {
     async execute(message) {
         if (message.author.bot) return;
 
-        if (message.channel.id === '1399797703092994100') {
-            if (chance(1, 1000)) {
-                const userData = await getCatCoinsUser(message.author.id);
+        try {
+            if (message.channel.id === generalChatId) {
+                if (chance(1, 1000)) {
+                    const userData = await getCatCoinsUser(message.author.id);
 
-                if (!userData) {
-                    return;
-                }
+                    if (!userData) {
+                        return;
+                    }
 
-                const coins = userData.coins;
-                const newCoins = coins + luckyMessageCoins;
+                    const coins = userData.coins;
+                    const newCoins = coins + luckyMessageCoins;
 
-                const updatedUserData = {
-                    coins: newCoins
-                };
+                    const updatedUserData = {
+                        coins: newCoins
+                    };
 
-                const updated = await updateCatCoinsUser(message.author.id, updatedUserData);
+                    const updated = await updateCatCoinsUser(message.author.id, updatedUserData);
 
-                if (updated) {
-                    return await message.reply({ content: `Congratulations! You hit a 0.1% chance lucky message, you\'ve been rewarded **${luckyMessageCoins} Cat Coins** ${catCoinEmoji}` });
+                    if (updated) {
+                        return await message.reply({ content: `Congratulations! You hit a 0.1% chance lucky message, you\'ve been rewarded **${luckyMessageCoins} Cat Coins** ${catCoinEmoji}` });
+                    }
                 }
             }
+        } catch (error) {
+            console.error(`Error in Message Jackpot: ${error}`);
         }
 
 
@@ -43,10 +48,14 @@ module.exports = {
         if (!whitelistedUsers.includes(message.author.id)) return;
 
         if (message.content.includes('-msg')) {
-            await message.delete();
+            try {
+                await message.delete();
 
-            const newContent = message.content.replace('-msg', '').trim();
-            await message.channel.send({ content: newContent });
+                const newContent = message.content.replace('-msg', '').trim();
+                await message.channel.send({ content: newContent });
+            } catch (error) {
+                console.error(`Error in -msg command: ${error}`);
+            }
         }
 
         if (message.content === '-embed') {
