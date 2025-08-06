@@ -205,12 +205,29 @@ module.exports = async (interaction) => {
                     let winningUser;
                     let losingUser;
 
+                    if (winningChoice === 'draw') {
+                        matchLogsString += `\n- Both users picked **${challangerChoice}**, the match is a draw`;
+
+                        challangeContainer.spliceComponents(challangeContainer.components.length - 4, 4);
+
+                        challangeContainer
+                            .addTextDisplayComponents(
+                                textDisplay => textDisplay.setContent(matchLogsString)
+                            )
+                            .addSeparatorComponents(largeSeparator)
+                            .addTextDisplayComponents(
+                                textDisplay => textDisplay.setContent(`## Draw ${catCheerEmoji}\nBoth users get their **${betAmount} Cat Coins** ${catCoinEmoji} back!`)
+                            );
+
+                        return await challangeMessage.edit({ components: [challangeContainer] });
+                    }
+
                     if (winningChoice === 'choice1') {
                         winningUser = interaction.user;
                         losingUser = targetUser;
 
                         matchLogsString += `\n- <@${losingUser.id}> picked **${targetChoice}** and lost\n- <@${winningUser.id}> picked **${challangerChoice}** and won`;
-                    } else {
+                    } else if (winningChoice === 'choice2') {
                         winningUser = targetUser;
                         losingUser = interaction.user;
 

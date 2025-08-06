@@ -5,7 +5,7 @@ const gameRps = require('./gamesRps');
 //const newGame = require('./newGame');
 
 module.exports = {
-    cooldown: 5,
+    cooldown: 30,
     data: new SlashCommandBuilder()
         .setName('games')
         .setDescription('Cat Coin Games')

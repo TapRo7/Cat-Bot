@@ -15,3 +15,4 @@ The variables required are as following:
 
 ## First Time Setup
 - Run `node deployCommands.js` after setting environment variables
+- Edit `commands/help/help.js` with your application's command IDs
