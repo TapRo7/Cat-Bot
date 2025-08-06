@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, ContainerBuilder, SeparatorBuilder, SeparatorSpacingSize } = require('discord.js');
+const { SlashCommandBuilder, ContainerBuilder, SeparatorBuilder, SeparatorSpacingSize, MessageFlags } = require('discord.js');
 
 const largeSeparator = new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Large);
 
@@ -75,6 +75,6 @@ module.exports = {
                 textDisplay => textDisplay.setContent(funHelpString1)
             );
 
-        await interaction.editReply({ components: [economyContainer, gamesContainer, funContainer] });
+        await interaction.editReply({ components: [economyContainer, gamesContainer, funContainer], flags: MessageFlags.IsComponentsV2 });
     }
 };
