@@ -14,6 +14,16 @@ module.exports = {
             process.exit(1);
         }
 
+        for (const guild of client.guilds.cache.values()) {
+            try {
+                await guild.members.fetch();
+                console.log(`Fetched ${guild.memberCount} members for ${guild.name}`);
+            } catch (error) {
+                console.error(`Failed to fetch members for ${guild.name}:`, error);
+            }
+        }
+        console.log('All guild members cached!');
+
         console.log(`Client Ready! Logged in as ${client.user.tag}`);
         client.user.setPresence({ status: 'dnd' });
         client.user.setActivity('Cat Videos', { type: ActivityType.Watching });
