@@ -15,7 +15,7 @@ const largeSeparator = new SeparatorBuilder().setSpacing(SeparatorSpacingSize.La
 const NoAcceptTimeoutContainer = new ContainerBuilder()
     .setAccentColor(0xFFC0CB)
     .addTextDisplayComponents(
-        textDisplay => textDisplay.setContent('This game has timed out, the challanged user did not accept in time.')
+        textDisplay => textDisplay.setContent('This game has timed out, the challenged user did not accept in time.')
     );
 
 const NoSelectionTimeoutContainer = new ContainerBuilder()
@@ -72,14 +72,14 @@ module.exports = async (interaction) => {
     const betAmount = interaction.options.getInteger('bet');
 
     if (targetUser.id === interaction.user.id) {
-        return await interaction.editReply({ content: 'You cannot challange yourself!' });
+        return await interaction.editReply({ content: 'You cannot challenge yourself!' });
     }
 
-    const challangerUserData = await getCatCoinsUser(interaction.user.id);
+    const challengerUserData = await getCatCoinsUser(interaction.user.id);
 
-    if (challangerUserData) {
-        if (challangerUserData.coins < betAmount) {
-            return await interaction.editReply({ content: `You only have **${challangerUserData.coins} Cat Coins** ${catCoinEmoji}, you cannot bet **${betAmount}**` });
+    if (challengerUserData) {
+        if (challengerUserData.coins < betAmount) {
+            return await interaction.editReply({ content: `You only have **${challengerUserData.coins} Cat Coins** ${catCoinEmoji}, you cannot bet **${betAmount}**` });
         }
     } else {
         return await interaction.editReply({ content: `You have not registered in the Cat Coins System yet, please use </coins register:1401243483649605752> to register before using other commands!` });
@@ -89,10 +89,10 @@ module.exports = async (interaction) => {
 
     if (targetUserData) {
         if (targetUserData.coins < betAmount) {
-            return await interaction.editReply({ content: `The user you are trying to challange only has **${challangerUserData.coins} Cat Coins** ${catCoinEmoji}, they cannot bet **${betAmount}**` });
+            return await interaction.editReply({ content: `The user you are trying to challenge only has **${challengerUserData.coins} Cat Coins** ${catCoinEmoji}, they cannot bet **${betAmount}**` });
         }
     } else {
-        return await interaction.editReply({ content: 'The user you are trying to challange has not registered in the Cat Coin System' });
+        return await interaction.editReply({ content: 'The user you are trying to challenge has not registered in the Cat Coin System' });
     }
 
     const acceptButton = new ButtonBuilder()
@@ -107,10 +107,10 @@ module.exports = async (interaction) => {
         .setEmoji(catRejectEmoji)
         .setStyle(ButtonStyle.Danger);
 
-    const challangeContainer = new ContainerBuilder()
+    const challengeContainer = new ContainerBuilder()
         .setAccentColor(0xFFC0CB)
         .addTextDisplayComponents(
-            textDisplay => textDisplay.setContent(`# Rock Paper Scissors Battle! 🪨📄✂️\n<@${interaction.user.id}> has challanged <@${targetUser.id}>`)
+            textDisplay => textDisplay.setContent(`# Rock Paper Scissors Battle! 🪨📄✂️\n<@${interaction.user.id}> has challenged <@${targetUser.id}>`)
         )
         .addSeparatorComponents(largeSeparator)
         .addTextDisplayComponents(
@@ -118,19 +118,19 @@ module.exports = async (interaction) => {
         )
         .addSeparatorComponents(largeSeparator)
         .addTextDisplayComponents(
-            textDisplay => textDisplay.setContent(`<@${targetUser.id}> you have been challanged to Rock Paper Scissors, do you accept?`)
+            textDisplay => textDisplay.setContent(`<@${targetUser.id}> you have been challenged to Rock Paper Scissors, do you accept?`)
         )
         .addActionRowComponents(
             actionRow => actionRow.addComponents(acceptButton, rejectButton)
         );
 
-    const challangeMessage = await interaction.editReply({ components: [challangeContainer], flags: MessageFlags.IsComponentsV2 });
+    const challengeMessage = await interaction.editReply({ components: [challengeContainer], flags: MessageFlags.IsComponentsV2 });
 
     const rpsFilter = btnInt => {
         return (btnInt.customId === 'acceptRps' || btnInt.customId === 'rejectRps') && btnInt.user.id === targetUser.id;
     };
 
-    const rpsCollector = challangeMessage.createMessageComponentCollector({
+    const rpsCollector = challengeMessage.createMessageComponentCollector({
         filter: rpsFilter,
         time: 60_000,
         max: 1
@@ -140,20 +140,20 @@ module.exports = async (interaction) => {
 
     rpsCollector.on('end', async (collected, reason) => {
         if (reason === 'time') {
-            await challangeMessage.edit({ components: [NoAcceptTimeoutContainer] });
+            await challengeMessage.edit({ components: [NoAcceptTimeoutContainer] });
         }
     });
 
     rpsCollector.on('collect', async btnInt => {
-        let challangerChoice;
+        let challengerChoice;
         let targetChoice;
 
         if (btnInt.customId === 'acceptRps') {
-            matchLogsString += `\n- <@${targetUser.id}> accepted the challange\n- Both users are selecting their options`;
+            matchLogsString += `\n- <@${targetUser.id}> accepted the challenge\n- Both users are selecting their options`;
 
-            challangeContainer.spliceComponents(challangeContainer.components.length - 3, 3);
+            challengeContainer.spliceComponents(challengeContainer.components.length - 3, 3);
 
-            challangeContainer
+            challengeContainer
                 .addSeparatorComponents(largeSeparator)
                 .addTextDisplayComponents(
                     textDisplay => textDisplay.setContent(matchLogsString)
@@ -166,13 +166,13 @@ module.exports = async (interaction) => {
                     actionRow => actionRow.addComponents(rpsChoiceSelect)
                 );
 
-            await challangeMessage.edit({ components: [challangeContainer] });
+            await challengeMessage.edit({ components: [challengeContainer] });
 
             const rpsChoiceFilter = slctInt => {
-                return (slctInt.user.id === interaction.user.id && !challangerChoice) || (slctInt.user.id == targetUser.id && !targetChoice);
+                return (slctInt.user.id === interaction.user.id && !challengerChoice) || (slctInt.user.id == targetUser.id && !targetChoice);
             };
 
-            const rpsChoiceCollector = challangeMessage.createMessageComponentCollector({
+            const rpsChoiceCollector = challengeMessage.createMessageComponentCollector({
                 filter: rpsChoiceFilter,
                 time: 120_000,
                 max: 2
@@ -184,7 +184,7 @@ module.exports = async (interaction) => {
                     const selectorId = slctInt.user.id;
 
                     if (selectorId === interaction.user.id) {
-                        challangerChoice = selection;
+                        challengerChoice = selection;
                         matchLogsString += `\n- <@${selectorId}> has made their choice`;
                     } else if (selectorId === targetUser.id) {
                         targetChoice = selection;
@@ -192,25 +192,25 @@ module.exports = async (interaction) => {
                     }
 
                     const matchLogsTextDisplay = new TextDisplayBuilder().setContent(matchLogsString);
-                    challangeContainer.spliceComponents(4, 1, matchLogsTextDisplay);
-                    await challangeMessage.edit({ components: [challangeContainer] });
+                    challengeContainer.spliceComponents(4, 1, matchLogsTextDisplay);
+                    await challengeMessage.edit({ components: [challengeContainer] });
                 });
             });
 
             rpsChoiceCollector.on('end', async (collected, reason) => {
                 if (reason === 'time') {
-                    await challangeMessage.edit({ components: [NoSelectionTimeoutContainer] });
+                    await challengeMessage.edit({ components: [NoSelectionTimeoutContainer] });
                 } else if (reason === 'limit') {
-                    const winningChoice = await rpsWinner(challangerChoice, targetChoice);
+                    const winningChoice = await rpsWinner(challengerChoice, targetChoice);
                     let winningUser;
                     let losingUser;
 
                     if (winningChoice === 'draw') {
-                        matchLogsString += `\n- Both users picked **${challangerChoice}**, the match is a draw`;
+                        matchLogsString += `\n- Both users picked **${challengerChoice}**, the match is a draw`;
 
-                        challangeContainer.spliceComponents(challangeContainer.components.length - 4, 4);
+                        challengeContainer.spliceComponents(challengeContainer.components.length - 4, 4);
 
-                        challangeContainer
+                        challengeContainer
                             .addTextDisplayComponents(
                                 textDisplay => textDisplay.setContent(matchLogsString)
                             )
@@ -219,19 +219,19 @@ module.exports = async (interaction) => {
                                 textDisplay => textDisplay.setContent(`## Draw ${catCheerEmoji}\nBoth users get their **${betAmount} Cat Coins** ${catCoinEmoji} back!`)
                             );
 
-                        return await challangeMessage.edit({ components: [challangeContainer] });
+                        return await challengeMessage.edit({ components: [challengeContainer] });
                     }
 
                     if (winningChoice === 'choice1') {
                         winningUser = interaction.user;
                         losingUser = targetUser;
 
-                        matchLogsString += `\n- <@${losingUser.id}> picked **${targetChoice}** and lost\n- <@${winningUser.id}> picked **${challangerChoice}** and won`;
+                        matchLogsString += `\n- <@${losingUser.id}> picked **${targetChoice}** and lost\n- <@${winningUser.id}> picked **${challengerChoice}** and won`;
                     } else if (winningChoice === 'choice2') {
                         winningUser = targetUser;
                         losingUser = interaction.user;
 
-                        matchLogsString += `\n- <@${losingUser.id}> picked **${challangerChoice}** and lost\n- <@${winningUser.id}> picked **${targetChoice}** and won`;
+                        matchLogsString += `\n- <@${losingUser.id}> picked **${challengerChoice}** and lost\n- <@${winningUser.id}> picked **${targetChoice}** and won`;
                     }
 
                     let criticalError = false;
@@ -245,7 +245,7 @@ module.exports = async (interaction) => {
                     };
                     const winnerUpdated = await customUpdateCatCoinsUser(winningUser.id, winnerUpdate);
                     if (!winnerUpdated) {
-                        await challangeMessage.edit({ components: [criticalErrorContainer] });
+                        await challengeMessage.edit({ components: [criticalErrorContainer] });
                         criticalError = 1;
                     }
 
@@ -264,7 +264,7 @@ module.exports = async (interaction) => {
                     };
                     const loserUpdated = await customUpdateCatCoinsUser(losingUser.id, loserUpdate);
                     if (!loserUpdated) {
-                        await challangeMessage.edit({ components: [criticalErrorContainer] });
+                        await challengeMessage.edit({ components: [criticalErrorContainer] });
                         criticalError = 2;
                     }
 
@@ -272,8 +272,8 @@ module.exports = async (interaction) => {
                         return criticalErrorNotify('Critical error in updating user coins after game', `Critical Error Code: ${criticalError}\nUser 1: ${winningUser.id}\nUser 2: ${losingUser.id}\nBet: ${betAmount}`);
                     }
 
-                    challangeContainer.spliceComponents(challangeContainer.components.length - 4, 4);
-                    challangeContainer
+                    challengeContainer.spliceComponents(challengeContainer.components.length - 4, 4);
+                    challengeContainer
                         .addTextDisplayComponents(
                             textDisplay => textDisplay.setContent(matchLogsString)
                         )
@@ -282,24 +282,24 @@ module.exports = async (interaction) => {
                             textDisplay => textDisplay.setContent(`## Winner ${catCheerEmoji}\n<@${winningUser.id}> wins **${betAmount} Cat Coins** ${catCoinEmoji}`)
                         );
 
-                    await challangeMessage.edit({ components: [challangeContainer] });
+                    await challengeMessage.edit({ components: [challengeContainer] });
                 }
             });
 
         } else if (btnInt.customId === 'rejectRps') {
-            matchLogsString += `\n- <@${targetUser.id}> rejected the challange`;
+            matchLogsString += `\n- <@${targetUser.id}> rejected the challenge`;
 
-            challangeContainer.spliceComponents(challangeContainer.components.length - 3, 3);
-            challangeContainer.addSeparatorComponents(largeSeparator);
-            challangeContainer.addTextDisplayComponents(
+            challengeContainer.spliceComponents(challengeContainer.components.length - 3, 3);
+            challengeContainer.addSeparatorComponents(largeSeparator);
+            challengeContainer.addTextDisplayComponents(
                 textDisplay => textDisplay.setContent(matchLogsString)
             );
 
-            return await challangeMessage.edit({ components: [challangeContainer] });
+            return await challengeMessage.edit({ components: [challengeContainer] });
         }
     });
 
-    const targetNotificationMessage = await challangeMessage.reply({ content: `<@${targetUser.id}> You have been challanged!` });
+    const targetNotificationMessage = await challengeMessage.reply({ content: `<@${targetUser.id}> You have been challenged!` });
 
     setTimeout(async () => {
         await targetNotificationMessage.delete();
