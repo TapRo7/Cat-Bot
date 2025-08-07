@@ -1,43 +1,10 @@
 const { Events, EmbedBuilder } = require('discord.js');
 const { getRandomCatUrl } = require('../catAPI/catPictures');
+const { fetchInviteInfo } = require('../utils/inviteApi');
 require('dotenv').config();
 
 const welcomeChannelId = process.env.WELCOME_CHANNEL_ID;
 const inviteLogChannelId = process.env.INVITE_LOG_CHANNEL_ID;
-const inviteApiUrl = process.env.INVITE_API_URL;
-const inviteApiToken = process.env.INVITE_API_TOKEN;
-
-async function fetchInviteInfo(guildId, memberId) {
-    const payload = {
-        token: inviteApiToken,
-        guildId,
-        memberId
-    };
-
-    const options = {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-    };
-
-    try {
-        const response = await fetch(inviteApiUrl, options);
-        if (response.status !== 200) {
-            return null;
-        }
-
-        const responseJson = await response.json();
-        if (!responseJson.inviterId || !responseJson.inviteCode) {
-            return null;
-        }
-        return responseJson;
-    } catch (error) {
-        console.error(`Error in invite API fetch: ${error}`);
-        return null;
-    }
-}
 
 module.exports = {
     name: Events.GuildMemberAdd,
@@ -65,6 +32,7 @@ module.exports = {
             await welcomeMessage.react('<a:HappyHappy:1399809689008738516>');
 
             // Invite Tracking
+            await new Promise(resolve => setTimeout(resolve, 5000));
             const memberInviteInfo = await fetchInviteInfo(member.guild.id, member.id);
             const inviteLogChannel = member.client.channels.cache.get(inviteLogChannelId);
 

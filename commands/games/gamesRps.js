@@ -75,6 +75,10 @@ module.exports = async (interaction) => {
         return await interaction.editReply({ content: 'You cannot challenge yourself!' });
     }
 
+    if (targetUser.id === interaction.client.application.id) {
+        return await interaction.editReply({ content: 'You cannot challange me! Meow' });
+    }
+
     const challengerUserData = await getCatCoinsUser(interaction.user.id);
 
     if (challengerUserData) {

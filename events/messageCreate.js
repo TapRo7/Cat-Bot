@@ -1,5 +1,6 @@
-const { Events, MediaGalleryBuilder, SeparatorSpacingSize, ContainerBuilder, MessageFlags, ButtonStyle } = require('discord.js');
+const { Events, MediaGalleryBuilder, SeparatorSpacingSize, ContainerBuilder, MessageFlags, ButtonStyle, EmbedBuilder } = require('discord.js');
 const { getCatCoinsUser, updateCatCoinsUser } = require('../database/catCoins');
+const { fetchInviteInfo } = require('../utils/inviteApi');
 require('dotenv').config();
 
 const whitelistedUsers = JSON.parse(process.env.WHITELISTED_USERS);
@@ -55,6 +56,47 @@ module.exports = {
                 await message.channel.send({ content: newContent });
             } catch (error) {
                 console.error(`Error in -msg command: ${error}`);
+            }
+        }
+
+        if (message.content.includes('-invite')) {
+            try {
+                await message.delete();
+
+                const memberId = message.content.replace('-invite', '').trim();
+                const member = message.guild.members.cache.get(memberId);
+
+                if (!member) return;
+
+                const guildId = message.guild.id;
+
+                const memberInviteInfo = await fetchInviteInfo(guildId, memberId);
+
+                if (memberInviteInfo) {
+                    const inviteLogEmbed = new EmbedBuilder()
+                        .setColor(0xFFC0CB)
+                        .setTitle('Invite Log')
+                        .setAuthor({ name: `${member.user.username} (${member.id})`, iconURL: member.displayAvatarURL() })
+                        .addFields(
+                            { name: 'Inviter', value: `<@${memberInviteInfo.inviterId}> (${memberInviteInfo.inviterId})` },
+                            { name: 'Invite Code', value: memberInviteInfo.inviteCode }
+                        );
+
+                    await message.channel.send({ embeds: [inviteLogEmbed] });
+                } else {
+                    const inviteLogEmbed = new EmbedBuilder()
+                        .setColor(0xFFC0CB)
+                        .setTitle('Invite Log')
+                        .setAuthor({ name: `${member.user.username} (${member.id})`, iconURL: member.displayAvatarURL() })
+                        .addFields(
+                            { name: 'Inviter', value: 'Unknown' },
+                            { name: 'Invite Code', value: 'Unknown' }
+                        );
+
+                    await message.channel.send({ embeds: [inviteLogEmbed] });
+                }
+            } catch (error) {
+                console.error(`Error in -invite command: ${error}`);
             }
         }
 
