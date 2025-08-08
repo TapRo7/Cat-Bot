@@ -31,10 +31,12 @@ const rest = new REST().setToken(token);
     try {
         console.log(`Started refreshing ${commands.length} application (/) commands.`);
 
-        await rest.put(
-            Routes.applicationCommands(clientId),
-            { body: [] }
-        );
+        // Un-Comment the lines below if your application has old commands that need to be removed.
+
+        //await rest.put(
+        //    Routes.applicationCommands(clientId),
+        //    { body: [] }
+        //);
 
         const data = await rest.put(
             Routes.applicationCommands(clientId),

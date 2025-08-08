@@ -3,6 +3,7 @@ const { SlashCommandBuilder, MessageFlags } = require('discord.js');
 const coinsRegister = require('./coinsRegister');
 const coinsDaily = require('./coinsDaily');
 const coinsCheck = require('./coinsCheck');
+const coinsLeaderboard = require('./coinsLeaderboard');
 
 module.exports = {
 	cooldown: 5,
@@ -21,6 +22,10 @@ module.exports = {
 			.setName('check')
 			.setDescription('Check your or someone else\'s Cat Coins!')
 			.addUserOption(option => option.setName('user').setDescription('Select a user to check the Cat Coin\'s of').setRequired(false))
+		)
+		.addSubcommand(subcommand => subcommand
+			.setName('leaderboard')
+			.setDescription('Check the top users leaderboard for Cat Coins!')
 		),
 
 	async execute(interaction) {
@@ -35,6 +40,8 @@ module.exports = {
 				return await coinsDaily(interaction);
 			case 'check':
 				return await coinsCheck(interaction);
+			case 'leaderboard':
+				return await coinsLeaderboard(interaction);
 			default:
 				return await interaction.editReply({ content: 'Unknown subcommand.', flags: MessageFlags.Ephemeral });
 		}

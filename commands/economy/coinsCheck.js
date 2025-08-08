@@ -1,6 +1,10 @@
+const { EmbedBuilder } = require('discord.js');
 const { getCatCoinsUser } = require('../../database/catCoins');
 
 const catCoinEmoji = '<:CatCoin:1401235223831642133>';
+const winsEmoji = '<a:Happy:1403155072384503929>';
+const streakEmoji = '<a:vibeCat:1403155858954649641>';
+const lossEmoji = '<:SadCat:1403156017059074241>';
 
 module.exports = async (interaction) => {
     const targetUser = interaction.options.getUser('user') || interaction.user;
@@ -22,10 +26,20 @@ module.exports = async (interaction) => {
     }
 
     const coins = userData.coins;
+    const gamesWon = userData.gamesWon;
+    const gamesLost = userData.gamesLost;
+    const winStreak = userData.gamesWonStreak;
 
-    if (isOtherUser) {
-        return await interaction.editReply({ content: `<@${targetUser.id}> has **${coins} Cat Coins** ${catCoinEmoji}` });
-    } else {
-        return await interaction.editReply({ content: `You have **${coins} Cat Coins** ${catCoinEmoji}` });
-    }
+    const statsEmbed = new EmbedBuilder()
+        .setColor(0xFFC0CB)
+        .setTitle('User Statistics')
+        .setAuthor({ name: `${targetUser.username} (${targetUser.id})`, iconURL: targetUser.displayAvatarURL() })
+        .setFields(
+            { name: `Cat Coins ${catCoinEmoji}`, value: `${coins}` },
+            { name: `Game Wins ${winsEmoji}`, value: `${gamesWon}` },
+            { name: `Game Wins Streak ${streakEmoji}`, value: `${winStreak}` },
+            { name: `Game Losses ${lossEmoji}`, value: `${gamesLost}` }
+        );
+
+    return await interaction.editReply({ embeds: [statsEmbed] });
 };

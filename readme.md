@@ -15,6 +15,7 @@ The variables required are as following:
 - DAILY_CAT_CHANNEL_ID
 - WHITELISTED_USERS (Array)
 - CRITICAL_ERROR_WEBHOOK
+- DEFAULT_AVATAR_URL
 
 ## First Time Setup
 - Run `node deployCommands.js` after setting environment variables

@@ -1,4 +1,4 @@
-const { insertOne, findOne, updateOne, customUpdateOne } = require('./index');
+const { insertOne, findOne, updateOne, customUpdateOne, findWithOptions } = require('./index');
 const AsyncLock = require('async-lock');
 
 const catCoinsCollection = 'catCoinPlayers';
@@ -21,6 +21,10 @@ async function getCatCoinsUser(userId) {
     return await findOne(catCoinsCollection, { userId });
 }
 
+async function getTopCatCoinUsers(amount) {
+    return await findWithOptions(catCoinsCollection, {}, { sort: { coins: -1 }, limit: amount });
+}
+
 async function updateCatCoinsUser(userId, updates) {
     return await coinDatabaseLock.acquire(userId, async () => {
         return await updateOne(catCoinsCollection, { userId }, updates);
@@ -33,4 +37,4 @@ async function customUpdateCatCoinsUser(userId, updates) {
     });
 }
 
-module.exports = { registerCatCoinsUser, getCatCoinsUser, updateCatCoinsUser, customUpdateCatCoinsUser, coinDatabaseLock };
+module.exports = { registerCatCoinsUser, getCatCoinsUser, getTopCatCoinUsers, updateCatCoinsUser, customUpdateCatCoinsUser, coinDatabaseLock };

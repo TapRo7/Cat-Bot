@@ -6,9 +6,9 @@ const AsyncLock = require('async-lock');
 const messageEditLocker = new AsyncLock();
 
 const catCoinEmoji = '<:CatCoin:1401235223831642133>';
-const catAcceptEmoji = '<:Accept:1402090146693648447>';
-const catRejectEmoji = '<:Reject:1402090870014087378>';
-const catCheerEmoji = '<a:cheer:1401246694968131644>';
+const catAcceptEmoji = '<a:yes:1403153341780988006>';
+const catRejectEmoji = '<a:no:1403153353407725710>';
+const catCheerEmoji = '<a:Cheer:1403153695192911893>';
 
 const largeSeparator = new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Large);
 
@@ -70,6 +70,10 @@ async function rpsWinner(choice1, choice2) {
 module.exports = async (interaction) => {
     const targetUser = interaction.options.getUser('user');
     const betAmount = interaction.options.getInteger('bet');
+
+    if (betAmount <= 0) {
+        return await interaction.editReply({ content: 'You cannot bet 0 coins!' });
+    }
 
     if (targetUser.id === interaction.user.id) {
         return await interaction.editReply({ content: 'You cannot challenge yourself!' });

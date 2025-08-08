@@ -32,7 +32,7 @@ module.exports = {
             await welcomeMessage.react('<a:HappyHappy:1399809689008738516>');
 
             // Invite Tracking
-            await new Promise(resolve => setTimeout(resolve, 5000));
+            await new Promise(resolve => setTimeout(resolve, 30000));
             const memberInviteInfo = await fetchInviteInfo(member.guild.id, member.id);
             const inviteLogChannel = member.client.channels.cache.get(inviteLogChannelId);
 

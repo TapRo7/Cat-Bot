@@ -120,4 +120,27 @@ async function find(collectionName, filter) {
     }
 }
 
-module.exports = { connectToDatabase, getCollection, setupDatabase, insertOne, findOne, deleteOne, updateOne, customUpdateOne, findAll, find };
+async function findWithOptions(collectionName, filter = {}, options = {}) {
+    try {
+        const collection = getCollection(collectionName);
+        let cursor = collection.find(filter);
+
+        if (options.sort) {
+            cursor = cursor.sort(options.sort);
+        }
+        if (options.limit) {
+            cursor = cursor.limit(options.limit);
+        }
+        if (options.projection) {
+            cursor = cursor.project(options.projection);
+        }
+
+        return await cursor.toArray();
+    } catch (error) {
+        console.error(error);
+        return 0;
+    }
+}
+
+
+module.exports = { connectToDatabase, getCollection, setupDatabase, insertOne, findOne, deleteOne, updateOne, customUpdateOne, findAll, find, findWithOptions };
