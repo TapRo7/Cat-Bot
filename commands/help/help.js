@@ -11,9 +11,12 @@ You can register in the Cat Coins System by using the </coins register:140124348
 const economyHelpString2 = `## Daily Coins
 You get free daily coins once every 24 hours by using the </coins daily:1401243483649605752> command`;
 
-const economyHelpString3 = `## Check Coins
-You can check your own, or someone else's Cat Coins by using the </coins check:1401243483649605752> command
-You can enter an optional \`user\` if you want to check someone else's coins`;
+const economyHelpString3 = `## Check Statistics
+You can check your own, or someone else's statistics by using the </coins check:1401243483649605752> command
+You can enter an optional \`user\` if you want to check someone else's statistics`;
+
+const economyHelpString4 = `## Coins Leaderboard
+You can check the top Cat Coin leaderboard by using the </coins leaderboard:1401243483649605752> command`;
 
 // Games Help
 const gamesHelpHeader = '# Game Commands <a:playfulcat:1402099047959105596>';
@@ -53,7 +56,11 @@ module.exports = {
             .addSeparatorComponents(largeSeparator)
             .addTextDisplayComponents(
                 textDisplay => textDisplay.setContent(economyHelpString3)
-            );
+            )
+            .addSeparatorComponents(largeSeparator)
+            .addTextDisplayComponents(
+                textDisplay => textDisplay.setContent(economyHelpString4)
+            );;
 
         const gamesContainer = new ContainerBuilder()
             .setAccentColor(0xFFC0CB)

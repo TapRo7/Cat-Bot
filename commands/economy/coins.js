@@ -20,8 +20,8 @@ module.exports = {
 		)
 		.addSubcommand(subcommand => subcommand
 			.setName('check')
-			.setDescription('Check your or someone else\'s Cat Coins!')
-			.addUserOption(option => option.setName('user').setDescription('Select a user to check the Cat Coin\'s of').setRequired(false))
+			.setDescription('Check your or someone else\'s statistics!')
+			.addUserOption(option => option.setName('user').setDescription('Select a user to check the statistics of').setRequired(false))
 		)
 		.addSubcommand(subcommand => subcommand
 			.setName('leaderboard')
