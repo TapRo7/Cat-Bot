@@ -14,7 +14,7 @@ module.exports = async (interaction) => {
     const leaderboardContainer = new ContainerBuilder()
         .setAccentColor(0xFFC0CB)
         .addTextDisplayComponents(
-            textDisplay => textDisplay.setContent(`# Cat Coins Leaderboard - Top #${leaderboardLimit} ${catCoinEmoji}`)
+            textDisplay => textDisplay.setContent(`## Cat Coins - Top #${leaderboardLimit} ${catCoinEmoji}`)
         )
         .addSeparatorComponents(largeSeparator);
 
@@ -27,7 +27,7 @@ module.exports = async (interaction) => {
             .addSectionComponents(
                 section => section
                     .addTextDisplayComponents(
-                        textDisplay => textDisplay.setContent(`${i + 1}. <@${user.userId}> (${user.userId})\n  - **Cat Coins: ** ${user.coins} ${catCoinEmoji}`)
+                        textDisplay => textDisplay.setContent(`${i + 1}. <@${user.userId}>\n  - **Cat Coins: ** ${user.coins} ${catCoinEmoji}`)
                     )
                     .setThumbnailAccessory(
                         thumbnail => thumbnail.setURL(memberIconUrl)
