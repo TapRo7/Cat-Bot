@@ -97,7 +97,7 @@ module.exports = async (interaction) => {
 
     if (targetUserData) {
         if (targetUserData.coins < betAmount) {
-            return await interaction.editReply({ content: `The user you are trying to challenge only has **${challengerUserData.coins} Cat Coins** ${catCoinEmoji}, they cannot bet **${betAmount}**` });
+            return await interaction.editReply({ content: `The user you are trying to challenge only has **${targetUserData.coins} Cat Coins** ${catCoinEmoji}, they cannot bet **${betAmount}**` });
         }
     } else {
         return await interaction.editReply({ content: 'The user you are trying to challenge has not registered in the Cat Coin System' });
