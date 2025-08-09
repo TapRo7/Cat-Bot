@@ -266,7 +266,7 @@ module.exports = async (interaction) => {
                     }
 
                     if (criticalError) {
-                        return criticalErrorNotify('Critical error in updating user coins after game', `Critical Error Code: ${criticalError}\nUser 1: ${winningUser.id}\nUser 2: ${losingUser.id}\nBet: ${betAmount}`);
+                        return await criticalErrorNotify('Critical error in updating user coins after game', `Critical Error Code: ${criticalError}\nUser 1: ${winningUser.id}\nUser 2: ${losingUser.id}\nBet: ${betAmount}`);
                     }
 
                     const loserUpdate = {
@@ -285,7 +285,7 @@ module.exports = async (interaction) => {
                     }
 
                     if (criticalError) {
-                        return criticalErrorNotify('Critical error in updating user coins after game', `Critical Error Code: ${criticalError}\nUser 1: ${winningUser.id}\nUser 2: ${losingUser.id}\nBet: ${betAmount}`);
+                        return await criticalErrorNotify('Critical error in updating user coins after game', `Critical Error Code: ${criticalError}\nUser 1: ${winningUser.id}\nUser 2: ${losingUser.id}\nBet: ${betAmount}`);
                     }
 
                     challengeContainer.spliceComponents(challengeContainer.components.length - 4, 4);

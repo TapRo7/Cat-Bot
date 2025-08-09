@@ -1,6 +1,6 @@
 const { Events, EmbedBuilder } = require('discord.js');
 const { getRandomCatUrl } = require('../catAPI/catPictures');
-const { fetchInviteInfo } = require('../utils/inviteApi');
+const { addPendingTracking } = require('../database/inviteTracking');
 require('dotenv').config();
 
 const welcomeChannelId = process.env.WELCOME_CHANNEL_ID;
@@ -32,34 +32,12 @@ module.exports = {
             await welcomeMessage.react('<a:HappyHappy:1399809689008738516>');
 
             // Invite Tracking
-            await new Promise(resolve => setTimeout(resolve, 30000));
-            const memberInviteInfo = await fetchInviteInfo(member.guild.id, member.id);
-            const inviteLogChannel = member.client.channels.cache.get(inviteLogChannelId);
+            const result = await addPendingTracking(member.id, member.guild.id);
 
-            if (memberInviteInfo) {
-                const inviteLogEmbed = new EmbedBuilder()
-                    .setColor(0xFFC0CB)
-                    .setTitle('Invite Log')
-                    .setAuthor({ name: `${member.user.username} (${member.id})`, iconURL: member.displayAvatarURL() })
-                    .addFields(
-                        { name: 'Inviter', value: `<@${memberInviteInfo.inviterId}> (${memberInviteInfo.inviterId})` },
-                        { name: 'Invite Code', value: memberInviteInfo.inviteCode }
-                    );
-
-                await inviteLogChannel.send({ embeds: [inviteLogEmbed] });
-            } else {
-                const inviteLogEmbed = new EmbedBuilder()
-                    .setColor(0xFFC0CB)
-                    .setTitle('Invite Log')
-                    .setAuthor({ name: `${member.user.username} (${member.id})`, iconURL: member.displayAvatarURL() })
-                    .addFields(
-                        { name: 'Inviter', value: 'Unknown' },
-                        { name: 'Invite Code', value: 'Unknown' }
-                    );
-
-                await inviteLogChannel.send({ embeds: [inviteLogEmbed] });
+            if (!result) {
+                const inviteLogChannel = member.client.channels.cache.get(inviteLogChannelId);
+                return await inviteLogChannel.send({ content: `Something went wrong trying to track invite for ${member.id}\nPlease get it manually by using \`-invite ${member.id}\`` });
             }
-
         } catch (error) {
             console.error(`Error in member join event: ${error}`);
         }
