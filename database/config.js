@@ -1,4 +1,4 @@
-const { findOne, updateOne } = require('./index');
+const { findOne, updateOne, customUpdateOne } = require('./index');
 
 const configCollection = 'Config';
 
@@ -10,4 +10,12 @@ async function updateTasksConfig(updates, configKey = 'tasks') {
     return await updateOne(configCollection, { configKey }, updates);
 }
 
-module.exports = { getTasksConfig, updateTasksConfig };
+async function getShopConfig(configKey = 'shop') {
+    return await findOne(configCollection, { configKey });
+}
+
+async function updateShopConfig(updates, configKey = 'shop') {
+    return await customUpdateOne(configCollection, { configKey }, updates);
+}
+
+module.exports = { getTasksConfig, updateTasksConfig, getShopConfig, updateShopConfig };

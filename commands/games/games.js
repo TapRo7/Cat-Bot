@@ -19,6 +19,10 @@ module.exports = {
     async execute(interaction) {
         await interaction.deferReply();
 
+        if (!interaction.guild) {
+            return await interaction.editReply('This command can only be used in a server!');
+        }
+
         const sub = interaction.options.getSubcommand();
 
         switch (sub) {

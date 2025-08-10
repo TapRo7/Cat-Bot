@@ -12,6 +12,7 @@ module.exports = async (interaction) => {
     const registered = await registerCatCoinsUser(interaction.user.id);
 
     if (registered) {
+        interaction.client.userItemsData.set(interaction.user.id, []);
         return await interaction.editReply({ content: `You have successfully registered in the Cat Coins System!\nYou have been given **200 Cat Coins** ${catCoinEmoji} as a sign up bonus!` });
     } else {
         return await interaction.editReply({ content: 'Something went wrong, please try again later.' });

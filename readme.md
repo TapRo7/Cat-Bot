@@ -16,6 +16,7 @@ The variables required are as following:
 - WHITELISTED_USERS (Array)
 - CRITICAL_ERROR_WEBHOOK
 - DEFAULT_AVATAR_URL
+- STAFF_NOTIFY_CHANNEL_ID
 
 ## First Time Setup
 - Run `node deployCommands.js` after setting environment variables

@@ -1,5 +1,7 @@
 const { Events, ActivityType } = require('discord.js');
 const { connectToDatabase, setupDatabase } = require('../database/index');
+const { getShopConfig } = require('../database/config');
+const { getCatCoinUserInventories } = require('../database/catCoins');
 const { startTasks } = require('../taskRunner');
 
 module.exports = {
@@ -12,6 +14,25 @@ module.exports = {
         } catch (error) {
             console.log(`Error connecting to or setting up Database: ${error}\nUnable to start bot.`);
             process.exit(1);
+        }
+
+        const shopConfig = await getShopConfig();
+
+        client.shop = new Map();
+        client.shopItemNames = new Array();
+        client.usedShopIds = shopConfig.usedShopIds;
+
+        for (const shopItem of shopConfig.shop) {
+            client.shop.set(shopItem.id, shopItem);
+            client.shopItemNames.push(`${shopItem.name} - ${shopItem.id}`);
+        }
+
+        const userItemsData = await getCatCoinUserInventories();
+
+        client.userItems = new Map();
+
+        for (const userData of userItemsData) {
+            client.userItems.set(userData.userId, userData.inventoryItemNames);
         }
 
         for (const guild of client.guilds.cache.values()) {

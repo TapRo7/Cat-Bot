@@ -5,6 +5,7 @@ const largeSeparator = new SeparatorBuilder().setSpacing(SeparatorSpacingSize.La
 const catCoinEmoji = '<:CatCoin:1401235223831642133>';
 const wiggleCatEmoji = '<a:wiggle:1403383636811845765>';
 const happyCatEmoji = '<a:Happy:1403155072384503929>';
+const catFlexEmoji = '<:catFlex:1403798330580013247>';
 
 // Economy Help
 const economyHelpHeader = `# Cat Coin Commands ${catCoinEmoji}`;
@@ -15,9 +16,9 @@ You can register in the Cat Coins System by using the </coins register:140124348
 const economyHelpString2 = `## Daily Coins
 You get free daily coins once every 24 hours by using the </coins daily:1401243483649605752> command`;
 
-const economyHelpString3 = `## Check Statistics
-You can check your own, or someone else's statistics by using the </coins check:1401243483649605752> command
-You can enter an optional \`user\` if you want to check someone else's statistics`;
+const economyHelpString3 = `## Check Profile
+You can check your own, or someone else's profile by using the </coins profile:1401243483649605752> command
+You can enter an optional \`user\` if you want to check someone else's profile`;
 
 const economyHelpString4 = `## Coins Leaderboard
 You can check the top Cat Coin leaderboard by using the </coins leaderboard:1401243483649605752> command`;
@@ -42,7 +43,39 @@ const economyContainer = new ContainerBuilder()
     .addSeparatorComponents(largeSeparator)
     .addTextDisplayComponents(
         textDisplay => textDisplay.setContent(economyHelpString4)
-    );;
+    );
+
+// Shop Help
+const shopHelpHeader = `# Shop Commands ${catFlexEmoji}`;
+
+const shopHelpString1 = `## View Shop
+You can view the current shop items by using the </shop view:1404177783697047553> command`;
+
+const shopHelpString2 = `## Buy Item
+You can buy an item from the shop by using the </shop buy:1404177783697047553> command
+You have to select an item from the shown items in the \`item\` field`;
+
+const shopHelpString3 = `## Use Item
+Some items are usable, you can use an item by using the </shop use:1404177783697047553> command
+You have to select an item from your inventory shown in the \`item\` field`;
+
+const shopContainer = new ContainerBuilder()
+    .setAccentColor(0xFFC0CB)
+    .addTextDisplayComponents(
+        textDisplay => textDisplay.setContent(shopHelpHeader)
+    )
+    .addSeparatorComponents(largeSeparator)
+    .addTextDisplayComponents(
+        textDisplay => textDisplay.setContent(shopHelpString1)
+    )
+    .addSeparatorComponents(largeSeparator)
+    .addTextDisplayComponents(
+        textDisplay => textDisplay.setContent(shopHelpString2)
+    )
+    .addSeparatorComponents(largeSeparator)
+    .addTextDisplayComponents(
+        textDisplay => textDisplay.setContent(shopHelpString3)
+    );
 
 // Games Help
 const gamesHelpHeader = `# Game Commands ${wiggleCatEmoji}`;
@@ -87,6 +120,10 @@ module.exports = {
             .setDescription('Get help regarding the Cat Coins system!')
         )
         .addSubcommand(subcommand => subcommand
+            .setName('shop')
+            .setDescription('Get help regarding the Cat Coins shop!')
+        )
+        .addSubcommand(subcommand => subcommand
             .setName('games')
             .setDescription('Get help regarding the Game commands!')
         )
@@ -98,11 +135,17 @@ module.exports = {
     async execute(interaction) {
         await interaction.deferReply();
 
+        if (!interaction.guild) {
+            return await interaction.editReply('This command can only be used in a server!');
+        }
+
         const sub = interaction.options.getSubcommand();
 
         switch (sub) {
             case 'coins':
                 return await interaction.editReply({ components: [economyContainer], flags: MessageFlags.IsComponentsV2 });
+            case 'shop':
+                return await interaction.editReply({ components: [shopContainer], flags: MessageFlags.IsComponentsV2 });
             case 'games':
                 return await interaction.editReply({ components: [gamesContainer], flags: MessageFlags.IsComponentsV2 });
             case 'fun':

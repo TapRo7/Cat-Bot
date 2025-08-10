@@ -2,7 +2,7 @@ const { SlashCommandBuilder, MessageFlags } = require('discord.js');
 
 const coinsRegister = require('./coinsRegister');
 const coinsDaily = require('./coinsDaily');
-const coinsCheck = require('./coinsCheck');
+const coinsProfile = require('./coinsProfile');
 const coinsLeaderboard = require('./coinsLeaderboard');
 
 module.exports = {
@@ -19,9 +19,9 @@ module.exports = {
 			.setDescription('Get your daily dose of free Cat Coins!')
 		)
 		.addSubcommand(subcommand => subcommand
-			.setName('check')
-			.setDescription('Check your or someone else\'s statistics!')
-			.addUserOption(option => option.setName('user').setDescription('Select a user to check the statistics of').setRequired(false))
+			.setName('profile')
+			.setDescription('Check your or someone else\'s profile!')
+			.addUserOption(option => option.setName('user').setDescription('Select a user to check the profile of'))
 		)
 		.addSubcommand(subcommand => subcommand
 			.setName('leaderboard')
@@ -31,6 +31,10 @@ module.exports = {
 	async execute(interaction) {
 		await interaction.deferReply();
 
+		if (!interaction.guild) {
+			return await interaction.editReply('This command can only be used in a server!');
+		}
+
 		const sub = interaction.options.getSubcommand();
 
 		switch (sub) {
@@ -38,8 +42,8 @@ module.exports = {
 				return await coinsRegister(interaction);
 			case 'daily':
 				return await coinsDaily(interaction);
-			case 'check':
-				return await coinsCheck(interaction);
+			case 'profile':
+				return await coinsProfile(interaction);
 			case 'leaderboard':
 				return await coinsLeaderboard(interaction);
 			default:

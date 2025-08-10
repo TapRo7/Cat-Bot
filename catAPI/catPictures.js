@@ -1,16 +1,12 @@
 require('dotenv').config();
 
-const CAT_API_BASE = 'https://api.thecatapi.com/v1';
-const API_KEY = process.env.CAT_API_KEY;
-
-if (!API_KEY) {
-    throw new Error('Missing CAT_API_KEY in .env file');
-}
+const catApiUrl = 'https://api.thecatapi.com/v1';
+const catApiKey = process.env.CAT_API_KEY;
 
 async function getRandomCatUrl() {
-    const res = await fetch(`${CAT_API_BASE}/images/search`, {
+    const res = await fetch(`${catApiUrl}/images/search`, {
         headers: {
-            'x-api-key': API_KEY
+            'x-api-key': catApiKey
         }
     });
 
