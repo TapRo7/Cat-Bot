@@ -35,7 +35,7 @@ module.exports = async (interaction) => {
         const updated = await updateCatCoinsUser(interaction.user.id, updatedUserData);
 
         if (updated) {
-            return await interaction.editReply({ content: `You have claimed your daily ${dailyCoinReward} coins! You now have **${newCoins} Cat Coins** ${catCoinEmoji}` });
+            return await interaction.editReply({ content: `You have claimed your daily ${coinsToAdd} coins! You now have **${newCoins} Cat Coins** ${catCoinEmoji}` });
         } else {
             return await interaction.editReply({ content: 'Something went wrong, please try again later.' });
         }

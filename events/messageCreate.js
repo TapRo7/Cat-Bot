@@ -46,7 +46,7 @@ module.exports = {
                     const updated = await updateCatCoinsUser(message.author.id, updatedUserData);
 
                     if (updated) {
-                        return await message.reply({ content: `Congratulations! You hit a 0.1% chance lucky message, you\'ve been rewarded **${luckyMessageCoins} Cat Coins** ${catCoinEmoji}` });
+                        return await message.reply({ content: `Congratulations! You hit a 0.1% chance lucky message, you\'ve been rewarded **${coinsToAdd} Cat Coins** ${catCoinEmoji}` });
                     }
                 }
             }
