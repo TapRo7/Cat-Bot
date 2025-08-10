@@ -6,7 +6,7 @@ const shopUse = require('./shopUse');
 const shopAdd = require('./shopAdd');
 
 module.exports = {
-    cooldown: 5,
+    cooldown: 10,
     data: new SlashCommandBuilder()
         .setName('shop')
         .setDescription('Discover the Cat Shop!')
