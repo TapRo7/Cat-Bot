@@ -77,10 +77,6 @@ module.exports = {
             return await interaction.editReply('This command can only be used in a server!');
         }
 
-        if (interaction.user.id !== '533692379777990656') {
-            return;
-        }
-
         const sub = interaction.options.getSubcommand();
 
         switch (sub) {
