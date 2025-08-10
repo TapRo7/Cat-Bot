@@ -1,14 +1,22 @@
 const { updateShopConfig } = require('../../database/config');
-const { customAlphabet } = require('nanoid');
 require('dotenv').config();
 
 const allowedIdChars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-const nanoid6 = customAlphabet(allowedIdChars, 6);
+const idLength = 6;
+
+function generateId() {
+    let id = '';
+    for (let i = 0; i < idLength; i++) {
+        const index = Math.floor(Math.random() * allowedIdChars.length);
+        id += allowedIdChars[index];
+    }
+    return id;
+}
 
 async function generateUniqueId(existingIds) {
     let id;
     do {
-        id = nanoid6();
+        id = generateId();
     } while (existingIds.includes(id));
     return id;
 }
