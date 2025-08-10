@@ -7,6 +7,7 @@ const whitelistedUsers = JSON.parse(process.env.WHITELISTED_USERS);
 const generalChatId = process.env.GENERAL_CHAT_ID;
 const catCoinEmoji = '<:CatCoin:1401235223831642133>';
 const luckyMessageCoins = 100;
+const boosterMultiplier = 2;
 
 function chance(numerator, denominator) {
     return Math.random() < numerator / denominator;
@@ -16,6 +17,7 @@ module.exports = {
     name: Events.MessageCreate,
     async execute(message) {
         if (message.author.bot) return;
+        if (!message.guild) return;
 
         try {
             if (message.channel.id === generalChatId) {
@@ -27,7 +29,15 @@ module.exports = {
                     }
 
                     const coins = userData.coins;
-                    const newCoins = coins + luckyMessageCoins;
+                    let coinsToAdd;
+
+                    if (message.member.premiumSince) {
+                        coinsToAdd = luckyMessageCoins * boosterMultiplier;
+                    } else {
+                        coinsToAdd = luckyMessageCoins;
+                    }
+
+                    const newCoins = coins + coinsToAdd;
 
                     const updatedUserData = {
                         coins: newCoins

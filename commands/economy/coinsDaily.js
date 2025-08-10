@@ -2,6 +2,7 @@ const { getCatCoinsUser, updateCatCoinsUser } = require('../../database/catCoins
 
 const catCoinEmoji = '<:CatCoin:1401235223831642133>';
 const dailyCoinReward = 100;
+const boosterMultiplier = 1.5;
 const dailySeconds = 86400;
 
 module.exports = async (interaction) => {
@@ -16,7 +17,15 @@ module.exports = async (interaction) => {
     const timeElapsed = currentEpoch - lastDailyClaimed;
 
     if (timeElapsed >= dailySeconds) {
-        const newCoins = userData.coins + dailyCoinReward;
+        let coinsToAdd;
+
+        if (interaction.member.premiumSince) {
+            coinsToAdd = Math.floor(dailyCoinReward * boosterMultiplier);
+        } else {
+            coinsToAdd = dailyCoinReward;
+        }
+
+        const newCoins = userData.coins + coinsToAdd;
 
         const updatedUserData = {
             coins: newCoins,
