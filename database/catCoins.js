@@ -9,6 +9,7 @@ async function registerCatCoinsUser(userId) {
         userId,
         coins: 200,
         lastDailyClaimed: 0,
+        lastHourlyClaimed: 0,
         gamesWon: 0,
         gamesLost: 0,
         gamesWonStreak: 0,

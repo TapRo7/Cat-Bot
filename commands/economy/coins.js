@@ -2,6 +2,7 @@ const { SlashCommandBuilder, MessageFlags } = require('discord.js');
 
 const coinsRegister = require('./coinsRegister');
 const coinsDaily = require('./coinsDaily');
+const coinsHourly = require('./coinsHourly');
 const coinsProfile = require('./coinsProfile');
 const coinsLeaderboard = require('./coinsLeaderboard');
 
@@ -17,6 +18,10 @@ module.exports = {
 		.addSubcommand(subcommand => subcommand
 			.setName('daily')
 			.setDescription('Get your daily dose of free Cat Coins!')
+		)
+		.addSubcommand(subcommand => subcommand
+			.setName('hourly')
+			.setDescription('Get your hourly dose of free Cat Coins!')
 		)
 		.addSubcommand(subcommand => subcommand
 			.setName('profile')
@@ -42,6 +47,8 @@ module.exports = {
 				return await coinsRegister(interaction);
 			case 'daily':
 				return await coinsDaily(interaction);
+			case 'hourly':
+				return coinsHourly(interaction);
 			case 'profile':
 				return await coinsProfile(interaction);
 			case 'leaderboard':
