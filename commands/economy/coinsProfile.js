@@ -5,7 +5,14 @@ const catCoinEmoji = '<:CatCoin:1401235223831642133>';
 const winsEmoji = '<a:Happy:1403155072384503929>';
 const streakEmoji = '<a:vibeCat:1403155858954649641>';
 const lossEmoji = '<:SadCat:1403156017059074241>';
+const drawEmoji = '<:catsHugging:1404464702045819022>';
 const inventoryEmoji = '<:catFlex:1403798330580013247>';
+
+async function getWinRate(wins, losses) {
+    const totalGames = wins + losses;
+    if (totalGames === 0) return 0;
+    return ((wins / totalGames) * 100).toFixed(2);
+}
 
 module.exports = async (interaction) => {
     const targetUser = interaction.options.getUser('user') || interaction.user;
@@ -29,8 +36,10 @@ module.exports = async (interaction) => {
     const coins = userData.coins;
     const gamesWon = userData.gamesWon;
     const gamesLost = userData.gamesLost;
+    const gameDraws = userData.gameDraws;
     const winStreak = userData.gamesWonStreak;
     const inventory = userData.inventory;
+    const winRate = await getWinRate(gamesWon, gamesLost);
 
     let inventoryString = '';
 
@@ -48,9 +57,10 @@ module.exports = async (interaction) => {
         .setAuthor({ name: `${targetUser.username} (${targetUser.id})`, iconURL: targetUser.displayAvatarURL() })
         .setFields(
             { name: `Cat Coins ${catCoinEmoji}`, value: `${coins}` },
-            { name: `Game Wins ${winsEmoji}`, value: `${gamesWon}` },
+            { name: `Game Wins ${winsEmoji}`, value: `${gamesWon} (${winRate}% Win Rate)` },
             { name: `Game Wins Streak ${streakEmoji}`, value: `${winStreak}` },
             { name: `Game Losses ${lossEmoji}`, value: `${gamesLost}` },
+            { name: `Game Draws ${drawEmoji}`, value: `${gameDraws}` },
             { name: `Inventory ${inventoryEmoji}`, value: inventoryString }
         );
 

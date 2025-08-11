@@ -235,6 +235,18 @@ module.exports = async (interaction) => {
                                 textDisplay => textDisplay.setContent(`## Draw ${catCheerEmoji}\nBoth users get their **${betAmount} Cat Coins** ${catCoinEmoji} back!`)
                             );
 
+                        const drawUpdate = {
+                            $inc: {
+                                gameDraws: 1
+                            }
+                        };
+                        const drawUpdate1 = await customUpdateCatCoinsUser(interaction.user.id, drawUpdate);
+                        const drawUpdate2 = await customUpdateCatCoinsUser(targetUser.id, drawUpdate);
+
+                        if (!drawUpdate1 || !drawUpdate2) {
+                            console.error(`Failed to update draws for one of the two users. ${interaction.user.id} / ${targetUser.id}`);
+                        }
+
                         return await challengeMessage.edit({ components: [challengeContainer] });
                     }
 

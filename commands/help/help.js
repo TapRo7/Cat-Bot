@@ -16,11 +16,14 @@ You can register in the Cat Coins System by using the </coins register:140124348
 const economyHelpString2 = `## Daily Coins
 You get free daily coins once every 24 hours by using the </coins daily:1401243483649605752> command`;
 
-const economyHelpString3 = `## Check Profile
+const economyHelpString3 = `## Hourly Coins
+You get free daily coins once every hour by using the </coins hourly:1401243483649605752> command`;
+
+const economyHelpString4 = `## Check Profile
 You can check your own, or someone else's profile by using the </coins profile:1401243483649605752> command
 You can enter an optional \`user\` if you want to check someone else's profile`;
 
-const economyHelpString4 = `## Coins Leaderboard
+const economyHelpString5 = `## Coins Leaderboard
 You can check the top Cat Coin leaderboard by using the </coins leaderboard:1401243483649605752> command`;
 
 const economyContainer = new ContainerBuilder()
@@ -43,6 +46,10 @@ const economyContainer = new ContainerBuilder()
     .addSeparatorComponents(largeSeparator)
     .addTextDisplayComponents(
         textDisplay => textDisplay.setContent(economyHelpString4)
+    )
+    .addSeparatorComponents(largeSeparator)
+    .addTextDisplayComponents(
+        textDisplay => textDisplay.setContent(economyHelpString5)
     );
 
 // Shop Help

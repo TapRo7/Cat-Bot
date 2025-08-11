@@ -12,6 +12,7 @@ async function registerCatCoinsUser(userId) {
         lastHourlyClaimed: 0,
         gamesWon: 0,
         gamesLost: 0,
+        gameDraws: 0,
         gamesWonStreak: 0,
         inventory: [],
         inventoryItemNames: [],
