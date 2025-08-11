@@ -1,10 +1,11 @@
-const { ContainerBuilder, SeparatorBuilder, SeparatorSpacingSize, MessageFlags } = require('discord.js');
+const { ContainerBuilder, SeparatorBuilder, SeparatorSpacingSize, MessageFlags, ContainerComponent } = require('discord.js');
 const { getTopCatCoinUsers } = require('../../database/catCoins');
 require('dotenv').config();
 
 const catCoinEmoji = '<:CatCoin:1401235223831642133>';
 const leaderboardLimit = 10;
 const defaultAvatarUrl = process.env.DEFAULT_AVATAR_URL;
+const ignoredUsers = JSON.parse(process.env.IGNORE_LEADERBOARD_IDS);
 
 const largeSeparator = new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Large);
 
@@ -20,6 +21,11 @@ module.exports = async (interaction) => {
 
     for (let i = 0; i < topUsers.length; i++) {
         const user = topUsers[i];
+
+        if (ignoredUsers.includes(user.userId)) {
+            continue;
+        }
+
         const member = interaction.guild.members.cache.get(user.userId);
         const memberIconUrl = member?.displayAvatarURL() ?? defaultAvatarUrl;
 
