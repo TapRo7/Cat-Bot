@@ -171,8 +171,7 @@ module.exports = async (interaction) => {
 
     const guessCollector = guessThread.createMessageCollector({
         filter: guessFilter,
-        time: gameTimeoutSeconds * 1000,
-        max: maxWrongGuesses + word.length
+        time: gameTimeoutSeconds * 1000
     });
 
     await guessThread.send(`<@${interaction.user.id}> Send your guesses here! Send a message with only one letter to make a valid guess.\nAnything extra, or multiple letters in the message will make it not count!`);
