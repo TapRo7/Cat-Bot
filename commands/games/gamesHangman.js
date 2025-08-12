@@ -1,4 +1,4 @@
-const { ContainerBuilder, SeparatorBuilder, SeparatorSpacingSize, TextDisplayBuilder, MessageFlags, ButtonBuilder, ButtonStyle, TextChannel } = require('discord.js');
+const { ContainerBuilder, SeparatorBuilder, SeparatorSpacingSize, TextDisplayBuilder, MessageFlags, ButtonBuilder, ButtonStyle, TextChannel, ThreadAutoArchiveDuration } = require('discord.js');
 const { getCatCoinsUser, customUpdateCatCoinsUser } = require('../../database/catCoins');
 const { criticalErrorNotify } = require('../../utils/errorNotifier');
 const AsyncLock = require('async-lock');
@@ -167,7 +167,7 @@ module.exports = async (interaction) => {
         return msg.author.id === interaction.user.id && msg.content.length === 1 && /^[A-Za-z]$/.test(msg.content);
     };
 
-    const guessThread = await gameMessage.startThread({ name: 'Guess Thread', rateLimitPerUser: 3 });
+    const guessThread = await gameMessage.startThread({ name: 'Guess Thread', rateLimitPerUser: 3, autoArchiveDuration: ThreadAutoArchiveDuration.OneHour });
 
     const guessCollector = guessThread.createMessageCollector({
         filter: guessFilter,
@@ -249,7 +249,6 @@ module.exports = async (interaction) => {
             }
 
             await gameMessage.edit({ components: [gameContainer] });
-            await guessThread.setLocked(true);
 
         } else if (reason === 'won') {
             matchLogsString += `\n- **VICTORY!** The word was **${word}**`;
@@ -280,7 +279,6 @@ module.exports = async (interaction) => {
             }
 
             await gameMessage.edit({ components: [gameContainer] });
-            await guessThread.setLocked(true);
 
         } else if (reason === 'lost') {
             matchLogsString += `\n- **DEFEAT!** Hangman is dead. The word was **${word}**`;
@@ -313,7 +311,6 @@ module.exports = async (interaction) => {
             }
 
             await gameMessage.edit({ components: [gameContainer] });
-            await guessThread.setLocked(true);
         }
     });
 };
