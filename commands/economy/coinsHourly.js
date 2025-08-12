@@ -41,6 +41,6 @@ module.exports = async (interaction) => {
         }
     } else {
         const timeLeftToClaim = lastHourlyClaimed + hourlySeconds;
-        return await interaction.editReply({ content: `You have already claimed your daily!\nYou can claim your daily again <t:${timeLeftToClaim}:R>` });
+        return await interaction.editReply({ content: `You have already claimed your hourly!\nYou can claim your hourly again <t:${timeLeftToClaim}:R>` });
     }
 };

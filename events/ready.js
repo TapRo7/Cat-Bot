@@ -2,7 +2,7 @@ const { Events, ActivityType } = require('discord.js');
 const { connectToDatabase, setupDatabase } = require('../database/index');
 const { getShopConfig, getHangmanConfig } = require('../database/config');
 const { getCatCoinUserInventories } = require('../database/catCoins');
-const { startTasks } = require('../taskRunner');
+const { startTasks } = require('../utils/taskRunner');
 
 module.exports = {
     name: Events.ClientReady,
