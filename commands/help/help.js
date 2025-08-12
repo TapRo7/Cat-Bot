@@ -91,6 +91,10 @@ const gamesHelpString1 = `## Rock, Paper, Scissors
 You can challange other players to Rock Paper Scissors and bet Cat Coins by using the </games rps:1402095106969833563> command
 You need to enter the \`user\` you want to challange, and the amount of coins you want to \`bet\``;
 
+const gamesHelpString2 = `## Hangman
+You can play Hangman by using the </games hangman:1402095106969833563> command
+You need to select the \`difficulty\` you want to play at, each difficulty has different rewards and loss amounts, exact amounts will be shown when you run the command.`;
+
 const gamesContainer = new ContainerBuilder()
     .setAccentColor(0xFFC0CB)
     .addTextDisplayComponents(
@@ -99,6 +103,10 @@ const gamesContainer = new ContainerBuilder()
     .addSeparatorComponents(largeSeparator)
     .addTextDisplayComponents(
         textDisplay => textDisplay.setContent(gamesHelpString1)
+    )
+    .addSeparatorComponents(largeSeparator)
+    .addTextDisplayComponents(
+        textDisplay => textDisplay.setContent(gamesHelpString2)
     );
 
 // Fun Help

@@ -9,7 +9,7 @@ function shopItemStringBuilder(itemData) {
 - **Description:** ${itemData.description}
 - **Cost:** ${itemData.price} Cat Coins ${catCoinEmoji}
 - **Type:** ${itemData.type}
-- **Usable**: ${itemData.usable ? 'Yes' : 'No'}`;
+- **Usable:** ${itemData.usable ? 'Yes' : 'No'}`;
 
     if (itemData.expiry > 0) {
         itemInfo += `\n\nThis item will leave the shop on <t:${itemData.expiry}:F>`;

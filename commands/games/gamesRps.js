@@ -12,13 +12,13 @@ const catCheerEmoji = '<a:Cheer:1403153695192911893>';
 
 const largeSeparator = new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Large);
 
-const NoAcceptTimeoutContainer = new ContainerBuilder()
+const noAcceptTimeoutContainer = new ContainerBuilder()
     .setAccentColor(0xFFC0CB)
     .addTextDisplayComponents(
         textDisplay => textDisplay.setContent('This game has timed out, the challenged user did not accept in time.')
     );
 
-const NoSelectionTimeoutContainer = new ContainerBuilder()
+const noSelectionTimeoutContainer = new ContainerBuilder()
     .setAccentColor(0xFFC0CB)
     .addTextDisplayComponents(
         textDisplay => textDisplay.setContent('This game has timed out, one or more of the users did not make a choice in time.')
@@ -66,6 +66,17 @@ async function rpsWinner(choice1, choice2) {
     }
 }
 
+const acceptButton = new ButtonBuilder()
+    .setCustomId('acceptRps')
+    .setLabel('Accept')
+    .setEmoji(catAcceptEmoji)
+    .setStyle(ButtonStyle.Success);
+
+const rejectButton = new ButtonBuilder()
+    .setCustomId('rejectRps')
+    .setLabel('Reject')
+    .setEmoji(catRejectEmoji)
+    .setStyle(ButtonStyle.Danger);
 
 module.exports = async (interaction) => {
     const targetUser = interaction.options.getUser('user');
@@ -103,18 +114,6 @@ module.exports = async (interaction) => {
         return await interaction.editReply({ content: 'The user you are trying to challenge has not registered in the Cat Coin System' });
     }
 
-    const acceptButton = new ButtonBuilder()
-        .setCustomId('acceptRps')
-        .setLabel('Accept')
-        .setEmoji(catAcceptEmoji)
-        .setStyle(ButtonStyle.Success);
-
-    const rejectButton = new ButtonBuilder()
-        .setCustomId('rejectRps')
-        .setLabel('Reject')
-        .setEmoji(catRejectEmoji)
-        .setStyle(ButtonStyle.Danger);
-
     const challengeContainer = new ContainerBuilder()
         .setAccentColor(0xFFC0CB)
         .addTextDisplayComponents(
@@ -148,7 +147,7 @@ module.exports = async (interaction) => {
 
     rpsCollector.on('end', async (collected, reason) => {
         if (reason === 'time') {
-            await challengeMessage.edit({ components: [NoAcceptTimeoutContainer] });
+            await challengeMessage.edit({ components: [noAcceptTimeoutContainer] });
         }
     });
 
@@ -211,7 +210,7 @@ module.exports = async (interaction) => {
 
             rpsChoiceCollector.on('end', async (collected, reason) => {
                 if (reason === 'time') {
-                    await challengeMessage.edit({ components: [NoSelectionTimeoutContainer] });
+                    await challengeMessage.edit({ components: [noSelectionTimeoutContainer] });
                 } else if (reason === 'limit') {
                     while (pendingUpdates > 0) {
                         await new Promise(resolve => setTimeout(resolve, 10));

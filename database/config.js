@@ -18,4 +18,8 @@ async function updateShopConfig(updates, configKey = 'shop') {
     return await customUpdateOne(configCollection, { configKey }, updates);
 }
 
-module.exports = { getTasksConfig, updateTasksConfig, getShopConfig, updateShopConfig };
+async function getHangmanConfig(configKey = 'hangman') {
+    return await findOne(configCollection, { configKey });
+}
+
+module.exports = { getTasksConfig, updateTasksConfig, getShopConfig, updateShopConfig, getHangmanConfig };
