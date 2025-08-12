@@ -249,7 +249,7 @@ module.exports = async (interaction) => {
             }
 
             await gameMessage.edit({ components: [gameContainer] });
-            await guessThread.setArchived(true);
+            await guessThread.setLocked(true);
 
         } else if (reason === 'won') {
             matchLogsString += `\n- **VICTORY!** The word was **${word}**`;
@@ -280,7 +280,7 @@ module.exports = async (interaction) => {
             }
 
             await gameMessage.edit({ components: [gameContainer] });
-            await guessThread.setArchived(true);
+            await guessThread.setLocked(true);
 
         } else if (reason === 'lost') {
             matchLogsString += `\n- **DEFEAT!** Hangman is dead. The word was **${word}**`;
@@ -313,7 +313,7 @@ module.exports = async (interaction) => {
             }
 
             await gameMessage.edit({ components: [gameContainer] });
-            await guessThread.setArchived(true);
+            await guessThread.setLocked(true);
         }
     });
 };
