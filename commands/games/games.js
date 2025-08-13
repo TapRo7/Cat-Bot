@@ -5,6 +5,9 @@ const gameHangman = require('./gamesHangman');
 
 module.exports = {
     cooldown: 30,
+    subCooldowns: {
+        'hangman': 600
+    },
     data: new SlashCommandBuilder()
         .setName('games')
         .setDescription('Cat Coin Games')

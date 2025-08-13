@@ -1,5 +1,5 @@
-const { Events, MediaGalleryBuilder, SeparatorSpacingSize, ContainerBuilder, MessageFlags, ButtonStyle, EmbedBuilder } = require('discord.js');
-const { getCatCoinsUser, updateCatCoinsUser } = require('../database/catCoins');
+const { Events, MediaGalleryBuilder, SeparatorSpacingSize, ContainerBuilder, MessageFlags, ButtonStyle, EmbedBuilder, ButtonBuilder, ActionRowBuilder } = require('discord.js');
+const { getCatCoinsUser, customUpdateCatCoinsUser } = require('../database/catCoins');
 const { fetchInviteInfo } = require('../utils/inviteApi');
 require('dotenv').config();
 
@@ -13,12 +13,21 @@ function chance(numerator, denominator) {
     return Math.random() < numerator / denominator;
 }
 
+const claimDropButton = new ButtonBuilder()
+    .setCustomId('claimDrop')
+    .setLabel('Claim Drop')
+    .setStyle(ButtonStyle.Primary)
+    .setEmoji(catCoinEmoji);
+
+const claimDropRow = new ActionRowBuilder().addComponents(claimDropButton);
+
 module.exports = {
     name: Events.MessageCreate,
     async execute(message) {
         if (message.author.bot) return;
         if (!message.guild) return;
 
+        // Lucky Message
         try {
             if (message.channel.id === generalChatId) {
                 if (chance(1, 1000)) {
@@ -28,7 +37,6 @@ module.exports = {
                         return;
                     }
 
-                    const coins = userData.coins;
                     let coinsToAdd;
 
                     if (message.member.premiumSince) {
@@ -37,13 +45,13 @@ module.exports = {
                         coinsToAdd = luckyMessageCoins;
                     }
 
-                    const newCoins = coins + coinsToAdd;
-
                     const updatedUserData = {
-                        coins: newCoins
+                        $inc: {
+                            coins: coinsToAdd
+                        }
                     };
 
-                    const updated = await updateCatCoinsUser(message.author.id, updatedUserData);
+                    const updated = await customUpdateCatCoinsUser(message.author.id, updatedUserData);
 
                     if (updated) {
                         return await message.reply({ content: `Congratulations! You hit a 0.1% chance lucky message, you\'ve been rewarded **${coinsToAdd} Cat Coins** ${catCoinEmoji}` });
@@ -52,6 +60,17 @@ module.exports = {
             }
         } catch (error) {
             console.error(`Error in Message Jackpot: ${error}`);
+        }
+
+        // Cat Coin Chat Drops
+        try {
+            if (message.channel.id === generalChatId) {
+                if (chance(1, 100)) {
+                    await message.channel.send({ content: `Lucky Drop! First one to click the button will earn free **Cat Coins** ${catCoinEmoji}`, components: [claimDropRow] });
+                }
+            }
+        } catch (error) {
+            console.error(`Error in Cat Coin Drops: ${error}`);
         }
 
 

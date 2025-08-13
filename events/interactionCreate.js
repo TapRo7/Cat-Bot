@@ -13,23 +13,38 @@ module.exports = {
                 return;
             }
 
-            const { cooldowns } = interaction.client;
+            const sub = interaction.options.getSubcommand(false);
+            let commandName;
 
-            if (!cooldowns.has(command.data.name)) {
-                cooldowns.set(command.data.name, new Collection());
+            if (sub) {
+                commandName = `${command.data.name} ${sub}`;
+            } else {
+                commandName = command.data.name;
+            }
+
+            const cooldowns = interaction.client.cooldowns;
+
+            if (!cooldowns.has(commandName)) {
+                cooldowns.set(commandName, new Collection());
             }
 
             const now = Date.now();
-            const timestamps = cooldowns.get(command.data.name);
+            const timestamps = cooldowns.get(commandName);
             const defaultCooldownDuration = 5;
-            const cooldownAmount = (command.cooldown ?? defaultCooldownDuration) * 1_000;
+            let cooldownAmount;
+
+            if (sub && command.subCooldowns && command.subCooldowns[sub] != null) {
+                cooldownAmount = command.subCooldowns[sub] * 1000;
+            } else {
+                cooldownAmount = (command.cooldown ?? defaultCooldownDuration) * 1_000;
+            }
 
             if (timestamps.has(interaction.user.id)) {
                 const expirationTime = timestamps.get(interaction.user.id) + cooldownAmount;
 
                 if (now < expirationTime) {
                     const expiredTimestamp = Math.round(expirationTime / 1_000);
-                    return interaction.reply({ content: `Please wait, you are on a cooldown for the \`${command.data.name}\` command. You can use it again <t:${expiredTimestamp}:R>.`, flags: MessageFlags.Ephemeral });
+                    return interaction.reply({ content: `Please wait, you are on a cooldown for the \`${commandName}\` command. You can use it again <t:${expiredTimestamp}:R>.`, flags: MessageFlags.Ephemeral });
                 }
             }
 
@@ -65,7 +80,11 @@ module.exports = {
         else if (interaction.isButton()) {
             const handler = interaction.client.buttons.get(interaction.customId);
             if (!handler) {
-                await interaction.deferUpdate();
+                try {
+                    await interaction.deferUpdate();
+                } catch (error) {
+                    console.error(error);
+                }
                 if (!expectedNoHandlers.includes(interaction.customId)) {
                     console.log(`No handler found for Button Custom ID: ${interaction.customId}`);
                 }
@@ -108,7 +127,11 @@ module.exports = {
             const handler = interaction.client.selects.get(interaction.customId);
 
             if (!handler) {
-                await interaction.deferUpdate();
+                try {
+                    await interaction.deferUpdate();
+                } catch (error) {
+                    console.error(error);
+                }
                 if (!expectedNoHandlers.includes(interaction.customId)) {
                     console.log(`No handler found for Select Custom ID: ${interaction.customId}`);
                 }

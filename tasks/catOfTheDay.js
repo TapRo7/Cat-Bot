@@ -17,7 +17,7 @@ module.exports = {
 
         if (timeElapsed >= dailySeconds) {
             const updatedConfig = {
-                lastDailyCatPostedAt: currentEpoch
+                lastDailyCatPostedAt: lastDailyCatPostedAt + dailySeconds
             };
 
             const updated = await updateTasksConfig(updatedConfig);
