@@ -3,7 +3,7 @@ const path = require('path');
 
 const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
 
-async function startTasks(client, tasksDir = path.join(__dirname, 'tasks')) {
+async function startTasks(client, tasksDir = path.join(__dirname, '..', 'tasks')) {
     const taskFiles = fs.readdirSync(tasksDir).filter(f => f.endsWith('.js'));
 
     for (const file of taskFiles) {
