@@ -17,9 +17,9 @@ const gameTimeoutSeconds = 3 * 60;
 const maxWrongGuesses = 6;
 
 const difficultySettings = {
-    'Easy': { reward: 10, entryFee: 5 },
-    'Medium': { reward: 40, entryFee: 15 },
-    'Hard': { reward: 75, entryFee: 30 }
+    'Easy': { reward: 10, lossPenalty: 5 },
+    'Medium': { reward: 20, lossPenalty: 10 },
+    'Hard': { reward: 30, lossPenalty: 20 }
 };
 
 const hangmanStates = [
@@ -85,14 +85,14 @@ module.exports = async (interaction) => {
         return await interaction.editReply({ content: `You have not registered in the Cat Coins System yet, please use </coins register:1401243483649605752> to register before using other commands!` });
     }
 
-    if (playerData.coins < settings.entryFee) {
-        return await interaction.editReply({ content: `You need at least **${settings.entryFee} Cat Coins** ${catCoinEmoji} to play the **${difficulty}** difficulty, but you only have **${playerData.coins}**` });
+    if (playerData.coins < settings.lossPenalty) {
+        return await interaction.editReply({ content: `You need at least **${settings.lossPenalty} Cat Coins** ${catCoinEmoji} to play the **${difficulty}** difficulty, but you only have **${playerData.coins}**` });
     }
 
     const confirmationContainer = new ContainerBuilder()
         .setAccentColor(0xFFC0CB)
         .addTextDisplayComponents(
-            textDisplay => textDisplay.setContent(`Are you sure you want to play hangman on **${difficulty}** difficulty?\n\nIf you win you will get **${settings.reward} Cat Coins** ${catCoinEmoji}\nIf you lose, you will lose **${settings.entryFee} Cat Coins** ${catCoinEmoji}`)
+            textDisplay => textDisplay.setContent(`Are you sure you want to play hangman on **${difficulty}** difficulty?\n\nIf you win you will get **${settings.reward} Cat Coins** ${catCoinEmoji}\nIf you lose, you will lose **${settings.lossPenalty} Cat Coins** ${catCoinEmoji}`)
         )
         .addSeparatorComponents(largeSeparator)
         .addActionRowComponents(actionRow => actionRow.addComponents(acceptButton, rejectButton));
@@ -233,12 +233,12 @@ module.exports = async (interaction) => {
                 )
                 .addSeparatorComponents(largeSeparator)
                 .addTextDisplayComponents(
-                    textDisplay => textDisplay.setContent(`## Defeat! ${catSadEmoji}\nYou lost **${settings.entryFee} Cat Coins** ${catCoinEmoji}`)
+                    textDisplay => textDisplay.setContent(`## Defeat! ${catSadEmoji}\nYou lost **${settings.lossPenalty} Cat Coins** ${catCoinEmoji}`)
                 );
 
             const timeoutUpdate = {
                 $inc: {
-                    coins: -settings.entryFee,
+                    coins: -settings.lossPenalty,
                     gamesLost: 1
                 },
                 $set: {
@@ -249,7 +249,7 @@ module.exports = async (interaction) => {
             const timeoutUpdated = await customUpdateCatCoinsUser(interaction.user.id, timeoutUpdate);
 
             if (!timeoutUpdated) {
-                await criticalErrorNotify('Critical error in updating user coins after hangman timeout', `User: ${interaction.user.id}\nEntry Fee: ${settings.entryFee}`);
+                await criticalErrorNotify('Critical error in updating user coins after hangman timeout', `User: ${interaction.user.id}\nEntry Fee: ${settings.lossPenalty}`);
             }
 
             await gameMessage.edit({ components: [gameContainer] });
@@ -294,12 +294,12 @@ module.exports = async (interaction) => {
                 )
                 .addSeparatorComponents(largeSeparator)
                 .addTextDisplayComponents(
-                    textDisplay => textDisplay.setContent(`## Defeat! ${catSadEmoji}\nYou lost **${settings.entryFee} Cat Coins** ${catCoinEmoji}`)
+                    textDisplay => textDisplay.setContent(`## Defeat! ${catSadEmoji}\nYou lost **${settings.lossPenalty} Cat Coins** ${catCoinEmoji}`)
                 );
 
             const loseUpdate = {
                 $inc: {
-                    coins: -settings.entryFee,
+                    coins: -settings.lossPenalty,
                     gamesLost: 1
                 },
                 $set: {
@@ -311,7 +311,7 @@ module.exports = async (interaction) => {
 
             if (!loseUpdated) {
                 await gameMessage.edit({ components: [criticalErrorContainer] });
-                return await criticalErrorNotify('Critical error in updating user coins after hangman loss', `User: ${interaction.user.id}\nEntry Fee: ${settings.entryFee}`);
+                return await criticalErrorNotify('Critical error in updating user coins after hangman loss', `User: ${interaction.user.id}\nLoss Penalty: ${settings.lossPenalty}`);
             }
 
             await gameMessage.edit({ components: [gameContainer] });
