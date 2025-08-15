@@ -2,6 +2,7 @@ const { SlashCommandBuilder, MessageFlags } = require('discord.js');
 
 const gameRps = require('./gamesRps');
 const gameHangman = require('./gamesHangman');
+const gameTicTacToe = require('./gamesTicTacToe');
 
 module.exports = {
     cooldown: 30,
@@ -25,6 +26,12 @@ module.exports = {
                 { name: 'Medium', value: 'Medium' },
                 { name: 'Easy', value: 'Easy' }
             ))
+        )
+        .addSubcommand(subcommand => subcommand
+            .setName('tic-tac-toe')
+            .setDescription('Challenge someone to Tic Tac Toe!')
+            .addUserOption(option => option.setName('user').setDescription('Select the user you want to challenge!').setRequired(true))
+            .addIntegerOption(option => option.setName('bet').setDescription('Enter how many Cat Coins you want to bet').setRequired(true))
         ),
 
     async execute(interaction) {
@@ -41,6 +48,8 @@ module.exports = {
                 return await gameRps(interaction);
             case 'hangman':
                 return await gameHangman(interaction);
+            case 'tic-tac-toe':
+                return await gameTicTacToe(interaction);
             default:
                 return await interaction.editReply({ content: 'Unknown subcommand.', flags: MessageFlags.Ephemeral });
         }

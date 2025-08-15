@@ -289,7 +289,9 @@ module.exports = async (interaction) => {
                             gamesWonStreak: 0
                         }
                     };
+
                     const loserUpdated = await customUpdateCatCoinsUser(losingUser.id, loserUpdate);
+
                     if (!loserUpdated) {
                         await challengeMessage.edit({ components: [criticalErrorContainer] });
                         criticalError = 2;
@@ -312,7 +314,6 @@ module.exports = async (interaction) => {
                     await challengeMessage.edit({ components: [challengeContainer] });
                 }
             });
-
         } else if (btnInt.customId === 'rejectRps') {
             matchLogsString += `\n- <@${targetUser.id}> rejected the challenge`;
 

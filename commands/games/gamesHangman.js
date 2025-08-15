@@ -181,8 +181,12 @@ module.exports = async (interaction) => {
 
     await guessThread.send(`<@${interaction.user.id}> Send your guesses here! Send a message with only one letter to make a valid guess.\nAnything extra, or multiple letters in the message will make it not count!`);
 
+    let gameEnded = false;
+
     guessCollector.on('collect', async msg => {
         await messageEditLocker.acquire('edit', async () => {
+            if (gameEnded) return;
+
             const guess = msg.content.toUpperCase();
 
             if (guessedLetters.includes(guess)) {
@@ -210,111 +214,119 @@ module.exports = async (interaction) => {
 
             await gameMessage.edit({ components: [gameContainer] });
 
-            if (isWordComplete(word, guessedLetters)) {
-                guessCollector.stop('won');
+            if (isWordComplete(word, guessedLetters) && !gameEnded) {
+                gameEnded = true;
+                matchLogsString += `\n- **VICTORY!** The word was **${word}**`;
+
+                gameContainer.spliceComponents(gameContainer.components.length - 3, 3);
+                gameContainer
+                    .addTextDisplayComponents(
+                        textDisplay => textDisplay.setContent(matchLogsString)
+                    )
+                    .addSeparatorComponents(largeSeparator)
+                    .addTextDisplayComponents(
+                        textDisplay => textDisplay.setContent(`## Victory! ${catCheerEmoji}\nYou won **${settings.reward} Cat Coins** ${catCoinEmoji}`)
+                    );
+
+                const winUpdate = {
+                    $inc: {
+                        coins: settings.reward,
+                        gamesWon: 1,
+                        gamesWonStreak: 1
+                    }
+                };
+
+                const winUpdated = await customUpdateCatCoinsUser(interaction.user.id, winUpdate);
+
+                if (!winUpdated) {
+                    await gameMessage.edit({ components: [criticalErrorContainer] });
+                    guessCollector.stop();
+                    return await criticalErrorNotify('Critical error in updating user coins after hangman win', `User: ${interaction.user.id}\nReward: ${settings.reward}`);
+                }
+
+                await gameMessage.edit({ components: [gameContainer] });
                 return;
             }
 
-            if (wrongGuesses >= maxWrongGuesses) {
-                guessCollector.stop('lost');
+            if (wrongGuesses >= maxWrongGuesses && !gameEnded) {
+                gameEnded = true;
+                matchLogsString += `\n- **DEFEAT!** Hangman is dead. The word was **${word}**`;
+
+                gameContainer.spliceComponents(gameContainer.components.length - 3, 3);
+                gameContainer
+                    .addTextDisplayComponents(
+                        textDisplay => textDisplay.setContent(matchLogsString)
+                    )
+                    .addSeparatorComponents(largeSeparator)
+                    .addTextDisplayComponents(
+                        textDisplay => textDisplay.setContent(`## Defeat! ${catSadEmoji}\nYou lost **${settings.lossPenalty} Cat Coins** ${catCoinEmoji}`)
+                    );
+
+                const loseUpdate = {
+                    $inc: {
+                        coins: -settings.lossPenalty,
+                        gamesLost: 1
+                    },
+                    $set: {
+                        gamesWonStreak: 0
+                    }
+                };
+
+                const loseUpdated = await customUpdateCatCoinsUser(interaction.user.id, loseUpdate);
+
+                if (!loseUpdated) {
+                    await gameMessage.edit({ components: [criticalErrorContainer] });
+                    guessCollector.stop();
+                    return await criticalErrorNotify('Critical error in updating user coins after hangman loss', `User: ${interaction.user.id}\nLoss Penalty: ${settings.lossPenalty}`);
+                }
+
+                await gameMessage.edit({ components: [gameContainer] });
                 return;
             }
         });
     });
 
     guessCollector.on('end', async (collected, reason) => {
-        if (reason === 'time') {
-            matchLogsString += `\n- **DEFEAT!** The time ran out. The word was **${word}**`;
-
-            gameContainer.spliceComponents(gameContainer.components.length - 3, 3);
-            gameContainer
-                .addTextDisplayComponents(
-                    textDisplay => textDisplay.setContent(matchLogsString)
-                )
-                .addSeparatorComponents(largeSeparator)
-                .addTextDisplayComponents(
-                    textDisplay => textDisplay.setContent(`## Defeat! ${catSadEmoji}\nYou lost **${settings.lossPenalty} Cat Coins** ${catCoinEmoji}`)
-                );
-
-            const timeoutUpdate = {
-                $inc: {
-                    coins: -settings.lossPenalty,
-                    gamesLost: 1
-                },
-                $set: {
-                    gamesWonStreak: 0
+        await messageEditLocker.acquire('edit', async () => {
+            if (reason === 'time') {
+                if (gameEnded) {
+                    return;
+                } else {
+                    gameEnded = true;
                 }
-            };
 
-            const timeoutUpdated = await customUpdateCatCoinsUser(interaction.user.id, timeoutUpdate);
+                matchLogsString += `\n- **DEFEAT!** The time ran out. The word was **${word}**`;
 
-            if (!timeoutUpdated) {
-                await criticalErrorNotify('Critical error in updating user coins after hangman timeout', `User: ${interaction.user.id}\nEntry Fee: ${settings.lossPenalty}`);
-            }
+                gameContainer.spliceComponents(gameContainer.components.length - 3, 3);
+                gameContainer
+                    .addTextDisplayComponents(
+                        textDisplay => textDisplay.setContent(matchLogsString)
+                    )
+                    .addSeparatorComponents(largeSeparator)
+                    .addTextDisplayComponents(
+                        textDisplay => textDisplay.setContent(`## Defeat! ${catSadEmoji}\nYou lost **${settings.lossPenalty} Cat Coins** ${catCoinEmoji}`)
+                    );
 
-            await gameMessage.edit({ components: [gameContainer] });
+                const timeoutUpdate = {
+                    $inc: {
+                        coins: -settings.lossPenalty,
+                        gamesLost: 1
+                    },
+                    $set: {
+                        gamesWonStreak: 0
+                    }
+                };
 
-        } else if (reason === 'won') {
-            matchLogsString += `\n- **VICTORY!** The word was **${word}**`;
+                const timeoutUpdated = await customUpdateCatCoinsUser(interaction.user.id, timeoutUpdate);
 
-            gameContainer.spliceComponents(gameContainer.components.length - 3, 3);
-            gameContainer
-                .addTextDisplayComponents(
-                    textDisplay => textDisplay.setContent(matchLogsString)
-                )
-                .addSeparatorComponents(largeSeparator)
-                .addTextDisplayComponents(
-                    textDisplay => textDisplay.setContent(`## Victory! ${catCheerEmoji}\nYou won **${settings.reward} Cat Coins** ${catCoinEmoji}`)
-                );
-
-            const winUpdate = {
-                $inc: {
-                    coins: settings.reward,
-                    gamesWon: 1,
-                    gamesWonStreak: 1
+                if (!timeoutUpdated) {
+                    await gameMessage.edit({ components: [criticalErrorContainer] });
+                    return await criticalErrorNotify('Critical error in updating user coins after hangman timeout', `User: ${interaction.user.id}\nEntry Fee: ${settings.lossPenalty}`);
                 }
-            };
 
-            const winUpdated = await customUpdateCatCoinsUser(interaction.user.id, winUpdate);
+                await gameMessage.edit({ components: [gameContainer] });
 
-            if (!winUpdated) {
-                await gameMessage.edit({ components: [criticalErrorContainer] });
-                return await criticalErrorNotify('Critical error in updating user coins after hangman win', `User: ${interaction.user.id}\nReward: ${settings.reward}`);
             }
-
-            await gameMessage.edit({ components: [gameContainer] });
-
-        } else if (reason === 'lost') {
-            matchLogsString += `\n- **DEFEAT!** Hangman is dead. The word was **${word}**`;
-
-            gameContainer.spliceComponents(gameContainer.components.length - 3, 3);
-            gameContainer
-                .addTextDisplayComponents(
-                    textDisplay => textDisplay.setContent(matchLogsString)
-                )
-                .addSeparatorComponents(largeSeparator)
-                .addTextDisplayComponents(
-                    textDisplay => textDisplay.setContent(`## Defeat! ${catSadEmoji}\nYou lost **${settings.lossPenalty} Cat Coins** ${catCoinEmoji}`)
-                );
-
-            const loseUpdate = {
-                $inc: {
-                    coins: -settings.lossPenalty,
-                    gamesLost: 1
-                },
-                $set: {
-                    gamesWonStreak: 0
-                }
-            };
-
-            const loseUpdated = await customUpdateCatCoinsUser(interaction.user.id, loseUpdate);
-
-            if (!loseUpdated) {
-                await gameMessage.edit({ components: [criticalErrorContainer] });
-                return await criticalErrorNotify('Critical error in updating user coins after hangman loss', `User: ${interaction.user.id}\nLoss Penalty: ${settings.lossPenalty}`);
-            }
-
-            await gameMessage.edit({ components: [gameContainer] });
-        }
+        });
     });
 };

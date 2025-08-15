@@ -10,9 +10,9 @@ const processedDropIds = new Set();
 module.exports = {
     customId: 'claimDrop',
     async execute(interaction) {
-        await winnerLock.acquire('dropClaimed', async () => {
-            await interaction.deferUpdate();
+        await interaction.deferUpdate();
 
+        await winnerLock.acquire('dropClaimed', async () => {
             if (processedDropIds.has(interaction.message.id)) {
                 return;
             }
