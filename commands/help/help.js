@@ -95,6 +95,12 @@ const gamesHelpString2 = `## Hangman
 You can play Hangman by using the </games hangman:1402095106969833563> command
 You need to select the \`difficulty\` you want to play at, each difficulty has different rewards and loss amounts, exact amounts will be shown when you run the command.`;
 
+const gamesHelpString3 = `## Tic Tac Toe
+You can challange other players to Tic Tac Toe and bet Cat Coins by using the </games tic-tac-toe:1402095106969833563> command
+You need to enter the \`user\` you want to challange, and the amount of coins you want to \`bet\`
+
+**Note:** You must finish all games, even if it is an obvious draw, abandoning a game in the middle will be considered a loss.`;
+
 const gamesContainer = new ContainerBuilder()
     .setAccentColor(0xFFC0CB)
     .addTextDisplayComponents(
@@ -107,7 +113,11 @@ const gamesContainer = new ContainerBuilder()
     .addSeparatorComponents(largeSeparator)
     .addTextDisplayComponents(
         textDisplay => textDisplay.setContent(gamesHelpString2)
-    );
+    )
+    .addSeparatorComponents(largeSeparator)
+    .addTextDisplayComponents(
+        textDisplay => textDisplay.setContent(gamesHelpString3)
+    );;
 
 // Fun Help
 const funHelpHeader = `# Fun Commands ${happyCatEmoji}`;
