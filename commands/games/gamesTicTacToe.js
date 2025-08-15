@@ -89,7 +89,11 @@ module.exports = async (interaction) => {
     const betAmount = interaction.options.getInteger('bet');
 
     if (betAmount <= 0) {
-        return await interaction.editReply({ content: 'You cannot bet 0 coins!' });
+        return await interaction.editReply({ content: `You cannot bet **0 Cat Coins!** ${catCoinEmoji}` });
+    }
+
+    if (betAmount > 1) {
+        return await interaction.editReply({ content: 'At the moment you can\'t bet more than 1 coin.\nThe game is in test mode, once it is fully released you will be able to ber more.' });
     }
 
     if (targetUser.id === interaction.user.id) {
@@ -210,7 +214,15 @@ module.exports = async (interaction) => {
                 await messageEditLocker.acquire('edit', async () => {
                     if (gameEnded) return;
 
+                    if (btnInt.user.id !== currentPlayerId) {
+                        return;
+                    }
+
                     const position = parseInt(btnInt.customId.split('_')[1]);
+
+                    if (gameState[position]) {
+                        return;
+                    }
 
                     gameState[position] = playerSymbols[currentPlayerId];
 
