@@ -49,6 +49,7 @@ module.exports = {
             case 'hangman':
                 return await gameHangman(interaction);
             case 'tic-tac-toe':
+                return await interaction.editReply({ content: 'Game is currently disabled' });
                 return await gameTicTacToe(interaction);
             default:
                 return await interaction.editReply({ content: 'Unknown subcommand.', flags: MessageFlags.Ephemeral });
