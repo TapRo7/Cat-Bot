@@ -92,10 +92,6 @@ module.exports = async (interaction) => {
         return await interaction.editReply({ content: `You cannot bet **0 Cat Coins!** ${catCoinEmoji}` });
     }
 
-    if (betAmount > 1) {
-        return await interaction.editReply({ content: 'At the moment you can\'t bet more than 1 coin.\nThe game is in test mode, once it is fully released you will be able to ber more.' });
-    }
-
     if (targetUser.id === interaction.user.id) {
         return await interaction.editReply({ content: 'You cannot challenge yourself!' });
     }
