@@ -159,6 +159,8 @@ module.exports = async (interaction) => {
 
     acceptRejectCollector.on('collect', async btnInt => {
         if (btnInt.customId === 'acceptTicTacToe') {
+            await challengeMessage.reply({ content: `<@${interaction.user.id}> your challenge has been accepted!` });
+
             const firstPlayer = Math.random() < 0.5 ? interaction.user : targetUser;
             const secondPlayer = firstPlayer.id === interaction.user.id ? targetUser : interaction.user;
 
@@ -440,9 +442,5 @@ module.exports = async (interaction) => {
         }
     });
 
-    const targetNotificationMessage = await challengeMessage.reply({ content: `<@${targetUser.id}> You have been challenged!` });
-
-    setTimeout(async () => {
-        await targetNotificationMessage.delete();
-    }, 2500);
+    await challengeMessage.reply({ content: `<@${targetUser.id}> You have been challenged!` });
 };

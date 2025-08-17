@@ -17,9 +17,9 @@ const gameTimeoutSeconds = 3 * 60;
 const maxWrongGuesses = 6;
 
 const difficultySettings = {
-    'Easy': { reward: 10, lossPenalty: 5 },
-    'Medium': { reward: 20, lossPenalty: 10 },
-    'Hard': { reward: 30, lossPenalty: 20 }
+    'Easy': { reward: 20, lossPenalty: 10 },
+    'Medium': { reward: 35, lossPenalty: 20 },
+    'Hard': { reward: 50, lossPenalty: 30 }
 };
 
 const hangmanStates = [

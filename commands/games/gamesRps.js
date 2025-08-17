@@ -91,7 +91,7 @@ module.exports = async (interaction) => {
     }
 
     if (targetUser.id === interaction.client.application.id) {
-        return await interaction.editReply({ content: 'You cannot challange me! Meow' });
+        return await interaction.editReply({ content: 'You cannot challenge me! Meow' });
     }
 
     const challengerUserData = await getCatCoinsUser(interaction.user.id);
@@ -157,6 +157,7 @@ module.exports = async (interaction) => {
 
         if (btnInt.customId === 'acceptRps') {
             matchLogsString += `\n- <@${targetUser.id}> accepted the challenge\n- Both users are selecting their options`;
+            await challengeMessage.reply({ content: `<@${interaction.user.id}> your challenge has been accepted!` });
 
             challengeContainer.spliceComponents(challengeContainer.components.length - 3, 3);
 
@@ -327,9 +328,5 @@ module.exports = async (interaction) => {
         }
     });
 
-    const targetNotificationMessage = await challengeMessage.reply({ content: `<@${targetUser.id}> You have been challenged!` });
-
-    setTimeout(async () => {
-        await targetNotificationMessage.delete();
-    }, 2500);
+    await challengeMessage.reply({ content: `<@${targetUser.id}> You have been challenged!` });
 };
