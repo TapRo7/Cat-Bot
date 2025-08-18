@@ -12,6 +12,7 @@ client.cooldowns = new Collection();
 client.buttons = new Map();
 client.modals = new Map();
 client.selects = new Map();
+client.maxBet = 1500;
 
 const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);
