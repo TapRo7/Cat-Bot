@@ -63,7 +63,7 @@ async function setupDatabase() {
 }
 
 function getCollection(name) {
-    if (!databaseClient || database) {
+    if (!databaseClient || !database) {
         throw new Error(`Database not initialized. Tried to access "${name}" before connectToDatabase().`);
     }
     return database.collection(name);
