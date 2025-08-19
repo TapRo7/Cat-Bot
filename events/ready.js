@@ -3,6 +3,7 @@ const { connectToDatabase, setupDatabase } = require('../database/index');
 const { getShopConfig, getHangmanConfig } = require('../database/config');
 const { getCatCoinUserInventories } = require('../database/catCoins');
 const { startTasks } = require('../utils/taskRunner');
+const { criticalErrorNotify } = require('../utils/errorNotifier');
 
 module.exports = {
     name: Events.ClientReady,
@@ -13,6 +14,7 @@ module.exports = {
             await setupDatabase();
         } catch (error) {
             console.log(`Error connecting to or setting up Database: ${error}\nUnable to start bot.`);
+            await criticalErrorNotify('Critical error in trying to connect to database on startup');
             process.exit(1);
         }
 
