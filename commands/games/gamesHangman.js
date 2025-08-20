@@ -60,10 +60,6 @@ const rejectButton = new ButtonBuilder()
     .setEmoji(catRejectEmoji);
 
 module.exports = async (interaction) => {
-    if (!(interaction.channel instanceof TextChannel)) {
-        return await interaction.editReply({ content: 'This command can only be used in a Text Channel. ' });
-    }
-
     const difficulty = interaction.options.getString('difficulty');
     const settings = difficultySettings[difficulty];
 

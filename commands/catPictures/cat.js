@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, TextChannel } = require('discord.js');
 const { getRandomCatUrl } = require('../../catAPI/catPictures');
 
 module.exports = {
@@ -12,6 +12,10 @@ module.exports = {
 
         if (!interaction.guild) {
             return await interaction.editReply('This command can only be used in a server!');
+        }
+
+        if (!(interaction.channel instanceof TextChannel)) {
+            return await interaction.editReply({ content: 'This command can only be used in a Text Channel.' });
         }
 
         const randomCatUrl = await getRandomCatUrl();

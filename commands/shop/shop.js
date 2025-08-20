@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, MessageFlags } = require('discord.js');
+const { SlashCommandBuilder, MessageFlags, TextChannel } = require('discord.js');
 
 const shopView = require('./shopView');
 const shopBuy = require('./shopBuy');
@@ -75,6 +75,10 @@ module.exports = {
 
         if (!interaction.guild) {
             return await interaction.editReply('This command can only be used in a server!');
+        }
+
+        if (!(interaction.channel instanceof TextChannel)) {
+            return await interaction.editReply({ content: 'This command can only be used in a Text Channel.' });
         }
 
         const sub = interaction.options.getSubcommand();
