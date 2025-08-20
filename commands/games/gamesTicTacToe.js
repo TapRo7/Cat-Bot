@@ -9,14 +9,10 @@ const catCoinEmoji = '<:CatCoin:1401235223831642133>';
 const catAcceptEmoji = '<a:yes:1403153341780988006>';
 const catRejectEmoji = '<a:no:1403153353407725710>';
 const catCheerEmoji = '<a:Cheer:1403153695192911893>';
+const catDrawEmoji = '<:catsHugging:1404464702045819022>';
+const catTimeoutEmoji = '<:SadCat:1403156017059074241>';
 
 const largeSeparator = new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Large);
-
-const noAcceptTimeoutContainer = new ContainerBuilder()
-    .setAccentColor(0xFFC0CB)
-    .addTextDisplayComponents(
-        textDisplay => textDisplay.setContent('This game has timed out, the challenged user did not accept in time.')
-    );
 
 const criticalErrorContainer = new ContainerBuilder()
     .setAccentColor(0xFF0000)
@@ -157,7 +153,15 @@ module.exports = async (interaction) => {
 
     acceptRejectCollector.on('end', async (collected, reason) => {
         if (reason === 'time') {
-            await challengeMessage.edit({ components: [noAcceptTimeoutContainer] });
+            challengeContainer.spliceComponents(challengeContainer.components.length - 3, 3);
+
+            challengeContainer
+                .addSeparatorComponents(largeSeparator)
+                .addTextDisplayComponents(
+                    textDisplay => textDisplay.setContent(`## Timeout ${catTimeoutEmoji}\n<@${targetUser.id}> did not accept the challenge in time`)
+                );
+
+            await challengeMessage.edit({ components: [challengeContainer] });
         }
     });
 
@@ -252,7 +256,7 @@ module.exports = async (interaction) => {
                                 )
                                 .addSeparatorComponents(largeSeparator)
                                 .addTextDisplayComponents(
-                                    textDisplay => textDisplay.setContent(`## Draw ${catCheerEmoji}\nBoth users get their **${betAmount} Cat Coins** ${catCoinEmoji} back!`)
+                                    textDisplay => textDisplay.setContent(`## Draw ${catDrawEmoji}\nBoth users get their **${betAmount} Cat Coins** ${catCoinEmoji} back!`)
                                 );
 
                             const drawUpdate = {

@@ -38,18 +38,6 @@ const criticalErrorContainer = new ContainerBuilder()
         textDisplay => textDisplay.setContent('A critical error occurred updating your coins, this game could not be processed.')
     );
 
-const rejectedContainer = new ContainerBuilder()
-    .setAccentColor(0xFFC0CB)
-    .addTextDisplayComponents(
-        textDisplay => textDisplay.setContent('You cancelled the game.')
-    );
-
-const noResponseTimeoutContainer = new ContainerBuilder()
-    .setAccentColor(0xFFC0CB)
-    .addTextDisplayComponents(
-        textDisplay => textDisplay.setContent('This game has timed out, you did not accept in time.')
-    );
-
 function getWordDisplay(word, guessedLetters) {
     const display = word.split('').map(letter => guessedLetters.includes(letter) ? letter : '_').join(' ');
     return `\`${display}\``;
@@ -127,11 +115,23 @@ module.exports = async (interaction) => {
         const commandName = `${command.data.name} ${sub}`;
         interaction.client.cooldowns.get(commandName)?.delete(interaction.user.id);
 
-        return await gameMessage.edit({ components: [rejectedContainer] });
+        confirmationContainer.spliceComponents(2, 1);
+
+        confirmationContainer.addTextDisplayComponents(
+            textDisplay => textDisplay.setContent('You cancelled the game.')
+        );
+
+        return await gameMessage.edit({ components: [confirmationContainer] });
     }
 
     if (confirmResult === 'timeout') {
-        return await gameMessage.edit({ components: [noResponseTimeoutContainer] });
+        confirmationContainer.spliceComponents(2, 1);
+
+        confirmationContainer.addTextDisplayComponents(
+            textDisplay => textDisplay.setContent('This game has timed out, you did not accept in time.')
+        );
+
+        return await gameMessage.edit({ components: [confirmationContainer] });
     }
 
     const wordsList = interaction.client.hangmanWords.get(difficulty);
