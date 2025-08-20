@@ -6,7 +6,7 @@ module.exports = {
         script: 'index.js',
         autorestart: true,
         watch: false,
-        max_memory_restart: '1G',
+        max_memory_restart: '3G',
         max_restarts: 100,
         restart_delay: 5000,
         output: path.resolve(__dirname, 'logs', 'out.log'),
