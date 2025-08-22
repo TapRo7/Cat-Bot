@@ -3,13 +3,11 @@ const { SlashCommandBuilder, MessageFlags, TextChannel } = require('discord.js')
 const gameRps = require('./gamesRps');
 const gameHangman = require('./gamesHangman');
 const gameTicTacToe = require('./gamesTicTacToe');
-const gameVault = require('./gamesVault');
 
 module.exports = {
     cooldown: 30,
     subCooldowns: {
-        'hangman': 600,
-        'vault': 600
+        'hangman': 600
     },
     data: new SlashCommandBuilder()
         .setName('games')
@@ -56,8 +54,6 @@ module.exports = {
                 return await gameHangman(interaction);
             case 'tic-tac-toe':
                 return await gameTicTacToe(interaction);
-            case 'vault':
-                return await gameVault(interaction);
             default:
                 return await interaction.editReply({ content: 'Unknown subcommand.', flags: MessageFlags.Ephemeral });
         }
