@@ -34,15 +34,6 @@ module.exports = {
             .setDescription('Challenge someone to Tic Tac Toe!')
             .addUserOption(option => option.setName('user').setDescription('Select the user you want to challenge!').setRequired(true))
             .addIntegerOption(option => option.setName('bet').setDescription('Enter how many Cat Coins you want to bet').setRequired(true))
-        )
-        .addSubcommand(subcommand => subcommand
-            .setName('vault')
-            .setDescription('Crack the vault and win some coins!')
-            .addStringOption(option => option.setName('difficulty').setDescription('Select the difficulty you want to play at!').setRequired(true).setChoices(
-                { name: 'Hard', value: 'Hard' },
-                { name: 'Medium', value: 'Medium' },
-                { name: 'Easy', value: 'Easy' }
-            ))
         ),
 
     async execute(interaction) {
