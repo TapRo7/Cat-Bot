@@ -1,6 +1,8 @@
 const { ContainerBuilder, SeparatorBuilder, SeparatorSpacingSize, TextDisplayBuilder, MessageFlags, ButtonBuilder, ButtonStyle, TextChannel, ThreadAutoArchiveDuration } = require('discord.js');
 const { getCatCoinsUser, customUpdateCatCoinsUser } = require('../../database/catCoins');
 const { criticalErrorNotify } = require('../../utils/errorNotifier');
+const { createDeferred } = require('../../utils/createDeferred');
+const { removeCooldown } = require('../../utils/removeCooldown');
 const AsyncLock = require('async-lock');
 
 const messageEditLocker = new AsyncLock();
@@ -66,10 +68,12 @@ module.exports = async (interaction) => {
     const playerData = await getCatCoinsUser(interaction.user.id);
 
     if (!playerData) {
+        await removeCooldown(interaction);
         return await interaction.editReply({ content: `You have not registered in the Cat Coins System yet, please use </coins register:1401243483649605752> to register before using other commands!` });
     }
 
     if (playerData.coins < settings.lossPenalty) {
+        await removeCooldown(interaction);
         return await interaction.editReply({ content: `You need at least **${settings.lossPenalty} Cat Coins** ${catCoinEmoji} to play the **${difficulty}** difficulty, but you only have **${playerData.coins}**` });
     }
 
@@ -106,10 +110,7 @@ module.exports = async (interaction) => {
     });
 
     if (confirmResult === false) {
-        const command = interaction.client.commands.get(interaction.commandName);
-        const sub = interaction.options.getSubcommand();
-        const commandName = `${command.data.name} ${sub}`;
-        interaction.client.cooldowns.get(commandName)?.delete(interaction.user.id);
+        await removeCooldown(interaction);
 
         confirmationContainer.spliceComponents(2, 1);
 
@@ -121,6 +122,8 @@ module.exports = async (interaction) => {
     }
 
     if (confirmResult === 'timeout') {
+        await removeCooldown(interaction);
+
         confirmationContainer.spliceComponents(2, 1);
 
         confirmationContainer.addTextDisplayComponents(
@@ -179,7 +182,7 @@ module.exports = async (interaction) => {
 
     let gameEnded = false;
 
-    guessCollector.on('collect', async msg => {
+    const handleGuessCollect = async (msg) => {
         await messageEditLocker.acquire('edit', async () => {
             if (gameEnded) return;
 
@@ -237,11 +240,12 @@ module.exports = async (interaction) => {
                 if (!winUpdated) {
                     await gameMessage.edit({ components: [criticalErrorContainer] });
                     guessCollector.stop();
-                    return await criticalErrorNotify('Critical error in updating user coins after hangman win', `User: ${interaction.user.id}\nReward: ${settings.reward}`);
+                    await criticalErrorNotify('Critical error in updating user coins after hangman win', `User: ${interaction.user.id}\nReward: ${settings.reward}`);
+                    return completion.resolve();
                 }
 
                 await gameMessage.edit({ components: [gameContainer] });
-                return;
+                return completion.resolve();
             }
 
             if (wrongGuesses >= maxWrongGuesses && !gameEnded) {
@@ -273,16 +277,17 @@ module.exports = async (interaction) => {
                 if (!loseUpdated) {
                     await gameMessage.edit({ components: [criticalErrorContainer] });
                     guessCollector.stop();
-                    return await criticalErrorNotify('Critical error in updating user coins after hangman loss', `User: ${interaction.user.id}\nLoss Penalty: ${settings.lossPenalty}`);
+                    await criticalErrorNotify('Critical error in updating user coins after hangman loss', `User: ${interaction.user.id}\nLoss Penalty: ${settings.lossPenalty}`);
+                    return completion.resolve();
                 }
 
                 await gameMessage.edit({ components: [gameContainer] });
-                return;
+                return completion.resolve();
             }
         });
-    });
+    };
 
-    guessCollector.on('end', async (collected, reason) => {
+    const handleGuessEnd = async (reason) => {
         await messageEditLocker.acquire('edit', async () => {
             if (reason === 'time') {
                 if (gameEnded) {
@@ -317,12 +322,33 @@ module.exports = async (interaction) => {
 
                 if (!timeoutUpdated) {
                     await gameMessage.edit({ components: [criticalErrorContainer] });
-                    return await criticalErrorNotify('Critical error in updating user coins after hangman timeout', `User: ${interaction.user.id}\nEntry Fee: ${settings.lossPenalty}`);
+                    await criticalErrorNotify('Critical error in updating user coins after hangman timeout', `User: ${interaction.user.id}\nEntry Fee: ${settings.lossPenalty}`);
+                    return completion.resolve();
                 }
 
                 await gameMessage.edit({ components: [gameContainer] });
-
+                return completion.resolve();
             }
         });
+    };
+
+    const completion = createDeferred();
+
+    guessCollector.on('collect', async msg => {
+        try {
+            await handleGuessCollect(msg);
+        } catch (error) {
+            completion.reject(error);
+        }
     });
+
+    guessCollector.on('end', async (collected, reason) => {
+        try {
+            await handleGuessEnd(reason);
+        } catch (error) {
+            completion.reject(error);
+        }
+    });
+
+    await completion.promise;
 };

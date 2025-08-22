@@ -6,7 +6,7 @@ const winsEmoji = '<a:Happy:1403155072384503929>';
 const streakEmoji = '<a:vibeCat:1403155858954649641>';
 const lossEmoji = '<:SadCat:1403156017059074241>';
 const drawEmoji = '<:catsHugging:1404464702045819022>';
-const inventoryEmoji = '<:catFlex:1403798330580013247>';
+const inventoryEmoji = '<:CatFlex:1408288059774074932>';
 
 async function getWinRate(wins, losses) {
     const totalGames = wins + losses;

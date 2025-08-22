@@ -19,7 +19,7 @@
     "homepage": "https://github.com/TapRo7/JOI#readme",
     "dependencies": {
         "async-lock": "^1.4.1",
-        "discord.js": "^14.21.0",
+        "discord.js": "^14.22.0",
         "dotenv": "^17.2.0",
         "luxon": "^3.7.1",
         "mongodb": "^6.17.0",

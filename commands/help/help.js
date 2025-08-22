@@ -5,7 +5,7 @@ const largeSeparator = new SeparatorBuilder().setSpacing(SeparatorSpacingSize.La
 const catCoinEmoji = '<:CatCoin:1401235223831642133>';
 const wiggleCatEmoji = '<a:wiggle:1403383636811845765>';
 const happyCatEmoji = '<a:Happy:1403155072384503929>';
-const catFlexEmoji = '<:catFlex:1403798330580013247>';
+const catFlexEmoji = '<:CatFlex:1408288059774074932>';
 
 // Economy Help
 const economyHelpHeader = `# Cat Coin Commands ${catCoinEmoji}`;
