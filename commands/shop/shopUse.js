@@ -21,16 +21,16 @@ module.exports = async (interaction) => {
 
     const itemId = selectedItem.split('-').pop().trim();
 
-    const itemToBuy = interaction.client.shop.get(itemId);
-
-    if (!itemToBuy.usable) {
-        return await interaction.editReply({ content: 'The item you selected is not a usable item' });
-    }
-
     const userData = await getCatCoinsUser(interaction.user.id);
 
     if (!userData) {
         return await interaction.editReply({ content: `You have not registered in the Cat Coins System yet, please use </coins register:1401243483649605752> to register before using other commands!` });
+    }
+
+    const itemToBuy = userData.inventory.find(i => i.id === itemId);
+
+    if (!itemToBuy.usable) {
+        return await interaction.editReply({ content: 'The item you selected is not a usable item' });
     }
 
     const userUpdate = {
