@@ -3,11 +3,13 @@ const { SlashCommandBuilder, MessageFlags, TextChannel } = require('discord.js')
 const gameRps = require('./gamesRps');
 const gameHangman = require('./gamesHangman');
 const gameTicTacToe = require('./gamesTicTacToe');
+const gameVault = require('./gamesVault');
 
 module.exports = {
     cooldown: 30,
     subCooldowns: {
-        'hangman': 600
+        'hangman': 600,
+        'vault': 30,
     },
     data: new SlashCommandBuilder()
         .setName('games')
@@ -32,6 +34,15 @@ module.exports = {
             .setDescription('Challenge someone to Tic Tac Toe!')
             .addUserOption(option => option.setName('user').setDescription('Select the user you want to challenge!').setRequired(true))
             .addIntegerOption(option => option.setName('bet').setDescription('Enter how many Cat Coins you want to bet').setRequired(true))
+        )
+        .addSubcommand(subcommand => subcommand
+            .setName('vault')
+            .setDescription('Crack the vault and win some coins!')
+            .addStringOption(option => option.setName('difficulty').setDescription('Select the difficulty you want to play at!').setRequired(true).setChoices(
+                { name: 'Hard', value: 'Hard' },
+                { name: 'Medium', value: 'Medium' },
+                { name: 'Easy', value: 'Easy' }
+            ))
         ),
 
     async execute(interaction) {
@@ -54,6 +65,8 @@ module.exports = {
                 return await gameHangman(interaction);
             case 'tic-tac-toe':
                 return await gameTicTacToe(interaction);
+            case 'vault':
+                return await gameVault(interaction);
             default:
                 return await interaction.editReply({ content: 'Unknown subcommand.', flags: MessageFlags.Ephemeral });
         }
