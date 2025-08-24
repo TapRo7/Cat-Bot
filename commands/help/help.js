@@ -101,6 +101,10 @@ You need to enter the \`user\` you want to challange, and the amount of coins yo
 
 **Note:** You must finish all games, even if it is an obvious draw, abandoning a game in the middle will be considered a loss.`;
 
+const gamesHelpString4 = `## Crack the Vault
+You can play Crack the Vault by using the </games vault:1402095106969833563> command
+You need to select the \`difficulty\` you want to play at, each difficulty has different rewards and loss amounts, exact amounts will be shown when you run the command.`;
+
 const gamesContainer = new ContainerBuilder()
     .setAccentColor(0xFFC0CB)
     .addTextDisplayComponents(
@@ -117,7 +121,11 @@ const gamesContainer = new ContainerBuilder()
     .addSeparatorComponents(largeSeparator)
     .addTextDisplayComponents(
         textDisplay => textDisplay.setContent(gamesHelpString3)
-    );;
+    )
+    .addSeparatorComponents(largeSeparator)
+    .addTextDisplayComponents(
+        textDisplay => textDisplay.setContent(gamesHelpString4)
+    );
 
 // Fun Help
 const funHelpHeader = `# Fun Commands ${happyCatEmoji}`;

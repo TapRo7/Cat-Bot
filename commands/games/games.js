@@ -9,7 +9,7 @@ module.exports = {
     cooldown: 30,
     subCooldowns: {
         'hangman': 600,
-        'vault': 30,
+        'vault': 5,
     },
     data: new SlashCommandBuilder()
         .setName('games')

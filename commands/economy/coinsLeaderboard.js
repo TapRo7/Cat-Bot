@@ -45,5 +45,5 @@ module.exports = async (interaction) => {
         positionNumber++;
     }
 
-    return await interaction.editReply({ components: [leaderboardContainer], flags: MessageFlags.IsComponentsV2 });
+    return await interaction.editReply({ components: [leaderboardContainer], flags: MessageFlags.IsComponentsV2, allowedMentions: {} });
 };

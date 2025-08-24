@@ -1,4 +1,4 @@
-const { ContainerBuilder, SeparatorBuilder, SeparatorSpacingSize, TextDisplayBuilder, MessageFlags, ButtonBuilder, ButtonStyle, TextChannel, ThreadAutoArchiveDuration } = require('discord.js');
+const { ContainerBuilder, SeparatorBuilder, SeparatorSpacingSize, TextDisplayBuilder, MessageFlags, ButtonBuilder, ButtonStyle, ThreadAutoArchiveDuration } = require('discord.js');
 const { getCatCoinsUser, customUpdateCatCoinsUser } = require('../../database/catCoins');
 const { criticalErrorNotify } = require('../../utils/errorNotifier');
 const { createDeferred } = require('../../utils/createDeferred');

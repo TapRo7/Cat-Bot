@@ -1,9 +1,6 @@
-const { ContainerBuilder, SeparatorBuilder, SeparatorSpacingSize, TextDisplayBuilder, MessageFlags, ButtonBuilder, ButtonStyle, TextChannel } = require('discord.js');
+const { ContainerBuilder, SeparatorBuilder, SeparatorSpacingSize, MessageFlags, ButtonBuilder, ButtonStyle } = require('discord.js');
 const { getCatCoinsUser, customUpdateCatCoinsUser } = require('../../database/catCoins');
 const { criticalErrorNotify } = require('../../utils/errorNotifier');
-const AsyncLock = require('async-lock');
-
-const answerResolveLocker = new AsyncLock();
 
 const catCoinEmoji = '<:CatCoin:1401235223831642133>';
 const catCheerEmoji = '<a:Cheer:1403153695192911893>';
@@ -28,11 +25,11 @@ const difficultySettings = {
     'Hard': { reward: 1, lossPenalty: 1 }
 };
 
-const mathDifficultySettings = {
-    'Easy': { numCount: 5, numRange: [1, 9], offsetRange: 15 },
-    'Medium': { numCount: 5, numRange: [10, 99], offsetRange: 30 },
-    'Hard': { numCount: 7, numRange: [10, 99], offsetRange: 50 }
-};
+//const mathDifficultySettings = {
+//    'Easy': { numCount: 5, numRange: [1, 9], offsetRange: 15 },
+//    'Medium': { numCount: 5, numRange: [10, 99], offsetRange: 30 },
+//    'Hard': { numCount: 7, numRange: [10, 99], offsetRange: 50 }
+//};
 
 const criticalErrorContainer = new ContainerBuilder()
     .setAccentColor(0xFFC0CB)
@@ -43,41 +40,76 @@ const criticalErrorContainer = new ContainerBuilder()
 async function generateMathQuestions(difficulty, totalQuestions) {
     const questions = [];
 
-    const config = mathDifficultySettings[difficulty];
-    const [minNum, maxNum] = config.numRange;
-    const numRange = maxNum - minNum + 1;
-
     for (let i = 0; i < totalQuestions; i++) {
-        const numbers = [];
-        for (let j = 0; j < config.numCount; j++) {
-            numbers.push(Math.floor(Math.random() * numRange) + minNum);
-        }
+        let seq = [];
+        let correctAnswer;
 
-        let question = numbers[0].toString();
-        let correctAnswer = numbers[0];
+        switch (difficulty) {
+            case 'Easy': {
+                if (Math.random() < 0.5) {
+                    const start = Math.floor(Math.random() * 10);
+                    const step = Math.floor(Math.random() * 5) + 1;
+                    for (let j = 0; j < 5; j++) seq.push(start + j * step);
+                    correctAnswer = start + 5 * step;
+                } else {
+                    const start = Math.floor(Math.random() * 5) + 1;
+                    const mult = Math.floor(Math.random() * 3) + 2;
+                    for (let j = 0; j < 5; j++) seq.push(start * Math.pow(mult, j));
+                    correctAnswer = start * Math.pow(mult, 5);
+                }
+                break;
+            }
 
-        for (let j = 1; j < numbers.length; j++) {
-            const operation = Math.random() < 0.5 ? '+' : '-';
-            question += ` ${operation} ${numbers[j]}`;
-            correctAnswer += operation === '+' ? numbers[j] : -numbers[j];
+            case 'Medium': {
+                const choice = Math.random();
+                if (choice < 0.33) {
+                    seq = [1, 1];
+                    for (let j = 2; j < 5; j++) seq.push(seq[j - 1] + seq[j - 2]);
+                    correctAnswer = seq[4] + seq[3];
+                } else if (choice < 0.66) {
+                    let start = Math.floor(Math.random() * 20);
+                    const step = Math.floor(Math.random() * 5) + 2;
+                    for (let j = 0; j < 5; j++) {
+                        seq.push(start);
+                        start += j % 2 === 0 ? step : -step;
+                    }
+                    correctAnswer = start;
+                } else {
+                    const base = Math.floor(Math.random() * 5) + 1;
+                    for (let j = base; j < base + 5; j++) seq.push(j * j);
+                    correctAnswer = (base + 5) * (base + 5);
+                }
+                break;
+            }
+
+            case 'Hard': {
+                const choice = Math.random();
+                if (choice < 0.5) {
+                    seq = [1, 2, 6, 24];
+                    correctAnswer = 120;
+                } else {
+                    const c = Math.floor(Math.random() * 5);
+                    for (let j = 1; j <= 5; j++) seq.push(j * j + c);
+                    correctAnswer = 36 + c;
+                }
+                break;
+            }
         }
 
         const wrongAnswers = [];
         const used = new Set([correctAnswer]);
 
         const generators = [
-            () => correctAnswer + Math.floor(Math.random() * 20) - 10,
-            () => correctAnswer + (Math.random() < 0.5 ? config.offsetRange : -config.offsetRange),
+            () => correctAnswer + Math.floor(Math.random() * 10) - 5,
+            () => correctAnswer + (Math.random() < 0.5 ? 2 : -2),
             () => Math.floor(correctAnswer * (0.8 + Math.random() * 0.4))
         ];
 
         for (let g = 0; g < 3; g++) {
             let attempt = generators[g]();
-
             if (used.has(attempt)) {
-                attempt = correctAnswer + (g + 1) * (Math.random() < 0.5 ? 7 : -7);
+                attempt = correctAnswer + (g + 1) * (Math.random() < 0.5 ? 3 : -3);
             }
-
             wrongAnswers.push(attempt);
             used.add(attempt);
         }
@@ -89,7 +121,11 @@ async function generateMathQuestions(difficulty, totalQuestions) {
             [options[k], options[j]] = [options[j], options[k]];
         }
 
-        questions.push({ question, correctAnswer, options });
+        questions.push({
+            question: seq.join(', ') + ', ?',
+            correctAnswer,
+            options
+        });
     }
 
     return questions;
@@ -265,7 +301,7 @@ module.exports = async (interaction) => {
             const timeoutContainer = new ContainerBuilder()
                 .setAccentColor(0xFFC0CB)
                 .addTextDisplayComponents(
-                    textDisplay => textDisplay.setContent(`# Crack the Vault 🔐 - ${difficulty}`)
+                    textDisplay => textDisplay.setContent(`# Crack the Vault - ${difficulty} 🔐`)
                 )
                 .addSeparatorComponents(largeSeparator)
                 .addTextDisplayComponents(
@@ -303,7 +339,7 @@ module.exports = async (interaction) => {
             const loseContainer = new ContainerBuilder()
                 .setAccentColor(0xFFC0CB)
                 .addTextDisplayComponents(
-                    textDisplay => textDisplay.setContent(`# Crack the Vault 🔐 - ${difficulty}`)
+                    textDisplay => textDisplay.setContent(`# Crack the Vault - ${difficulty} 🔐`)
                 )
                 .addSeparatorComponents(largeSeparator)
                 .addTextDisplayComponents(
