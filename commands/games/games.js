@@ -9,7 +9,7 @@ module.exports = {
     cooldown: 30,
     subCooldowns: {
         'hangman': 600,
-        'vault': 5,
+        'vault': 600,
     },
     data: new SlashCommandBuilder()
         .setName('games')
@@ -42,6 +42,10 @@ module.exports = {
                 { name: 'Hard', value: 'Hard' },
                 { name: 'Medium', value: 'Medium' },
                 { name: 'Easy', value: 'Easy' }
+            ))
+            .addStringOption(option => option.setName('type').setDescription('Select the type of questions you want to solve!').setRequired(true).setChoices(
+                { name: 'Sequence', value: 'Sequence' },
+                { name: 'Math Equations', value: 'Math Equations' }
             ))
         ),
 

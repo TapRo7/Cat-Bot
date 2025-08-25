@@ -13,23 +13,17 @@ const largeSeparator = new SeparatorBuilder().setSpacing(SeparatorSpacingSize.La
 const gameTimeoutSeconds = 15;
 const totalQuestions = 5;
 
-//const difficultySettings = {
-//    'Easy': { reward: 25, lossPenalty: 15 },
-//    'Medium': { reward: 40, lossPenalty: 25 },
-//    'Hard': { reward: 60, lossPenalty: 35 }
-//};
-
 const difficultySettings = {
-    'Easy': { reward: 1, lossPenalty: 1 },
-    'Medium': { reward: 1, lossPenalty: 1 },
-    'Hard': { reward: 1, lossPenalty: 1 }
+    'Easy': { reward: 25, lossPenalty: 15 },
+    'Medium': { reward: 40, lossPenalty: 25 },
+    'Hard': { reward: 60, lossPenalty: 35 }
 };
 
-//const mathDifficultySettings = {
-//    'Easy': { numCount: 5, numRange: [1, 9], offsetRange: 15 },
-//    'Medium': { numCount: 5, numRange: [10, 99], offsetRange: 30 },
-//    'Hard': { numCount: 7, numRange: [10, 99], offsetRange: 50 }
-//};
+const mathDifficultySettings = {
+    'Easy': { numCount: 5, numRange: [1, 9], offsetRange: 15 },
+    'Medium': { numCount: 5, numRange: [10, 99], offsetRange: 30 },
+    'Hard': { numCount: 7, numRange: [10, 99], offsetRange: 50 }
+};
 
 const criticalErrorContainer = new ContainerBuilder()
     .setAccentColor(0xFFC0CB)
@@ -38,6 +32,61 @@ const criticalErrorContainer = new ContainerBuilder()
     );
 
 async function generateMathQuestions(difficulty, totalQuestions) {
+    const questions = [];
+
+    const config = mathDifficultySettings[difficulty];
+    const [minNum, maxNum] = config.numRange;
+    const numRange = maxNum - minNum + 1;
+
+    for (let i = 0; i < totalQuestions; i++) {
+        const numbers = [];
+        for (let j = 0; j < config.numCount; j++) {
+            numbers.push(Math.floor(Math.random() * numRange) + minNum);
+        }
+
+        let question = numbers[0].toString();
+        let correctAnswer = numbers[0];
+
+        for (let j = 1; j < numbers.length; j++) {
+            const operation = Math.random() < 0.5 ? '+' : '-';
+            question += ` ${operation} ${numbers[j]}`;
+            correctAnswer += operation === '+' ? numbers[j] : -numbers[j];
+        }
+
+        const wrongAnswers = [];
+        const used = new Set([correctAnswer]);
+
+        const generators = [
+            () => correctAnswer + Math.floor(Math.random() * 20) - 10,
+            () => correctAnswer + (Math.random() < 0.5 ? config.offsetRange : -config.offsetRange),
+            () => Math.floor(correctAnswer * (0.8 + Math.random() * 0.4))
+        ];
+
+        for (let g = 0; g < 3; g++) {
+            let attempt = generators[g]();
+
+            if (used.has(attempt)) {
+                attempt = correctAnswer + (g + 1) * (Math.random() < 0.5 ? 7 : -7);
+            }
+
+            wrongAnswers.push(attempt);
+            used.add(attempt);
+        }
+
+        const options = [correctAnswer, ...wrongAnswers];
+
+        for (let k = options.length - 1; k > 0; k--) {
+            const j = Math.floor(Math.random() * (k + 1));
+            [options[k], options[j]] = [options[j], options[k]];
+        }
+
+        questions.push({ question, correctAnswer, options });
+    }
+
+    return questions;
+}
+
+async function generateSequenceQuestions(difficulty, totalQuestions) {
     const questions = [];
 
     for (let i = 0; i < totalQuestions; i++) {
@@ -145,6 +194,7 @@ const rejectButton = new ButtonBuilder()
 
 module.exports = async (interaction) => {
     const difficulty = interaction.options.getString('difficulty');
+    const questionType = interaction.options.getString('type');
     const settings = difficultySettings[difficulty];
 
     const playerData = await getCatCoinsUser(interaction.user.id);
@@ -214,7 +264,12 @@ module.exports = async (interaction) => {
         return await gameMessage.edit({ components: [confirmationContainer] });
     }
 
-    const questions = await generateMathQuestions(difficulty, totalQuestions);
+    let questions;
+    if (questionType === 'Sequence') {
+        questions = await generateSequenceQuestions(difficulty, totalQuestions);
+    } else if (questionType === 'Math Equations') {
+        questions = await generateMathQuestions(difficulty, totalQuestions);
+    }
 
     let currentQuestion = 0;
     let matchLogsString = '# Vault Cracking Progress :scroll:';
@@ -257,7 +312,7 @@ module.exports = async (interaction) => {
             )
             .addSeparatorComponents(largeSeparator)
             .addTextDisplayComponents(
-                textDisplay => textDisplay.setContent(`### Question ${currentQuestion}/${totalQuestions}\n## ${questionData.question} = ?`)
+                textDisplay => textDisplay.setContent(`### Question ${currentQuestion}/${totalQuestions}\n## ${questionData.question}`)
             )
             .addSeparatorComponents(largeSeparator)
             .addActionRowComponents(
