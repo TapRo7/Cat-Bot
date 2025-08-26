@@ -89,81 +89,316 @@ async function generateMathQuestions(difficulty, totalQuestions) {
 async function generateSequenceQuestions(difficulty, totalQuestions) {
     const questions = [];
 
+    const sequenceTypes = {
+        arithmetic: (params) => {
+            const { start, step, length } = params;
+            const seq = [];
+            for (let i = 0; i < length; i++) {
+                seq.push(start + i * step);
+            }
+            return { sequence: seq, next: start + length * step };
+        },
+
+        geometric: (params) => {
+            const { start, ratio, length } = params;
+            const seq = [];
+            for (let i = 0; i < length; i++) {
+                seq.push(Math.round(start * Math.pow(ratio, i)));
+            }
+            return { sequence: seq, next: Math.round(start * Math.pow(ratio, length)) };
+        },
+
+        fibonacci: (params) => {
+            const { a, b, length } = params;
+            const seq = [a, b];
+            for (let i = 2; i < length; i++) {
+                seq.push(seq[i - 1] + seq[i - 2]);
+            }
+            return { sequence: seq, next: seq[length - 1] + seq[length - 2] };
+        },
+
+        quadratic: (params) => {
+            const { a, b, c, start, length } = params;
+            const seq = [];
+            for (let i = 0; i < length; i++) {
+                const x = start + i;
+                seq.push(a * x * x + b * x + c);
+            }
+            const nextX = start + length;
+            return { sequence: seq, next: a * nextX * nextX + b * nextX + c };
+        },
+
+        factorial: (params) => {
+            const { start, length } = params;
+            const seq = [];
+            for (let i = 0; i < length; i++) {
+                seq.push(factorial(start + i));
+            }
+            return { sequence: seq, next: factorial(start + length) };
+        },
+
+        powers: (params) => {
+            const { base, start, length } = params;
+            const seq = [];
+            for (let i = 0; i < length; i++) {
+                seq.push(Math.pow(start + i, base));
+            }
+            return { sequence: seq, next: Math.pow(start + length, base) };
+        },
+
+        triangular: (params) => {
+            const { start, length } = params;
+            const seq = [];
+            for (let i = 0; i < length; i++) {
+                const n = start + i;
+                seq.push(n * (n + 1) / 2);
+            }
+            const nextN = start + length;
+            return { sequence: seq, next: nextN * (nextN + 1) / 2 };
+        },
+
+        alternating: (params) => {
+            const { seq1, seq2, length } = params;
+            const seq = [];
+            for (let i = 0; i < length; i++) {
+                seq.push(i % 2 === 0 ? seq1[Math.floor(i / 2)] : seq2[Math.floor(i / 2)]);
+            }
+            const nextIndex = Math.floor(length / 2);
+            return {
+                sequence: seq,
+                next: length % 2 === 0 ? seq1[nextIndex] : seq2[nextIndex]
+            };
+        },
+
+        primes: (params) => {
+            const { length } = params;
+            const primes = generatePrimes(100);
+            const seq = primes.slice(0, length);
+            return { sequence: seq, next: primes[length] };
+        },
+
+        composite: (params) => {
+            const { op, seq1, seq2, length } = params;
+            const seq = [];
+            for (let i = 0; i < length; i++) {
+                switch (op) {
+                    case 'add': seq.push(seq1[i] + seq2[i]); break;
+                    case 'mult': seq.push(seq1[i] * seq2[i]); break;
+                    case 'diff': seq.push(Math.abs(seq1[i] - seq2[i])); break;
+                }
+            }
+            let next;
+            switch (op) {
+                case 'add': next = seq1[length] + seq2[length]; break;
+                case 'mult': next = seq1[length] * seq2[length]; break;
+                case 'diff': next = Math.abs(seq1[length] - seq2[length]); break;
+            }
+            return { sequence: seq, next };
+        }
+    };
+
+    const difficultySettings = {
+        'Easy': {
+            maxValue: 50,
+            preferredTypes: ['arithmetic', 'geometric', 'powers'],
+            complexity: 0.3
+        },
+        'Medium': {
+            maxValue: 200,
+            preferredTypes: ['arithmetic', 'geometric', 'fibonacci', 'quadratic', 'powers', 'triangular'],
+            complexity: 0.6
+        },
+        'Hard': {
+            maxValue: 1000,
+            preferredTypes: Object.keys(sequenceTypes),
+            complexity: 1.0
+        }
+    };
+
+    function factorial(n) {
+        if (n <= 1) return 1;
+        return n * factorial(n - 1);
+    }
+
+    function generatePrimes(max) {
+        const sieve = new Array(max + 1).fill(true);
+        sieve[0] = sieve[1] = false;
+
+        for (let i = 2; i * i <= max; i++) {
+            if (sieve[i]) {
+                for (let j = i * i; j <= max; j += i) {
+                    sieve[j] = false;
+                }
+            }
+        }
+
+        return sieve.map((isPrime, num) => isPrime ? num : null)
+            .filter(num => num !== null);
+    }
+
+    function generateRandomSequence(settings) {
+        const availableTypes = settings.preferredTypes;
+        const type = availableTypes[Math.floor(Math.random() * availableTypes.length)];
+        const seqLength = 4 + Math.floor(Math.random() * 3);
+
+        let params = {};
+
+        switch (type) {
+            case 'arithmetic':
+                params = {
+                    start: Math.floor(Math.random() * 20) - 10,
+                    step: Math.floor(Math.random() * 8) + 1,
+                    length: seqLength
+                };
+                break;
+
+            case 'geometric':
+                params = {
+                    start: Math.floor(Math.random() * 5) + 1,
+                    ratio: Math.floor(Math.random() * 3) + 2,
+                    length: Math.min(seqLength, 5)
+                };
+                break;
+
+            case 'fibonacci':
+                params = {
+                    a: Math.floor(Math.random() * 5) + 1,
+                    b: Math.floor(Math.random() * 5) + 1,
+                    length: seqLength
+                };
+                break;
+
+            case 'quadratic':
+                params = {
+                    a: Math.floor(Math.random() * 3) + 1,
+                    b: Math.floor(Math.random() * 6) - 3,
+                    c: Math.floor(Math.random() * 10),
+                    start: 1,
+                    length: seqLength
+                };
+                break;
+
+            case 'factorial':
+                params = {
+                    start: Math.floor(Math.random() * 3) + 1,
+                    length: Math.min(seqLength, 4)
+                };
+                break;
+
+            case 'powers':
+                params = {
+                    base: Math.floor(Math.random() * 3) + 2,
+                    start: 1,
+                    length: Math.min(seqLength, 5)
+                };
+                break;
+
+            case 'triangular':
+                params = {
+                    start: Math.floor(Math.random() * 5) + 1,
+                    length: seqLength
+                };
+                break;
+
+            case 'alternating':
+                const arithSeq = Array.from({ length: seqLength }, (_, i) => i * 2 + 1);
+                const geomSeq = Array.from({ length: seqLength }, (_, i) => Math.pow(2, i));
+                params = {
+                    seq1: arithSeq,
+                    seq2: geomSeq,
+                    length: seqLength
+                };
+                break;
+
+            case 'primes':
+                params = { length: Math.min(seqLength, 8) };
+                break;
+
+            case 'composite':
+                const seq1 = Array.from({ length: seqLength + 1 }, (_, i) => i + 1);
+                const seq2 = Array.from({ length: seqLength + 1 }, (_, i) => i * 2 + 1);
+                params = {
+                    op: ['add', 'mult', 'diff'][Math.floor(Math.random() * 3)],
+                    seq1,
+                    seq2,
+                    length: seqLength
+                };
+                break;
+        }
+
+        const result = sequenceTypes[type](params);
+
+        if (difficulty === 'Easy' && result.sequence.some(n => n < 0)) {
+            return generateRandomSequence(settings);
+        }
+
+        if (result.sequence.some(n => n > settings.maxValue) || result.next > settings.maxValue) {
+            return generateRandomSequence(settings);
+        }
+
+        return result;
+    }
+
+    function generateWrongAnswers(correctAnswer, difficulty) {
+        const wrongAnswers = new Set();
+        const settings = difficultySettings[difficulty];
+
+        for (let i = 0; i < 2; i++) {
+            let offset = Math.floor(Math.random() * 10) - 5;
+            if (offset === 0) offset = Math.random() < 0.5 ? 3 : -3;
+            wrongAnswers.add(Math.max(0, correctAnswer + offset));
+        }
+
+        wrongAnswers.add(Math.floor(correctAnswer * 0.5));
+        wrongAnswers.add(Math.floor(correctAnswer * 1.5));
+        wrongAnswers.add(Math.floor(correctAnswer * 2));
+
+        wrongAnswers.add(correctAnswer - 1);
+        wrongAnswers.add(correctAnswer + 1);
+
+        wrongAnswers.delete(correctAnswer);
+
+        const wrongArray = Array.from(wrongAnswers);
+        const selected = [];
+
+        while (selected.length < 3 && wrongArray.length > 0) {
+            const index = Math.floor(Math.random() * wrongArray.length);
+            const value = wrongArray.splice(index, 1)[0];
+            if (value !== correctAnswer && value >= 0 && value <= settings.maxValue) {
+                selected.push(value);
+            }
+        }
+
+        while (selected.length < 3) {
+            const randomWrong = Math.max(0, correctAnswer + Math.floor(Math.random() * 20) - 10);
+            if (randomWrong !== correctAnswer && !selected.includes(randomWrong)) {
+                selected.push(randomWrong);
+            }
+        }
+
+        return selected;
+    }
+
     for (let i = 0; i < totalQuestions; i++) {
-        let seq = [];
-        let correctAnswer;
+        const settings = difficultySettings[difficulty];
+        let attempts = 0;
+        let result;
 
-        switch (difficulty) {
-            case 'Easy': {
-                if (Math.random() < 0.5) {
-                    const start = Math.floor(Math.random() * 10);
-                    const step = Math.floor(Math.random() * 5) + 1;
-                    for (let j = 0; j < 5; j++) seq.push(start + j * step);
-                    correctAnswer = start + 5 * step;
-                } else {
-                    const start = Math.floor(Math.random() * 5) + 1;
-                    const mult = Math.floor(Math.random() * 3) + 2;
-                    for (let j = 0; j < 5; j++) seq.push(start * Math.pow(mult, j));
-                    correctAnswer = start * Math.pow(mult, 5);
-                }
-                break;
-            }
+        do {
+            result = generateRandomSequence(settings);
+            attempts++;
+        } while (attempts < 10 && (result.sequence.length === 0 || result.next <= 0));
 
-            case 'Medium': {
-                const choice = Math.random();
-                if (choice < 0.33) {
-                    seq = [1, 1];
-                    for (let j = 2; j < 5; j++) seq.push(seq[j - 1] + seq[j - 2]);
-                    correctAnswer = seq[4] + seq[3];
-                } else if (choice < 0.66) {
-                    let start = Math.floor(Math.random() * 20);
-                    const step = Math.floor(Math.random() * 5) + 2;
-                    for (let j = 0; j < 5; j++) {
-                        seq.push(start);
-                        start += j % 2 === 0 ? step : -step;
-                    }
-                    correctAnswer = start;
-                } else {
-                    const base = Math.floor(Math.random() * 5) + 1;
-                    for (let j = base; j < base + 5; j++) seq.push(j * j);
-                    correctAnswer = (base + 5) * (base + 5);
-                }
-                break;
-            }
-
-            case 'Hard': {
-                const choice = Math.random();
-                if (choice < 0.5) {
-                    seq = [1, 2, 6, 24];
-                    correctAnswer = 120;
-                } else {
-                    const c = Math.floor(Math.random() * 5);
-                    for (let j = 1; j <= 5; j++) seq.push(j * j + c);
-                    correctAnswer = 36 + c;
-                }
-                break;
-            }
+        if (attempts >= 10) {
+            const start = Math.floor(Math.random() * 10) + 1;
+            const step = Math.floor(Math.random() * 5) + 1;
+            const seq = [];
+            for (let j = 0; j < 5; j++) seq.push(start + j * step);
+            result = { sequence: seq, next: start + 5 * step };
         }
 
-        const wrongAnswers = [];
-        const used = new Set([correctAnswer]);
-
-        const generators = [
-            () => correctAnswer + Math.floor(Math.random() * 10) - 5,
-            () => correctAnswer + (Math.random() < 0.5 ? 2 : -2),
-            () => Math.floor(correctAnswer * (0.8 + Math.random() * 0.4))
-        ];
-
-        for (let g = 0; g < 3; g++) {
-            let attempt = generators[g]();
-            if (used.has(attempt)) {
-                attempt = correctAnswer + (g + 1) * (Math.random() < 0.5 ? 3 : -3);
-            }
-            wrongAnswers.push(attempt);
-            used.add(attempt);
-        }
-
-        const options = [correctAnswer, ...wrongAnswers];
+        const wrongAnswers = generateWrongAnswers(result.next, difficulty);
+        const options = [result.next, ...wrongAnswers];
 
         for (let k = options.length - 1; k > 0; k--) {
             const j = Math.floor(Math.random() * (k + 1));
@@ -171,9 +406,9 @@ async function generateSequenceQuestions(difficulty, totalQuestions) {
         }
 
         questions.push({
-            question: seq.join(', ') + ', ?',
-            correctAnswer,
-            options
+            question: result.sequence.join(', ') + ', ?',
+            correctAnswer: result.next,
+            options: options
         });
     }
 
