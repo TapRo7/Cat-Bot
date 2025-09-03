@@ -50,6 +50,8 @@ for (const file of buttonFiles) {
     const button = require(`./buttons/${file}`);
     if (button.customId && typeof button.execute === 'function') {
         client.buttons.set(button.customId, button);
+    } else {
+        console.log(`[WARNING] The button at ${file} is missing a required "customId" or "execute" property.`);
     }
 }
 
@@ -59,6 +61,8 @@ for (const file of modalFiles) {
     const modal = require(`./modals/${file}`);
     if (modal.customId && typeof modal.execute === 'function') {
         client.modals.set(modal.customId, modal);
+    } else {
+        console.log(`[WARNING] The modal at ${file} is missing a required "customId" or "execute" property.`);
     }
 }
 
@@ -68,6 +72,8 @@ for (const file of selectFiles) {
     const select = require(`./selectMenus/${file}`);
     if (select.customId && typeof select.execute === 'function') {
         client.selects.set(select.customId, select);
+    } else {
+        console.log(`[WARNING] The select at ${file} is missing a required "customId" or "execute" property.`);
     }
 }
 

@@ -44,7 +44,11 @@ module.exports = {
 
                 if (now < expirationTime) {
                     const expiredTimestamp = Math.round(expirationTime / 1_000);
-                    return interaction.reply({ content: `Please wait, you are on a cooldown for the \`${commandName}\` command. You can use it again <t:${expiredTimestamp}:R>.`, flags: MessageFlags.Ephemeral });
+                    try {
+                        return interaction.reply({ content: `Please wait, you are on a cooldown for the \`${commandName}\` command. You can use it again <t:${expiredTimestamp}:R>.`, flags: MessageFlags.Ephemeral });
+                    } catch (error) {
+                        return console.error(error);
+                    }
                 }
             }
 
@@ -55,10 +59,14 @@ module.exports = {
                 await command.execute(interaction);
             } catch (error) {
                 console.error(error);
-                if (interaction.replied || interaction.deferred) {
-                    await interaction.followUp({ content: 'There was an error while executing this command!', flags: MessageFlags.Ephemeral });
-                } else {
-                    await interaction.reply({ content: 'There was an error while executing this command!', flags: MessageFlags.Ephemeral });
+                try {
+                    if (interaction.replied || interaction.deferred) {
+                        await interaction.followUp({ content: 'There was an error while executing this command!', flags: MessageFlags.Ephemeral });
+                    } else {
+                        await interaction.reply({ content: 'There was an error while executing this command!', flags: MessageFlags.Ephemeral });
+                    }
+                } catch (error) {
+                    console.error(error);
                 }
                 timestamps.delete(interaction.user.id);
             }
@@ -95,10 +103,14 @@ module.exports = {
                 await handler.execute(interaction);
             } catch (error) {
                 console.log(error);
-                if (interaction.replied || interaction.deferred) {
-                    await interaction.followUp({ content: 'There was an error while executing this command!', flags: MessageFlags.Ephemeral });
-                } else {
-                    await interaction.reply({ content: 'There was an error while executing this command!', flags: MessageFlags.Ephemeral });
+                try {
+                    if (interaction.replied || interaction.deferred) {
+                        await interaction.followUp({ content: 'There was an error while executing this command!', flags: MessageFlags.Ephemeral });
+                    } else {
+                        await interaction.reply({ content: 'There was an error while executing this command!', flags: MessageFlags.Ephemeral });
+                    }
+                } catch (error) {
+                    console.error(error);
                 }
             }
         }
@@ -116,10 +128,14 @@ module.exports = {
                 await handler.execute(interaction);
             } catch (error) {
                 console.log(error);
-                if (interaction.replied || interaction.deferred) {
-                    await interaction.followUp({ content: 'There was an error while executing this command!', flags: MessageFlags.Ephemeral });
-                } else {
-                    await interaction.reply({ content: 'There was an error while executing this command!', flags: MessageFlags.Ephemeral });
+                try {
+                    if (interaction.replied || interaction.deferred) {
+                        await interaction.followUp({ content: 'There was an error while executing this command!', flags: MessageFlags.Ephemeral });
+                    } else {
+                        await interaction.reply({ content: 'There was an error while executing this command!', flags: MessageFlags.Ephemeral });
+                    }
+                } catch (error) {
+                    console.error(error);
                 }
             }
         }
@@ -142,25 +158,15 @@ module.exports = {
                 await handler.execute(interaction);
             } catch (error) {
                 console.log(error);
-                if (interaction.replied || interaction.deferred) {
-                    await interaction.followUp({ content: 'There was an error while executing this command!', flags: MessageFlags.Ephemeral });
-                } else {
-                    await interaction.reply({ content: 'There was an error while executing this command!', flags: MessageFlags.Ephemeral });
+                try {
+                    if (interaction.replied || interaction.deferred) {
+                        await interaction.followUp({ content: 'There was an error while executing this command!', flags: MessageFlags.Ephemeral });
+                    } else {
+                        await interaction.reply({ content: 'There was an error while executing this command!', flags: MessageFlags.Ephemeral });
+                    }
+                } catch (error) {
+                    console.error(error);
                 }
-            }
-        }
-        else if (interaction.isAutocomplete()) {
-            const command = interaction.client.commands.get(interaction.commandName);
-
-            if (!command) {
-                console.error(`No command matching ${interaction.commandName} was found.`);
-                return;
-            }
-
-            try {
-                await command.autocomplete(interaction);
-            } catch (error) {
-                console.error(error);
             }
         }
     }
