@@ -71,113 +71,73 @@ function getCollection(name) {
 
 // CRUD Helpers
 async function insertOne(collectionName, document) {
-    try {
-        const collection = getCollection(collectionName);
-        const result = await collection.insertOne(document);
-        return result.acknowledged;
-    } catch (error) {
-        console.error(error);
-        return 0;
-    }
+    const collection = getCollection(collectionName);
+    const result = await collection.insertOne(document);
+    return result.acknowledged;
 }
 
 async function findOne(collectionName, filter) {
-    try {
-        const collection = getCollection(collectionName);
-        return await collection.findOne(filter);
-    } catch (error) {
-        console.error(error);
-        return 0;
-    }
+    const collection = getCollection(collectionName);
+    return await collection.findOne(filter);
 }
 
 async function deleteOne(collectionName, filter) {
-    try {
-        const collection = getCollection(collectionName);
-        const result = await collection.deleteOne(filter);
-        return result.deletedCount > 0;
-    } catch (error) {
-        console.error(error);
-        return 0;
-    }
+    const collection = getCollection(collectionName);
+    const result = await collection.deleteOne(filter);
+    return result.deletedCount > 0;
 }
 
 async function updateOne(collectionName, filter, update, upsert = false) {
-    try {
-        const collection = getCollection(collectionName);
-        const result = await collection.updateOne(filter, { $set: update }, { upsert: upsert });
+    const collection = getCollection(collectionName);
+    const result = await collection.updateOne(filter, { $set: update }, { upsert: upsert });
 
-        if (result.upsertedCount > 0) {
-            return result.upsertedCount;
-        } else if (result.modifiedCount > 0) {
-            return result.modifiedCount;
-        } else {
-            return 0;
-        }
-    } catch (error) {
-        console.error(error);
+    if (result.upsertedCount > 0) {
+        return result.upsertedCount;
+    } else if (result.modifiedCount > 0) {
+        return result.modifiedCount;
+    } else {
         return 0;
     }
 }
 
 async function customUpdateOne(collectionName, filter, update) {
-    try {
-        const collection = getCollection(collectionName);
-        const result = await collection.updateOne(filter, update);
+    const collection = getCollection(collectionName);
+    const result = await collection.updateOne(filter, update);
 
-        if (result.upsertedCount > 0) {
-            return result.upsertedCount;
-        } else if (result.modifiedCount > 0) {
-            return result.modifiedCount;
-        } else {
-            return 0;
-        }
-    } catch (error) {
-        console.error(error);
+    if (result.upsertedCount > 0) {
+        return result.upsertedCount;
+    } else if (result.modifiedCount > 0) {
+        return result.modifiedCount;
+    } else {
         return 0;
     }
 }
 
 async function findAll(collectionName) {
-    try {
-        const collection = getCollection(collectionName);
-        return await collection.find().toArray();
-    } catch (error) {
-        console.error(error);
-        return 0;
-    }
+    const collection = getCollection(collectionName);
+    return await collection.find().toArray();
 }
 
 async function find(collectionName, filter) {
-    try {
-        const collection = getCollection(collectionName);
-        return await collection.find(filter).toArray();
-    } catch (error) {
-        console.error(error);
-        return 0;
-    }
+    const collection = getCollection(collectionName);
+    return await collection.find(filter).toArray();
 }
 
 async function findWithOptions(collectionName, filter = {}, options = {}) {
-    try {
-        const collection = getCollection(collectionName);
-        let cursor = collection.find(filter);
+    const collection = getCollection(collectionName);
+    let cursor = collection.find(filter);
 
-        if (options.sort) {
-            cursor = cursor.sort(options.sort);
-        }
-        if (options.limit) {
-            cursor = cursor.limit(options.limit);
-        }
-        if (options.projection) {
-            cursor = cursor.project(options.projection);
-        }
-
-        return await cursor.toArray();
-    } catch (error) {
-        console.error(error);
-        return 0;
+    if (options.sort) {
+        cursor = cursor.sort(options.sort);
     }
+    if (options.limit) {
+        cursor = cursor.limit(options.limit);
+    }
+    if (options.projection) {
+        cursor = cursor.project(options.projection);
+    }
+
+    return await cursor.toArray();
 }
 
 
