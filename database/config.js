@@ -22,4 +22,8 @@ async function getHangmanConfig(configKey = 'hangman') {
     return await findOne(configCollection, { configKey });
 }
 
-module.exports = { getTasksConfig, updateTasksConfig, getShopConfig, updateShopConfig, getHangmanConfig };
+async function getPetsConfig(configKey = 'pets') {
+    return await findOne(configCollection, { configKey });
+}
+
+module.exports = { getTasksConfig, updateTasksConfig, getShopConfig, updateShopConfig, getHangmanConfig, getPetsConfig };

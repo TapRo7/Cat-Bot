@@ -8,6 +8,10 @@ const coinsLeaderboard = require('./coinsLeaderboard');
 
 module.exports = {
 	cooldown: 5,
+	subCooldowns: {
+		'register': 600,
+		'leaderboard': 60,
+	},
 	data: new SlashCommandBuilder()
 		.setName('coins')
 		.setDescription('Cat Coin Commands')

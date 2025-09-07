@@ -1,6 +1,6 @@
 const { Events, ActivityType } = require('discord.js');
 const { connectToDatabase, setupDatabase } = require('../database/index');
-const { getShopConfig, getHangmanConfig } = require('../database/config');
+const { getShopConfig, getHangmanConfig, getPetsConfig } = require('../database/config');
 const { getCatCoinUserInventories } = require('../database/catCoins');
 const { startTasks } = require('../utils/taskRunner');
 const { criticalErrorNotify } = require('../utils/errorNotifier');
@@ -44,6 +44,15 @@ module.exports = {
         client.hangmanWords.set('Hard', hangmanConfig.hardWords);
         client.hangmanWords.set('Medium', hangmanConfig.mediumWords);
         client.hangmanWords.set('Easy', hangmanConfig.easyWords);
+
+        const petConfig = await getPetsConfig();
+
+        client.petConfig = petConfig;
+        client.petSkins = new Map();
+
+        for (const petSkin of petConfig.petSkins) {
+            client.petSkins.set(petSkin.id, petSkin);
+        }
 
         for (const guild of client.guilds.cache.values()) {
             try {
