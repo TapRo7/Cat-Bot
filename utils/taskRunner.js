@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
+const retryInterval = 5 * 1000;
 
 async function startTasks(client, tasksDir = path.join(__dirname, '..', 'tasks')) {
     const taskFiles = fs.readdirSync(tasksDir).filter(f => f.endsWith('.js'));
@@ -24,11 +25,20 @@ async function startTasks(client, tasksDir = path.join(__dirname, '..', 'tasks')
         }
 
         (async () => {
+            let running = false;
             while (true) {
+                if (running) {
+                    await sleep(retryInterval);
+                    continue;
+                }
+
                 try {
+                    running = true;
                     await task.run(client);
                 } catch (err) {
                     console.error(`Error in task ${name}:`, err);
+                } finally {
+                    running = false;
                 }
                 await sleep(intervalMs);
             }
