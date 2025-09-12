@@ -286,10 +286,12 @@ module.exports = async (interaction) => {
                             gameDraws: 1
                         }
                     };
-                    const drawUpdate1 = await customUpdateCatCoinsUser(interaction.user.id, drawUpdate);
-                    const drawUpdate2 = await customUpdateCatCoinsUser(targetUser.id, drawUpdate);
 
-                    if (!drawUpdate1 || !drawUpdate2) {
+                    try {
+                        await customUpdateCatCoinsUser(interaction.user.id, drawUpdate);
+                        await customUpdateCatCoinsUser(targetUser.id, drawUpdate);
+                    } catch (error) {
+                        console.error(error);
                         console.error(`Failed to update draws for one of the two users. ${interaction.user.id} / ${targetUser.id}`);
                     }
                 } else {
@@ -318,14 +320,12 @@ module.exports = async (interaction) => {
                         }
                     };
 
-                    const winnerUpdated = await customUpdateCatCoinsUser(winnerId, winnerUpdate);
-
-                    if (!winnerUpdated) {
+                    try {
+                        await customUpdateCatCoinsUser(winnerId, winnerUpdate);
+                    } catch (error) {
+                        console.error(error);
                         await challengeMessage.edit({ components: [criticalErrorContainer] });
                         criticalError = 1;
-                    }
-
-                    if (criticalError) {
                         gameCollector.stop();
                         await criticalErrorNotify('Critical error in updating user coins after game', `Critical Error Code: ${criticalError}\nUser 1: ${winnerId}\nUser 2: ${loserId}\nBet: ${betAmount}`);
                         return completion.resolve();
@@ -341,14 +341,12 @@ module.exports = async (interaction) => {
                         }
                     };
 
-                    const loserUpdated = await customUpdateCatCoinsUser(loserId, loserUpdate);
-
-                    if (!loserUpdated) {
+                    try {
+                        await customUpdateCatCoinsUser(loserId, loserUpdate);
+                    } catch (error) {
+                        console.error(error);
                         await challengeMessage.edit({ components: [criticalErrorContainer] });
                         criticalError = 2;
-                    }
-
-                    if (criticalError) {
                         gameCollector.stop();
                         await criticalErrorNotify('Critical error in updating user coins after game', `Critical Error Code: ${criticalError}\nUser 1: ${winnerId}\nUser 2: ${loserId}\nBet: ${betAmount}`);
                         return completion.resolve();
@@ -405,14 +403,12 @@ module.exports = async (interaction) => {
                     }
                 };
 
-                const winnerUpdated = await customUpdateCatCoinsUser(winningPlayerId, winnerUpdate);
-
-                if (!winnerUpdated) {
+                try {
+                    await customUpdateCatCoinsUser(winningPlayerId, winnerUpdate);
+                } catch (error) {
+                    console.error(error);
                     await challengeMessage.edit({ components: [criticalErrorContainer] });
                     criticalError = 1;
-                }
-
-                if (criticalError) {
                     await criticalErrorNotify('Critical error in updating user coins after game timeout', `Critical Error Code: ${criticalError}\nWinner: ${winningPlayerId}\nTimed Out: ${timedOutPlayerId}\nBet: ${betAmount}`);
                     return completion.resolve();
                 }
@@ -427,14 +423,12 @@ module.exports = async (interaction) => {
                     }
                 };
 
-                const loserUpdated = await customUpdateCatCoinsUser(timedOutPlayerId, loserUpdate);
-
-                if (!loserUpdated) {
+                try {
+                    await customUpdateCatCoinsUser(timedOutPlayerId, loserUpdate);
+                } catch (error) {
+                    console.error(error);
                     await challengeMessage.edit({ components: [criticalErrorContainer] });
                     criticalError = 2;
-                }
-
-                if (criticalError) {
                     await criticalErrorNotify('Critical error in updating user coins after game timeout', `Critical Error Code: ${criticalError}\nWinner: ${winningPlayerId}\nTimed Out: ${timedOutPlayerId}\nBet: ${betAmount}`);
                     return completion.resolve();
                 }

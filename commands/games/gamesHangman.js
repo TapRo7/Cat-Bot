@@ -235,9 +235,10 @@ module.exports = async (interaction) => {
                     }
                 };
 
-                const winUpdated = await customUpdateCatCoinsUser(interaction.user.id, winUpdate);
-
-                if (!winUpdated) {
+                try {
+                    await customUpdateCatCoinsUser(interaction.user.id, winUpdate);
+                } catch (error) {
+                    console.error(error);
                     await gameMessage.edit({ components: [criticalErrorContainer] });
                     guessCollector.stop();
                     await criticalErrorNotify('Critical error in updating user coins after hangman win', `User: ${interaction.user.id}\nReward: ${settings.reward}`);
@@ -272,9 +273,10 @@ module.exports = async (interaction) => {
                     }
                 };
 
-                const loseUpdated = await customUpdateCatCoinsUser(interaction.user.id, loseUpdate);
-
-                if (!loseUpdated) {
+                try {
+                    await customUpdateCatCoinsUser(interaction.user.id, loseUpdate);
+                } catch (error) {
+                    console.error(error);
                     await gameMessage.edit({ components: [criticalErrorContainer] });
                     guessCollector.stop();
                     await criticalErrorNotify('Critical error in updating user coins after hangman loss', `User: ${interaction.user.id}\nLoss Penalty: ${settings.lossPenalty}`);
@@ -318,9 +320,10 @@ module.exports = async (interaction) => {
                     }
                 };
 
-                const timeoutUpdated = await customUpdateCatCoinsUser(interaction.user.id, timeoutUpdate);
-
-                if (!timeoutUpdated) {
+                try {
+                    await customUpdateCatCoinsUser(interaction.user.id, timeoutUpdate);
+                } catch (error) {
+                    console.error(error);
                     await gameMessage.edit({ components: [criticalErrorContainer] });
                     await criticalErrorNotify('Critical error in updating user coins after hangman timeout', `User: ${interaction.user.id}\nEntry Fee: ${settings.lossPenalty}`);
                     return completion.resolve();

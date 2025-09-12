@@ -612,9 +612,10 @@ module.exports = async (interaction) => {
                 }
             };
 
-            const timeoutUpdated = await customUpdateCatCoinsUser(interaction.user.id, timeoutUpdate);
-
-            if (!timeoutUpdated) {
+            try {
+                await customUpdateCatCoinsUser(interaction.user.id, timeoutUpdate);
+            } catch (error) {
+                console.error(error);
                 await gameMessage.edit({ components: [criticalErrorContainer] });
                 return await criticalErrorNotify('Critical error in updating user coins after vault timeout', `User: ${interaction.user.id}\nLoss Penalty: ${settings.lossPenalty}`);
             }
@@ -650,9 +651,9 @@ module.exports = async (interaction) => {
                 }
             };
 
-            const loseUpdated = await customUpdateCatCoinsUser(interaction.user.id, loseUpdate);
-
-            if (!loseUpdated) {
+            try {
+                await customUpdateCatCoinsUser(interaction.user.id, loseUpdate);
+            } catch (error) {
                 await gameMessage.edit({ components: [criticalErrorContainer] });
                 return await criticalErrorNotify('Critical error in updating user coins after vault loss', `User: ${interaction.user.id}\nLoss Penalty: ${settings.lossPenalty}`);
             }
@@ -689,9 +690,10 @@ module.exports = async (interaction) => {
             }
         };
 
-        const winUpdated = await customUpdateCatCoinsUser(interaction.user.id, winUpdate);
-
-        if (!winUpdated) {
+        try {
+            await customUpdateCatCoinsUser(interaction.user.id, winUpdate);
+        } catch (error) {
+            console.error(error);
             await gameMessage.edit({ components: [criticalErrorContainer] });
             return await criticalErrorNotify('Critical error in updating user coins after vault win', `User: ${interaction.user.id}\nReward: ${settings.reward}`);
         }
