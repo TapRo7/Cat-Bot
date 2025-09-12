@@ -3,7 +3,7 @@ const { criticalErrorNotify } = require('../utils/errorNotifier');
 require('dotenv').config();
 
 const uri = process.env.MONGO_URI;
-const requiredCollections = ['catCoinPlayers', 'Config', 'pendingInviteTracking', 'playerPets'];
+const requiredCollections = ['catCoinPlayers', 'Config', 'pendingInviteTracking', 'playerPets', 'deletedPlayerPets'];
 
 let databaseClient;
 let database;
@@ -123,6 +123,11 @@ async function find(collectionName, filter) {
     return await collection.find(filter).toArray();
 }
 
+async function findOneAndDelete(collectionName, filter) {
+    const collection = getCollection(collectionName);
+    return await collection.findOneAndDelete(filter);
+}
+
 async function findWithOptions(collectionName, filter = {}, options = {}) {
     const collection = getCollection(collectionName);
     let cursor = collection.find(filter);
@@ -141,4 +146,4 @@ async function findWithOptions(collectionName, filter = {}, options = {}) {
 }
 
 
-module.exports = { connectToDatabase, getCollection, setupDatabase, insertOne, findOne, deleteOne, updateOne, customUpdateOne, findAll, find, findWithOptions };
+module.exports = { connectToDatabase, getCollection, setupDatabase, insertOne, findOne, deleteOne, updateOne, customUpdateOne, findAll, find, findOneAndDelete, findWithOptions };

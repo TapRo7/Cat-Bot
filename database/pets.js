@@ -1,7 +1,8 @@
-const { insertOne, findOne, updateOne, customUpdateOne } = require('./index');
+const { insertOne, findOne, updateOne, customUpdateOne, find, findOneAndDelete } = require('./index');
 const AsyncLock = require('async-lock');
 
 const petsCollection = 'playerPets';
+const deletedPetsCollection = 'deletedPlayerPets';
 const petsDatabaseLock = new AsyncLock();
 
 async function registerPet(userId, petName, petId) {
@@ -17,6 +18,14 @@ async function registerPet(userId, petName, petId) {
         lastPlayed: 0,
         lastSlept: 0,
         lastCareComplete: 0,
+        careWarnings: {
+            'day1': false,
+            'day2': false,
+            'day3': false,
+            'day4': false,
+            'day5': false,
+            'day6': false,
+        },
         collectedCoins: 0,
         lastCoinCollection: 0
     };
@@ -28,6 +37,11 @@ async function registerPet(userId, petName, petId) {
 
 async function getUserPet(userId) {
     return await findOne(petsCollection, { userId });
+}
+
+async function deleteUserPet(userId) {
+    const deletedPet = await findOneAndDelete(petsCollection, { userId });
+    return await insertOne(deletedPetsCollection, deletedPet);
 }
 
 async function updateUserPet(userId, updates) {
@@ -42,4 +56,8 @@ async function customUpdateUserPet(userId, updates) {
     });
 }
 
-module.exports = { registerPet, getUserPet, updateUserPet, customUpdateUserPet };
+async function getAllPets() {
+    return await find(petsCollection);
+}
+
+module.exports = { registerPet, getUserPet, updateUserPet, customUpdateUserPet, deleteUserPet, getAllPets };

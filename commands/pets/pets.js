@@ -1,9 +1,15 @@
 const { SlashCommandBuilder, MessageFlags, TextChannel } = require('discord.js');
 
+const petsView = require('./petsView');
 const petsRegister = require('./petsRegister');
+const petsSkin = require('./petsSkin');
+const petsFeed = require('./petsFeed');
 
 module.exports = {
-    cooldown: 30,
+    cooldown: 1,
+    subCooldowns: {
+        'register': 1
+    },
     data: new SlashCommandBuilder()
         .setName('pet')
         .setDescription('Pet Commands')
@@ -16,6 +22,10 @@ module.exports = {
                 .setMaxLength(10)
                 .setMinLength(3)
                 .setRequired(true))
+        )
+        .addSubcommand(subcommand => subcommand
+            .setName('view')
+            .setDescription('View your cat!')
         )
         .addSubcommand(subcommand => subcommand
             .setName('feed')
@@ -58,10 +68,12 @@ module.exports = {
         const sub = interaction.options.getSubcommand();
 
         switch (sub) {
+            case 'view':
+                return await petsView(interaction);
             case 'register':
                 return await petsRegister(interaction);
             case 'feed':
-                return;
+                return await petsFeed(interaction);
             case 'toilet':
                 return;
             case 'bath':
@@ -69,7 +81,7 @@ module.exports = {
             case 'sleep':
                 return;
             case 'skin':
-                return;
+                return await petsSkin(interaction);
             default:
                 return await interaction.editReply({ content: 'Unknown subcommand.', flags: MessageFlags.Ephemeral });
         }

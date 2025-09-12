@@ -15,11 +15,9 @@ async function petRoll(petSkins, rarityNumber) {
         }
         roll -= pet.weight;
     }
-
-    return null;
 }
 
-async function getPetCareStatus(userPetData, petConfigData, rarityCareConfig) {
+async function getPetCareStatus(userPetData, petConfigData, rarityCareConfig, returnCosts = false) {
     const rarity = petConfigData.rarityNumber;
     const now = Math.floor(Date.now() / 1000);
 
@@ -27,11 +25,13 @@ async function getPetCareStatus(userPetData, petConfigData, rarityCareConfig) {
         feed: {
             last: userPetData.lastFed,
             interval: rarityCareConfig.feedIntervalHours[rarity] * 3600,
+            cost: rarityCareConfig.feedCost[rarity],
             title: 'Food'
         },
         bath: {
             last: userPetData.lastBathed,
             interval: rarityCareConfig.bathIntervalHours[rarity] * 3600,
+            cost: rarityCareConfig.bathCost[rarity],
             title: 'Bath'
         },
         play: {
@@ -47,6 +47,7 @@ async function getPetCareStatus(userPetData, petConfigData, rarityCareConfig) {
         toilet: {
             last: userPetData.lastToilet,
             interval: rarityCareConfig.toiletIntervalHours[rarity] * 3600,
+            cost: rarityCareConfig.toiletCost[rarity],
             title: 'Toilet'
         }
     };
@@ -57,7 +58,10 @@ async function getPetCareStatus(userPetData, petConfigData, rarityCareConfig) {
 
     for (const [type, data] of Object.entries(careTypes)) {
         const due = (now - data.last) > data.interval;
-        careStatus[type] = !due;
+        careStatus[type] = {
+            due,
+            cost: data.cost ?? 0
+        };
         if (!due) {
             completed++;
         } else {
@@ -65,7 +69,11 @@ async function getPetCareStatus(userPetData, petConfigData, rarityCareConfig) {
         }
     }
 
-    pendingCare = pendingCare.slice(0, -1);
+    if (pendingCare === ``) {
+        pendingCare = '- Your cat is fully cared for!';
+    } else {
+        pendingCare = pendingCare.slice(0, -1);
+    }
 
     const happinessLevels = ['Depressed', 'Sad', 'Grumpy', 'Okay', 'Happy'];
     const catHappiness = happinessLevels[completed];

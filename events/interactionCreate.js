@@ -1,6 +1,6 @@
 const { Events, MessageFlags, Collection } = require('discord.js');
 
-const expectedNoHandlers = ['acceptRps', 'rejectRps', 'rpsChoice', 'acceptHangman', 'rejectHangman', 'acceptTicTacToe', 'rejectTicTacToe', 'acceptVault', 'rejectVault'];
+const expectedNoHandlers = ['acceptRps', 'rejectRps', 'rpsChoice', 'acceptHangman', 'rejectHangman', 'acceptTicTacToe', 'rejectTicTacToe', 'acceptVault', 'rejectVault', 'catCareButton', 'acceptCatAction', 'rejectCatAction'];
 
 module.exports = {
     name: Events.InteractionCreate,
