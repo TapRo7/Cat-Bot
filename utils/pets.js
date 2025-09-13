@@ -17,6 +17,25 @@ async function petRoll(petSkins, rarityNumber) {
     }
 }
 
+function rarityCatsString(petsConfig) {
+    const rarityGroups = {};
+
+    for (const pet of petsConfig.petSkins) {
+        const rarityName = petsConfig.rarityNames[pet.rarityNumber] || 'Unknown';
+        if (!rarityGroups[rarityName]) {
+            rarityGroups[rarityName] = [];
+        }
+        rarityGroups[rarityName].push(pet.emoji);
+    }
+
+    let result = '';
+    for (const [rarityName, emojis] of Object.entries(rarityGroups)) {
+        result += `### ${rarityName}\n# ${emojis.join(' ')}\n\n`;
+    }
+
+    return result.trim();
+}
+
 async function getPetCareStatus(userPetData, petConfigData, rarityCareConfig, returnCosts = false) {
     const rarity = petConfigData.rarityNumber;
     const now = Math.floor(Date.now() / 1000);
@@ -100,7 +119,7 @@ async function petDisplayBuilder(userPetData, petConfigData, rarityCareConfig) {
         )
         .addSeparatorComponents(largeSeparator)
         .addTextDisplayComponents(textDisplay => textDisplay
-            .setContent(petConfigData.emoji)
+            .setContent('# ' + petConfigData.emoji)
         )
         .addSeparatorComponents(largeSeparator)
         .addTextDisplayComponents(textDisplay => textDisplay
@@ -115,4 +134,4 @@ function capitalizeFirstLetter(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-module.exports = { petRoll, petDisplayBuilder, getPetCareStatus, capitalizeFirstLetter };
+module.exports = { petRoll, petDisplayBuilder, getPetCareStatus, capitalizeFirstLetter, rarityCatsString };

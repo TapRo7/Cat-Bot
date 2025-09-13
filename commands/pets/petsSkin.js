@@ -27,7 +27,7 @@ module.exports = async (interaction) => {
     const userPetData = await getUserPet(interaction.user.id);
 
     if (!userPetData) {
-        return await interaction.editReply({ content: `You have not registered a pet yet, please use </pets register:1401243483649605752> to register before using other commands!` });
+        return await interaction.editReply({ content: `You have not registered a pet yet, please use </pet register:1416420485721362433> to register before using other commands!` });
     }
 
     const rarityRollPrice = interaction.client.petConfig.rarityRollPrices[selectedRarity];
@@ -101,7 +101,7 @@ module.exports = async (interaction) => {
         )
         .addSeparatorComponents(largeSeparator)
         .addTextDisplayComponents(textDisplay => textDisplay
-            .setContent(petConfigData.emoji)
+            .setContent('# ' + petConfigData.emoji)
         )
         .addSeparatorComponents(largeSeparator)
         .addTextDisplayComponents(textDisplay => textDisplay

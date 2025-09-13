@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, ContainerBuilder, SeparatorBuilder, SeparatorSpacingSize, MessageFlags, TextChannel } = require('discord.js');
+const { rarityCatsString } = require('../../utils/pets');
 
 const largeSeparator = new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Large);
 
@@ -6,6 +7,7 @@ const catCoinEmoji = '<:CatCoin:1401235223831642133>';
 const wiggleCatEmoji = '<a:wiggle:1403383636811845765>';
 const happyCatEmoji = '<a:Happy:1403155072384503929>';
 const catFlexEmoji = '<:CatFlex:1408288059774074932>';
+const petEmoji = '<:Pet:1416425590201913435>';
 
 // Economy Help
 const economyHelpHeader = `# Cat Coin Commands ${catCoinEmoji}`;
@@ -143,6 +145,27 @@ const funContainer = new ContainerBuilder()
         textDisplay => textDisplay.setContent(funHelpString1)
     );
 
+const petsHelpHeader = `# Pet Commands ${petEmoji}`;
+
+const petHelpString1 = `## Registering
+You can register a pet using the </pet register:1416420485721362433> command
+You need to choose the \`name\` and \`gender\` of your pet while registering, you cannot change these later`;
+
+const petHelpString3 = `## Skins
+You can roll for a new pet skin by using the </pet skin:1416420485721362433> command
+You need to choose the \`rarity\` you want to roll for, and pay the amount of coins needed for a reroll`;
+
+const petHelpString4 = `## Viewing
+You can view your pet and its current status by using the </pet view:1416420485721362433> command`;
+
+const petHelpString5 = `## Pet Care
+Your pet will have various needs, you can use the following commands to take care of your pet and all its needs:
+- </pet feed:1416420485721362433>
+- </pet bath:1416420485721362433>
+- </pet toilet:1416420485721362433>
+- </pet play:1416420485721362433>
+- </pet sleep:1416420485721362433>`;
+
 module.exports = {
     cooldown: 10,
     data: new SlashCommandBuilder()
@@ -163,6 +186,10 @@ module.exports = {
         .addSubcommand(subcommand => subcommand
             .setName('fun')
             .setDescription('Get help regarding the fun commands!')
+        )
+        .addSubcommand(subcommand => subcommand
+            .setName('pets')
+            .setDescription('Get help regarding the pet commands!')
         ),
 
     async execute(interaction) {
@@ -187,6 +214,27 @@ module.exports = {
                 return await interaction.editReply({ components: [gamesContainer], flags: MessageFlags.IsComponentsV2 });
             case 'fun':
                 return await interaction.editReply({ components: [funContainer], flags: MessageFlags.IsComponentsV2 });
+            case 'pets':
+                const petHelpString2 = `## Rarities
+You can get different rarities of cat skins! The better the rarity the more the cat's needs. Following are all the cats available for each rarity!
+
+${rarityCatsString(interaction.client.petConfig)}`;
+
+                const petsContainer = new ContainerBuilder()
+                    .setAccentColor(0xFFC0CB)
+                    .addTextDisplayComponents(textDisplay => textDisplay.setContent(petsHelpHeader))
+                    .addSeparatorComponents(largeSeparator)
+                    .addTextDisplayComponents(textDisplay => textDisplay.setContent(petHelpString1))
+                    .addSeparatorComponents(largeSeparator)
+                    .addTextDisplayComponents(textDisplay => textDisplay.setContent(petHelpString2))
+                    .addSeparatorComponents(largeSeparator)
+                    .addTextDisplayComponents(textDisplay => textDisplay.setContent(petHelpString3))
+                    .addSeparatorComponents(largeSeparator)
+                    .addTextDisplayComponents(textDisplay => textDisplay.setContent(petHelpString4))
+                    .addSeparatorComponents(largeSeparator)
+                    .addTextDisplayComponents(textDisplay => textDisplay.setContent(petHelpString5));
+
+                return await interaction.editReply({ components: [petsContainer], flags: MessageFlags.IsComponentsV2 });
             default:
                 return await interaction.editReply({ content: 'Unknown subcommand.', flags: MessageFlags.Ephemeral });
         }

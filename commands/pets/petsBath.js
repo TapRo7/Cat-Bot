@@ -80,7 +80,7 @@ module.exports = async (interaction) => {
     const userPetData = await getUserPet(interaction.user.id);
 
     if (!userPetData) {
-        return await interaction.editReply({ content: `You have not registered a pet yet, please use </pets register:1401243483649605752> to register before using other commands!` });
+        return await interaction.editReply({ content: `You have not registered a pet yet, please use </pet register:1416420485721362433> to register before using other commands!` });
     }
 
     let now = Math.floor(Date.now() / 1000);
@@ -122,7 +122,7 @@ module.exports = async (interaction) => {
         )
         .addSeparatorComponents(largeSeparator)
         .addTextDisplayComponents(textDisplay => textDisplay
-            .setContent(petConfigData.emoji)
+            .setContent('# ' + petConfigData.emoji)
         )
         .addSeparatorComponents(largeSeparator)
         .addTextDisplayComponents(textDisplay => textDisplay
@@ -202,7 +202,7 @@ module.exports = async (interaction) => {
     petContainer.spliceComponents(petContainer.components.length - 3, 3);
     petContainer
         .addTextDisplayComponents(textDisplay => textDisplay
-            .setContent('🛁' + petConfigData.emoji)
+            .setContent('# ' + '🛁' + petConfigData.emoji)
         )
         .addSeparatorComponents(largeSeparator)
         .addSectionComponents(section => section
@@ -227,7 +227,7 @@ module.exports = async (interaction) => {
     petContainer.spliceComponents(petContainer.components.length - 3, 3);
     petContainer
         .addTextDisplayComponents(textDisplay => textDisplay
-            .setContent('💦' + petConfigData.emoji)
+            .setContent('# ' + '💦' + petConfigData.emoji)
         )
         .addSeparatorComponents(largeSeparator)
         .addSectionComponents(section => section
@@ -252,7 +252,7 @@ module.exports = async (interaction) => {
     petContainer.spliceComponents(petContainer.components.length - 3, 3);
     petContainer
         .addTextDisplayComponents(textDisplay => textDisplay
-            .setContent('🫧' + petConfigData.emoji)
+            .setContent('# ' + '🫧' + petConfigData.emoji)
         )
         .addSeparatorComponents(largeSeparator)
         .addSectionComponents(section => section
@@ -277,7 +277,7 @@ module.exports = async (interaction) => {
     petContainer.spliceComponents(petContainer.components.length - 3, 3);
     petContainer
         .addTextDisplayComponents(textDisplay => textDisplay
-            .setContent('💦' + petConfigData.emoji)
+            .setContent('# ' + '💦' + petConfigData.emoji)
         )
         .addSeparatorComponents(largeSeparator)
         .addSectionComponents(section => section
@@ -302,7 +302,7 @@ module.exports = async (interaction) => {
     petContainer.spliceComponents(petContainer.components.length - 3, 3);
     petContainer
         .addTextDisplayComponents(textDisplay => textDisplay
-            .setContent('✨' + petConfigData.emoji)
+            .setContent('# ' + '✨' + petConfigData.emoji)
         )
         .addSeparatorComponents(largeSeparator)
         .addTextDisplayComponents(textDisplay => textDisplay

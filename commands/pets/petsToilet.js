@@ -122,7 +122,7 @@ module.exports = async (interaction) => {
         )
         .addSeparatorComponents(largeSeparator)
         .addTextDisplayComponents(textDisplay => textDisplay
-            .setContent(petConfigData.emoji)
+            .setContent('# ' + petConfigData.emoji)
         )
         .addSeparatorComponents(largeSeparator)
         .addTextDisplayComponents(textDisplay => textDisplay
@@ -202,7 +202,7 @@ module.exports = async (interaction) => {
     petContainer.spliceComponents(petContainer.components.length - 3, 3);
     petContainer
         .addTextDisplayComponents(textDisplay => textDisplay
-            .setContent(petConfigData.emoji + '🚽')
+            .setContent('# ' + petConfigData.emoji + '🚽')
         )
         .addSeparatorComponents(largeSeparator)
         .addSectionComponents(section => section
@@ -227,7 +227,7 @@ module.exports = async (interaction) => {
     petContainer.spliceComponents(petContainer.components.length - 3, 3);
     petContainer
         .addTextDisplayComponents(textDisplay => textDisplay
-            .setContent(petConfigData.emoji + '💩🚽')
+            .setContent('# ' + petConfigData.emoji + '💩🚽')
         )
         .addSeparatorComponents(largeSeparator)
         .addSectionComponents(section => section
@@ -252,7 +252,7 @@ module.exports = async (interaction) => {
     petContainer.spliceComponents(petContainer.components.length - 3, 3);
     petContainer
         .addTextDisplayComponents(textDisplay => textDisplay
-            .setContent(petConfigData.emoji + '💦💩🚽')
+            .setContent('# ' + petConfigData.emoji + '💦💩🚽')
         )
         .addSeparatorComponents(largeSeparator)
         .addSectionComponents(section => section
@@ -277,7 +277,7 @@ module.exports = async (interaction) => {
     petContainer.spliceComponents(petContainer.components.length - 3, 3);
     petContainer
         .addTextDisplayComponents(textDisplay => textDisplay
-            .setContent(petConfigData.emoji + '🧻🚽')
+            .setContent('# ' + petConfigData.emoji + '🧻🚽')
         )
         .addSeparatorComponents(largeSeparator)
         .addSectionComponents(section => section
@@ -302,7 +302,7 @@ module.exports = async (interaction) => {
     petContainer.spliceComponents(petContainer.components.length - 3, 3);
     petContainer
         .addTextDisplayComponents(textDisplay => textDisplay
-            .setContent('✨' + petConfigData.emoji)
+            .setContent('# ' + '✨' + petConfigData.emoji)
         )
         .addSeparatorComponents(largeSeparator)
         .addTextDisplayComponents(textDisplay => textDisplay
