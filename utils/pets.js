@@ -26,18 +26,18 @@ async function getPetCareStatus(userPetData, petConfigData, rarityCareConfig, re
             last: userPetData.lastFed,
             interval: rarityCareConfig.feedIntervalHours[rarity] * 3600,
             cost: rarityCareConfig.feedCost[rarity],
-            title: 'Food'
+            title: 'Eat'
         },
         bath: {
             last: userPetData.lastBathed,
             interval: rarityCareConfig.bathIntervalHours[rarity] * 3600,
             cost: rarityCareConfig.bathCost[rarity],
-            title: 'Bath'
+            title: 'Bathe'
         },
         play: {
             last: userPetData.lastPlayed,
             interval: rarityCareConfig.playIntervalHours[rarity] * 3600,
-            title: 'Play Time'
+            title: 'Play'
         },
         sleep: {
             last: userPetData.lastSlept,
@@ -48,7 +48,7 @@ async function getPetCareStatus(userPetData, petConfigData, rarityCareConfig, re
             last: userPetData.lastToilet,
             interval: rarityCareConfig.toiletIntervalHours[rarity] * 3600,
             cost: rarityCareConfig.toiletCost[rarity],
-            title: 'Toilet'
+            title: 'Potty'
         }
     };
 
@@ -60,7 +60,8 @@ async function getPetCareStatus(userPetData, petConfigData, rarityCareConfig, re
         const due = (now - data.last) > data.interval;
         careStatus[type] = {
             due,
-            cost: data.cost ?? 0
+            cost: data.cost ?? 0,
+            title: data.title
         };
         if (!due) {
             completed++;
@@ -75,7 +76,7 @@ async function getPetCareStatus(userPetData, petConfigData, rarityCareConfig, re
         pendingCare = pendingCare.slice(0, -1);
     }
 
-    const happinessLevels = ['Depressed', 'Sad', 'Grumpy', 'Okay', 'Happy'];
+    const happinessLevels = ['Depressed', 'Sad', 'Grumpy', 'Okay', 'Happy', 'Overjoyed'];
     const catHappiness = happinessLevels[completed];
 
     const total = Object.keys(careTypes).length;
@@ -109,4 +110,9 @@ async function petDisplayBuilder(userPetData, petConfigData, rarityCareConfig) {
     return petContainer;
 }
 
-module.exports = { petRoll, petDisplayBuilder, getPetCareStatus };
+function capitalizeFirstLetter(str) {
+    if (!str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+module.exports = { petRoll, petDisplayBuilder, getPetCareStatus, capitalizeFirstLetter };

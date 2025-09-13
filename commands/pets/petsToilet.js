@@ -21,29 +21,35 @@ const rejectButton = new ButtonBuilder()
     .setEmoji(catRejectEmoji)
     .setStyle(ButtonStyle.Danger);
 
-const pourFoodButton = new ButtonBuilder()
+const goToToilet = new ButtonBuilder()
     .setCustomId('catCareButton')
-    .setLabel('Pour Food')
-    .setEmoji('🥫')
+    .setLabel('Go To Toilet')
+    .setEmoji('🚽')
     .setStyle(ButtonStyle.Primary);
 
-const feedCatButton = new ButtonBuilder()
+const catPoopButton = new ButtonBuilder()
     .setCustomId('catCareButton')
-    .setLabel('Feed Cat')
-    .setEmoji('🐱')
+    .setLabel('Poop')
+    .setEmoji('💩')
     .setStyle(ButtonStyle.Success);
 
-const pourWaterButton = new ButtonBuilder()
+const catPeeButton = new ButtonBuilder()
     .setCustomId('catCareButton')
-    .setLabel('Pour Water')
-    .setEmoji('💧')
+    .setLabel('Pee')
+    .setEmoji('💦')
     .setStyle(ButtonStyle.Primary);
 
-const waterCatButton = new ButtonBuilder()
+const cleanCatButton = new ButtonBuilder()
     .setCustomId('catCareButton')
-    .setLabel('Water Cat')
-    .setEmoji('🐱')
+    .setLabel('Clean Cat')
+    .setEmoji('🧻')
     .setStyle(ButtonStyle.Success);
+
+const flushToilet = new ButtonBuilder()
+    .setCustomId('catCareButton')
+    .setLabel('Flush Toilet')
+    .setEmoji('🪠')
+    .setStyle(ButtonStyle.Primary);
 
 async function waitForButton(message, filter, timeout = 60_000) {
     return new Promise(resolve => {
@@ -97,16 +103,16 @@ module.exports = async (interaction) => {
     const petCareStatusFull = await getPetCareStatus(userPetData, petConfigData, interaction.client.petConfig.rarityCareConfig);
     const dueCareCount = Object.values(petCareStatusFull.careStatus).filter(c => c.due).length;
 
-    const petCareStatus = petCareStatusFull.careStatus.feed;
+    const petCareStatus = petCareStatusFull.careStatus.toilet;
 
     if (!petCareStatus.due) {
-        return await interaction.editReply({ content: `${petNameEmojiString} does not want to eat right now!` });
+        return await interaction.editReply({ content: `${petNameEmojiString} does not want to go to the toilet right now!` });
     }
 
     const userData = await getCatCoinsUser(interaction.user.id);
 
     if (petCareStatus.cost > userData.coins) {
-        return await interaction.editReply(({ content: `Feeding ${petNameEmojiString} costs **${petCareStatus.cost} Cat Coins ${catCoinEmoji}**, you do not have enough coins!` }));
+        return await interaction.editReply(({ content: `Taking ${petNameEmojiString} to the toilet costs **${petCareStatus.cost} Cat Coins ${catCoinEmoji}**, you do not have enough coins!` }));
     }
 
     const petContainer = new ContainerBuilder()
@@ -120,7 +126,7 @@ module.exports = async (interaction) => {
         )
         .addSeparatorComponents(largeSeparator)
         .addTextDisplayComponents(textDisplay => textDisplay
-            .setContent(`Feeding ${userPetData.petName} will cost **${petCareStatus.cost} Cat Coins ${catCoinEmoji}**, are you sure you want to continue?`)
+            .setContent(`Taking ${userPetData.petName} to the toilet will cost **${petCareStatus.cost} Cat Coins ${catCoinEmoji}**, are you sure you want to continue?`)
         )
         .addActionRowComponents(actionRow => actionRow
             .addComponents(acceptButton, rejectButton)
@@ -153,7 +159,7 @@ module.exports = async (interaction) => {
     if (confirmResult === false) {
         petContainer.spliceComponents(petContainer.components.length - 2, 2);
         petContainer.addTextDisplayComponents(
-            textDisplay => textDisplay.setContent(`You cancelled the food, ${userPetData.petName} is still hungry!`)
+            textDisplay => textDisplay.setContent(`You cancelled the toilet, ${userPetData.petName} still has to go!`)
         );
 
         return await petMessage.edit({ components: [petContainer] });
@@ -162,7 +168,7 @@ module.exports = async (interaction) => {
     if (confirmResult === 'timeout') {
         return await handleTimeout(
             petMessage,
-            `You didn\'t accept the food in time, ${userPetData.petName} is still hungry!`,
+            `You didn\'t accept the toilet in time, ${userPetData.petName} still has to go!`,
             petContainer.components.length - 2,
             2,
             petContainer
@@ -175,18 +181,18 @@ module.exports = async (interaction) => {
 
     petContainer.spliceComponents(petContainer.components.length - 2, 2);
     petContainer.addSectionComponents(section => section
-        .addTextDisplayComponents(textDisplay => textDisplay.setContent('Pour the food!'))
-        .setButtonAccessory(pourFoodButton)
+        .addTextDisplayComponents(textDisplay => textDisplay.setContent(`Take the Cat to the Toilet!`))
+        .setButtonAccessory(goToToilet)
     );
 
     await petMessage.edit({ components: [petContainer] });
 
-    const foodPoured = await waitForButton(petMessage, buttonIntFilter);
+    const atToilet = await waitForButton(petMessage, buttonIntFilter);
 
-    if (foodPoured === 'timeout') {
+    if (atToilet === 'timeout') {
         return await handleTimeout(
             petMessage,
-            `You didn\'t pour the food in time, ${userPetData.petName} is still hungry!`,
+            `You didn\'t go to the toilet in time, ${userPetData.petName} still has to go!`,
             petContainer.components.length - 1,
             1,
             petContainer
@@ -196,22 +202,97 @@ module.exports = async (interaction) => {
     petContainer.spliceComponents(petContainer.components.length - 3, 3);
     petContainer
         .addTextDisplayComponents(textDisplay => textDisplay
-            .setContent('🥫' + petConfigData.emoji)
+            .setContent(petConfigData.emoji + '🚽')
         )
         .addSeparatorComponents(largeSeparator)
         .addSectionComponents(section => section
-            .addTextDisplayComponents(textDisplay => textDisplay.setContent('Feed the Cat!'))
-            .setButtonAccessory(feedCatButton)
+            .addTextDisplayComponents(textDisplay => textDisplay.setContent('Help the Cat poop!'))
+            .setButtonAccessory(catPoopButton)
         );
 
     await petMessage.edit({ components: [petContainer] });
 
-    const catFed = await waitForButton(petMessage, buttonIntFilter);
+    const catPooped = await waitForButton(petMessage, buttonIntFilter);
 
-    if (catFed === 'timeout') {
+    if (catPooped === 'timeout') {
         return await handleTimeout(
             petMessage,
-            `You didn\'t feed the cat in time, ${userPetData.petName} is still hungry!`,
+            `You didn\'t help the cat poop in time, ${userPetData.petName} still has to go!`,
+            petContainer.components.length - 1,
+            1,
+            petContainer
+        );
+    }
+
+    petContainer.spliceComponents(petContainer.components.length - 3, 3);
+    petContainer
+        .addTextDisplayComponents(textDisplay => textDisplay
+            .setContent(petConfigData.emoji + '💩🚽')
+        )
+        .addSeparatorComponents(largeSeparator)
+        .addSectionComponents(section => section
+            .addTextDisplayComponents(textDisplay => textDisplay.setContent('Help the Cat pee!'))
+            .setButtonAccessory(catPeeButton)
+        );
+
+    await petMessage.edit({ components: [petContainer] });
+
+    const catPeed = await waitForButton(petMessage, buttonIntFilter);
+
+    if (catPeed === 'timeout') {
+        return await handleTimeout(
+            petMessage,
+            `You didn\'t help the cat pee in time, ${userPetData.petName} still has to go!`,
+            petContainer.components.length - 1,
+            1,
+            petContainer
+        );
+    }
+
+    petContainer.spliceComponents(petContainer.components.length - 3, 3);
+    petContainer
+        .addTextDisplayComponents(textDisplay => textDisplay
+            .setContent(petConfigData.emoji + '💦💩🚽')
+        )
+        .addSeparatorComponents(largeSeparator)
+        .addSectionComponents(section => section
+            .addTextDisplayComponents(textDisplay => textDisplay.setContent('Clean the Cat!'))
+            .setButtonAccessory(cleanCatButton)
+        );
+
+    await petMessage.edit({ components: [petContainer] });
+
+    const soapWashed = await waitForButton(petMessage, buttonIntFilter);
+
+    if (soapWashed === 'timeout') {
+        return await handleTimeout(
+            petMessage,
+            `You didn\'t clean the cat in time, ${userPetData.petName} still has to go!`,
+            petContainer.components.length - 1,
+            1,
+            petContainer
+        );
+    }
+
+    petContainer.spliceComponents(petContainer.components.length - 3, 3);
+    petContainer
+        .addTextDisplayComponents(textDisplay => textDisplay
+            .setContent(petConfigData.emoji + '🧻🚽')
+        )
+        .addSeparatorComponents(largeSeparator)
+        .addSectionComponents(section => section
+            .addTextDisplayComponents(textDisplay => textDisplay.setContent('Flush the Toilet!'))
+            .setButtonAccessory(flushToilet)
+        );
+
+    await petMessage.edit({ components: [petContainer] });
+
+    const toiletFlushed = await waitForButton(petMessage, buttonIntFilter);
+
+    if (toiletFlushed === 'timeout') {
+        return await handleTimeout(
+            petMessage,
+            `You didn\'t flush the toilet in time, ${userPetData.petName} still has to go!`,
             petContainer.components.length - 1,
             1,
             petContainer
@@ -224,58 +305,8 @@ module.exports = async (interaction) => {
             .setContent('✨' + petConfigData.emoji)
         )
         .addSeparatorComponents(largeSeparator)
-        .addSectionComponents(section => section
-            .addTextDisplayComponents(textDisplay => textDisplay.setContent('Pour the Water!'))
-            .setButtonAccessory(pourWaterButton)
-        );
-
-    await petMessage.edit({ components: [petContainer] });
-
-    const waterPoured = await waitForButton(petMessage, buttonIntFilter);
-
-    if (waterPoured === 'timeout') {
-        return await handleTimeout(
-            petMessage,
-            `You didn\'t pour the water in time, ${userPetData.petName} is still thirsty!`,
-            petContainer.components.length - 1,
-            1,
-            petContainer
-        );
-    }
-
-    petContainer.spliceComponents(petContainer.components.length - 3, 3);
-    petContainer
         .addTextDisplayComponents(textDisplay => textDisplay
-            .setContent('💧' + petConfigData.emoji)
-        )
-        .addSeparatorComponents(largeSeparator)
-        .addSectionComponents(section => section
-            .addTextDisplayComponents(textDisplay => textDisplay.setContent('Water the Cat!'))
-            .setButtonAccessory(waterCatButton)
-        );
-
-    await petMessage.edit({ components: [petContainer] });
-
-    const catWatered = await waitForButton(petMessage, buttonIntFilter);
-
-    if (catWatered === 'timeout') {
-        return await handleTimeout(
-            petMessage,
-            `You didn\'t water the cat in time, ${userPetData.petName} is still thirsty!`,
-            petContainer.components.length - 1,
-            1,
-            petContainer
-        );
-    }
-
-    petContainer.spliceComponents(petContainer.components.length - 3, 3);
-    petContainer
-        .addTextDisplayComponents(textDisplay => textDisplay
-            .setContent('✨' + petConfigData.emoji)
-        )
-        .addSeparatorComponents(largeSeparator)
-        .addTextDisplayComponents(textDisplay => textDisplay
-            .setContent('Your cat has been fed! You\'ve earned 1 relationship point')
+            .setContent('Your cat has been to the toilet! You\'ve earned 1 relationship point')
         );
 
     const userUpdate = {
@@ -288,7 +319,7 @@ module.exports = async (interaction) => {
     now = Math.floor(Date.now() / 1000);
 
     const petUpdateSet = {
-        lastFed: now
+        lastToilet: now
     };
 
     if (dueCareCount === 1) {

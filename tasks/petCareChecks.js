@@ -25,7 +25,7 @@ module.exports = {
 
             if (daysNeglected >= 7) {
                 const container = new ContainerBuilder()
-                    .addTextDisplayComponents(textDisplay => textDisplay.setContent(`<@${pet.userId}> 😿 Your pet **${pet.petName} ${petConfigData.emoji}** has run away due to neglect after 7 days without care.`));
+                    .addTextDisplayComponents(textDisplay => textDisplay.setContent(`<@${pet.userId}> **${pet.petName} ${petConfigData.emoji}** has run away due to neglect after 7 days without care.`));
                 await channel.send({ components: [container], flags: MessageFlags.IsComponentsV2 });
 
                 await deleteUserPet(pet.userId);
@@ -38,7 +38,7 @@ module.exports = {
                     const dayWord = daysNeglected === 1 ? 'day' : 'days';
 
                     const container = new ContainerBuilder()
-                        .addTextDisplayComponents(textDisplay => textDisplay.setContent(`<@${pet.userId}> you haven't completed care for **${pet.petName} ${petConfigData.emoji}** in ${daysNeglected} ${dayWord}! Please look after your pet or they may abandon you!`));
+                        .addTextDisplayComponents(textDisplay => textDisplay.setContent(`<@${pet.userId}> you haven't completed care for **${pet.petName} ${petConfigData.emoji}** in ${daysNeglected} ${dayWord}! Please look after your pet or ${pet.pronoun} may abandon you!`));
                     await channel.send({ components: [container], flags: MessageFlags.IsComponentsV2 });
 
                     pet.careWarnings[dayKey] = true;

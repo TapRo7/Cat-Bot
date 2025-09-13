@@ -1,14 +1,18 @@
 const { SlashCommandBuilder, MessageFlags, TextChannel } = require('discord.js');
 
-const petsView = require('./petsView');
 const petsRegister = require('./petsRegister');
 const petsSkin = require('./petsSkin');
+const petsView = require('./petsView');
 const petsFeed = require('./petsFeed');
+const petsBath = require('./petsBath');
+const petsToilet = require('./petsToilet');
+const petsPlay = require('./petsPlay');
+const petsSleep = require('./petsSleep');
 
 module.exports = {
-    cooldown: 1,
+    cooldown: 20,
     subCooldowns: {
-        'register': 1
+        'register': 300
     },
     data: new SlashCommandBuilder()
         .setName('pet')
@@ -22,26 +26,10 @@ module.exports = {
                 .setMaxLength(10)
                 .setMinLength(3)
                 .setRequired(true))
-        )
-        .addSubcommand(subcommand => subcommand
-            .setName('view')
-            .setDescription('View your cat!')
-        )
-        .addSubcommand(subcommand => subcommand
-            .setName('feed')
-            .setDescription('Feed your cat!')
-        )
-        .addSubcommand(subcommand => subcommand
-            .setName('toilet')
-            .setDescription('Take your cat to the toilet!')
-        )
-        .addSubcommand(subcommand => subcommand
-            .setName('bath')
-            .setDescription('Give your cat a bath!')
-        )
-        .addSubcommand(subcommand => subcommand
-            .setName('sleep')
-            .setDescription('Put your cat to sleep!')
+            .addStringOption(option => option.setName('gender').setDescription('Select the gender of your cat').setRequired(true).setChoices(
+                { name: 'Male', value: 'he' },
+                { name: 'Female', value: 'she' }
+            ))
         )
         .addSubcommand(subcommand => subcommand
             .setName('skin')
@@ -52,6 +40,30 @@ module.exports = {
                 { name: 'Classic', value: '2' },
                 { name: 'Street', value: '3' }
             ))
+        )
+        .addSubcommand(subcommand => subcommand
+            .setName('view')
+            .setDescription('View your cat!')
+        )
+        .addSubcommand(subcommand => subcommand
+            .setName('feed')
+            .setDescription('Feed your cat!')
+        )
+        .addSubcommand(subcommand => subcommand
+            .setName('bath')
+            .setDescription('Give your cat a bath!')
+        )
+        .addSubcommand(subcommand => subcommand
+            .setName('toilet')
+            .setDescription('Take your cat to the toilet!')
+        )
+        .addSubcommand(subcommand => subcommand
+            .setName('play')
+            .setDescription('Play with your cat!')
+        )
+        .addSubcommand(subcommand => subcommand
+            .setName('sleep')
+            .setDescription('Put your cat to sleep!')
         ),
 
     async execute(interaction) {
@@ -68,20 +80,22 @@ module.exports = {
         const sub = interaction.options.getSubcommand();
 
         switch (sub) {
-            case 'view':
-                return await petsView(interaction);
             case 'register':
                 return await petsRegister(interaction);
-            case 'feed':
-                return await petsFeed(interaction);
-            case 'toilet':
-                return;
-            case 'bath':
-                return;
-            case 'sleep':
-                return;
             case 'skin':
                 return await petsSkin(interaction);
+            case 'view':
+                return await petsView(interaction);
+            case 'feed':
+                return await petsFeed(interaction);
+            case 'bath':
+                return await petsBath(interaction);
+            case 'toilet':
+                return await petsToilet(interaction);
+            case 'play':
+                return await petsPlay(interaction);
+            case 'sleep':
+                return await petsSleep(interaction);
             default:
                 return await interaction.editReply({ content: 'Unknown subcommand.', flags: MessageFlags.Ephemeral });
         }

@@ -1,48 +1,31 @@
 const { MessageFlags, ButtonStyle, ButtonBuilder, ContainerBuilder, SeparatorBuilder, SeparatorSpacingSize } = require('discord.js');
 const { getUserPet, customUpdateUserPet } = require('../../database/pets');
-const { getCatCoinsUser, customUpdateCatCoinsUser } = require('../../database/catCoins');
 const { getPetCareStatus, capitalizeFirstLetter } = require('../../utils/pets');
 
 const largeSeparator = new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Large);
 
-const catCoinEmoji = '<:CatCoin:1401235223831642133>';
-const catAcceptEmoji = '<a:yes:1403153341780988006>';
-const catRejectEmoji = '<a:no:1403153353407725710>';
-
-const acceptButton = new ButtonBuilder()
-    .setCustomId('acceptCatAction')
-    .setLabel('Accept')
-    .setEmoji(catAcceptEmoji)
-    .setStyle(ButtonStyle.Success);
-
-const rejectButton = new ButtonBuilder()
-    .setCustomId('rejectCatAction')
-    .setLabel('Reject')
-    .setEmoji(catRejectEmoji)
-    .setStyle(ButtonStyle.Danger);
-
-const pourFoodButton = new ButtonBuilder()
+const getYarnButton = new ButtonBuilder()
     .setCustomId('catCareButton')
-    .setLabel('Pour Food')
-    .setEmoji('🥫')
+    .setLabel('Get Yarn')
+    .setEmoji('🧶')
     .setStyle(ButtonStyle.Primary);
 
-const feedCatButton = new ButtonBuilder()
+const throwYarnButton = new ButtonBuilder()
     .setCustomId('catCareButton')
-    .setLabel('Feed Cat')
-    .setEmoji('🐱')
+    .setLabel('Throw Yarn')
+    .setEmoji('🤾')
     .setStyle(ButtonStyle.Success);
 
-const pourWaterButton = new ButtonBuilder()
+const catFetchButton = new ButtonBuilder()
     .setCustomId('catCareButton')
-    .setLabel('Pour Water')
-    .setEmoji('💧')
+    .setLabel('Fetch Yarn')
+    .setEmoji('🐈')
     .setStyle(ButtonStyle.Primary);
 
-const waterCatButton = new ButtonBuilder()
+const catPetButton = new ButtonBuilder()
     .setCustomId('catCareButton')
-    .setLabel('Water Cat')
-    .setEmoji('🐱')
+    .setLabel('Pet Cat')
+    .setEmoji('🫳')
     .setStyle(ButtonStyle.Success);
 
 async function waitForButton(message, filter, timeout = 60_000) {
@@ -97,17 +80,23 @@ module.exports = async (interaction) => {
     const petCareStatusFull = await getPetCareStatus(userPetData, petConfigData, interaction.client.petConfig.rarityCareConfig);
     const dueCareCount = Object.values(petCareStatusFull.careStatus).filter(c => c.due).length;
 
-    const petCareStatus = petCareStatusFull.careStatus.feed;
+    const needsSleep = Object.entries(petCareStatusFull.careStatus)
+        .filter(([need, data]) => data.due && need === 'sleep')
+        .map(([_, data]) => data.title);
+
+    if (needsSleep.length > 0) {
+        return await interaction.editReply({ content: `${petNameEmojiString} is tired, ${userPetData.pronoun} doesn't want to play! ${capitalizeFirstLetter(userPetData.pronoun)} needs to **Sleep** before being able to play!` });
+    }
+
+    const petCareStatus = petCareStatusFull.careStatus.play;
 
     if (!petCareStatus.due) {
-        return await interaction.editReply({ content: `${petNameEmojiString} does not want to eat right now!` });
+        return await interaction.editReply({ content: `${petNameEmojiString} does not want to play right now!` });
     }
 
-    const userData = await getCatCoinsUser(interaction.user.id);
-
-    if (petCareStatus.cost > userData.coins) {
-        return await interaction.editReply(({ content: `Feeding ${petNameEmojiString} costs **${petCareStatus.cost} Cat Coins ${catCoinEmoji}**, you do not have enough coins!` }));
-    }
+    const buttonIntFilter = btnInt => {
+        return (btnInt.customId === 'catCareButton') && btnInt.user.id === interaction.user.id;
+    };
 
     const petContainer = new ContainerBuilder()
         .setAccentColor(0xFFC0CB)
@@ -119,74 +108,19 @@ module.exports = async (interaction) => {
             .setContent(petConfigData.emoji)
         )
         .addSeparatorComponents(largeSeparator)
-        .addTextDisplayComponents(textDisplay => textDisplay
-            .setContent(`Feeding ${userPetData.petName} will cost **${petCareStatus.cost} Cat Coins ${catCoinEmoji}**, are you sure you want to continue?`)
-        )
-        .addActionRowComponents(actionRow => actionRow
-            .addComponents(acceptButton, rejectButton)
+        .addSectionComponents(section => section
+            .addTextDisplayComponents(textDisplay => textDisplay.setContent('Get the Yarn to play!'))
+            .setButtonAccessory(getYarnButton)
         );
 
     const petMessage = await interaction.editReply({ components: [petContainer], flags: MessageFlags.IsComponentsV2 });
 
-    const confirmFilter = btnInt => {
-        return (btnInt.customId === 'acceptCatAction' || btnInt.customId === 'rejectCatAction') && btnInt.user.id === interaction.user.id;
-    };
+    const yarnGotten = await waitForButton(petMessage, buttonIntFilter);
 
-    const confirmResult = await new Promise((resolve) => {
-        const collector = petMessage.createMessageComponentCollector({
-            filter: confirmFilter,
-            time: 60_000,
-            max: 1
-        });
-
-        collector.on('collect', async btnInt => {
-            resolve(btnInt.customId === 'acceptCatAction');
-        });
-
-        collector.on('end', async (collected, reason) => {
-            if (reason === 'time') {
-                resolve('timeout');
-            }
-        });
-    });
-
-    if (confirmResult === false) {
-        petContainer.spliceComponents(petContainer.components.length - 2, 2);
-        petContainer.addTextDisplayComponents(
-            textDisplay => textDisplay.setContent(`You cancelled the food, ${userPetData.petName} is still hungry!`)
-        );
-
-        return await petMessage.edit({ components: [petContainer] });
-    }
-
-    if (confirmResult === 'timeout') {
+    if (yarnGotten === 'timeout') {
         return await handleTimeout(
             petMessage,
-            `You didn\'t accept the food in time, ${userPetData.petName} is still hungry!`,
-            petContainer.components.length - 2,
-            2,
-            petContainer
-        );
-    }
-
-    const buttonIntFilter = btnInt => {
-        return (btnInt.customId === 'catCareButton') && btnInt.user.id === interaction.user.id;
-    };
-
-    petContainer.spliceComponents(petContainer.components.length - 2, 2);
-    petContainer.addSectionComponents(section => section
-        .addTextDisplayComponents(textDisplay => textDisplay.setContent('Pour the food!'))
-        .setButtonAccessory(pourFoodButton)
-    );
-
-    await petMessage.edit({ components: [petContainer] });
-
-    const foodPoured = await waitForButton(petMessage, buttonIntFilter);
-
-    if (foodPoured === 'timeout') {
-        return await handleTimeout(
-            petMessage,
-            `You didn\'t pour the food in time, ${userPetData.petName} is still hungry!`,
+            `You didn\'t get the Yarn in time, ${userPetData.petName} still wants to play!`,
             petContainer.components.length - 1,
             1,
             petContainer
@@ -196,22 +130,22 @@ module.exports = async (interaction) => {
     petContainer.spliceComponents(petContainer.components.length - 3, 3);
     petContainer
         .addTextDisplayComponents(textDisplay => textDisplay
-            .setContent('🥫' + petConfigData.emoji)
+            .setContent('🧶' + petConfigData.emoji)
         )
         .addSeparatorComponents(largeSeparator)
         .addSectionComponents(section => section
-            .addTextDisplayComponents(textDisplay => textDisplay.setContent('Feed the Cat!'))
-            .setButtonAccessory(feedCatButton)
+            .addTextDisplayComponents(textDisplay => textDisplay.setContent('Toss the Yarn away!'))
+            .setButtonAccessory(throwYarnButton)
         );
 
     await petMessage.edit({ components: [petContainer] });
 
-    const catFed = await waitForButton(petMessage, buttonIntFilter);
+    const yarnThrown = await waitForButton(petMessage, buttonIntFilter);
 
-    if (catFed === 'timeout') {
+    if (yarnThrown === 'timeout') {
         return await handleTimeout(
             petMessage,
-            `You didn\'t feed the cat in time, ${userPetData.petName} is still hungry!`,
+            `You didn\'t toss the yarn in time, ${userPetData.petName} still wants to play!`,
             petContainer.components.length - 1,
             1,
             petContainer
@@ -221,22 +155,22 @@ module.exports = async (interaction) => {
     petContainer.spliceComponents(petContainer.components.length - 3, 3);
     petContainer
         .addTextDisplayComponents(textDisplay => textDisplay
-            .setContent('✨' + petConfigData.emoji)
+            .setContent('‼️' + petConfigData.emoji)
         )
         .addSeparatorComponents(largeSeparator)
         .addSectionComponents(section => section
-            .addTextDisplayComponents(textDisplay => textDisplay.setContent('Pour the Water!'))
-            .setButtonAccessory(pourWaterButton)
+            .addTextDisplayComponents(textDisplay => textDisplay.setContent('Make the Cat fetch the Yarn!'))
+            .setButtonAccessory(catFetchButton)
         );
 
     await petMessage.edit({ components: [petContainer] });
 
-    const waterPoured = await waitForButton(petMessage, buttonIntFilter);
+    const yarnFetched = await waitForButton(petMessage, buttonIntFilter);
 
-    if (waterPoured === 'timeout') {
+    if (yarnFetched === 'timeout') {
         return await handleTimeout(
             petMessage,
-            `You didn\'t pour the water in time, ${userPetData.petName} is still thirsty!`,
+            `You didn\'t fetch the Yarn in time, ${userPetData.petName} still wants to play!`,
             petContainer.components.length - 1,
             1,
             petContainer
@@ -246,22 +180,22 @@ module.exports = async (interaction) => {
     petContainer.spliceComponents(petContainer.components.length - 3, 3);
     petContainer
         .addTextDisplayComponents(textDisplay => textDisplay
-            .setContent('💧' + petConfigData.emoji)
+            .setContent('🧶' + petConfigData.emoji)
         )
         .addSeparatorComponents(largeSeparator)
         .addSectionComponents(section => section
-            .addTextDisplayComponents(textDisplay => textDisplay.setContent('Water the Cat!'))
-            .setButtonAccessory(waterCatButton)
+            .addTextDisplayComponents(textDisplay => textDisplay.setContent('Pet the Cat for doing a good job!'))
+            .setButtonAccessory(catPetButton)
         );
 
     await petMessage.edit({ components: [petContainer] });
 
-    const catWatered = await waitForButton(petMessage, buttonIntFilter);
+    const catPetted = await waitForButton(petMessage, buttonIntFilter);
 
-    if (catWatered === 'timeout') {
+    if (catPetted === 'timeout') {
         return await handleTimeout(
             petMessage,
-            `You didn\'t water the cat in time, ${userPetData.petName} is still thirsty!`,
+            `You didn\'t pet the cat in time, ${userPetData.petName} still wants to play!`,
             petContainer.components.length - 1,
             1,
             petContainer
@@ -275,20 +209,13 @@ module.exports = async (interaction) => {
         )
         .addSeparatorComponents(largeSeparator)
         .addTextDisplayComponents(textDisplay => textDisplay
-            .setContent('Your cat has been fed! You\'ve earned 1 relationship point')
+            .setContent('Your cat has been played with! You\'ve earned 1 relationship point')
         );
-
-    const userUpdate = {
-        $inc: {
-            coins: -petCareStatus.cost
-        }
-    };
-    await customUpdateCatCoinsUser(interaction.user.id, userUpdate);
 
     now = Math.floor(Date.now() / 1000);
 
     const petUpdateSet = {
-        lastFed: now
+        lastPlayed: now
     };
 
     if (dueCareCount === 1) {

@@ -8,6 +8,7 @@ const startingPetTier = '3';
 
 module.exports = async (interaction) => {
     const petName = interaction.options.getString('name');
+    const pronoun = interaction.options.getString('gender');
 
     const userPetData = await getUserPet(interaction.user.id);
 
@@ -17,7 +18,7 @@ module.exports = async (interaction) => {
 
     const selectedPet = await petRoll(interaction.client.petConfig.petSkins, startingPetTier);
 
-    const { registered, newPet } = await registerPet(interaction.user.id, petName, selectedPet.id);
+    const { registered, newPet } = await registerPet(interaction.user.id, petName, selectedPet.id, pronoun);
 
     if (!registered) {
         return await interaction.editReply({ content: 'Something went wrong, please try again later.' });

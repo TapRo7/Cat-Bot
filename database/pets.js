@@ -5,10 +5,11 @@ const petsCollection = 'playerPets';
 const deletedPetsCollection = 'deletedPlayerPets';
 const petsDatabaseLock = new AsyncLock();
 
-async function registerPet(userId, petName, petId) {
+async function registerPet(userId, petName, petId, pronoun) {
     const newPet = {
         userId,
         petName,
+        pronoun,
         petId,
         relationshipPoints: 0,
         petRegisteredEpoch: Math.floor(Date.now() / 1000),
