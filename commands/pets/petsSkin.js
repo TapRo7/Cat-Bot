@@ -90,7 +90,7 @@ module.exports = async (interaction) => {
         return await petMessage.edit({ components: [confirmContainer] });
     }
 
-    const selectedPet = await petRoll(interaction.client.petConfig.petSkins, selectedRarity);
+    const selectedPet = await petRoll(interaction.client.petConfig.petSkins, selectedRarity, userPetData.petId);
 
     const petConfigData = interaction.client.petSkins.get(selectedPet.id);
 

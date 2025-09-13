@@ -2,19 +2,24 @@ const { ContainerBuilder, SeparatorBuilder, SeparatorSpacingSize } = require('di
 
 const largeSeparator = new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Large);
 
-async function petRoll(petSkins, rarityNumber) {
+async function petRoll(petSkins, rarityNumber, currentId) {
     const pets = petSkins.filter(p => p.rarityNumber === rarityNumber);
 
-    const totalWeight = pets.reduce((sum, pet) => sum + pet.weight, 0);
+    let chosenPet;
+    do {
+        const totalWeight = pets.reduce((sum, pet) => sum + pet.weight, 0);
+        let roll = Math.random() * totalWeight;
 
-    let roll = Math.random() * totalWeight;
-
-    for (const pet of pets) {
-        if (roll < pet.weight) {
-            return pet;
+        for (const pet of pets) {
+            if (roll < pet.weight) {
+                chosenPet = pet;
+                break;
+            }
+            roll -= pet.weight;
         }
-        roll -= pet.weight;
-    }
+    } while (chosenPet.id === currentId);
+
+    return chosenPet;
 }
 
 function rarityCatsString(petsConfig) {
