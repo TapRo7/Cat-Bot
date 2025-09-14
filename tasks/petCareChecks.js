@@ -1,7 +1,7 @@
 const { ContainerBuilder, MessageFlags } = require('discord.js');
 const { getAllPets, deleteUserPet, updateUserPet } = require('../database/pets');
 
-const dailyCatChannelId = process.env.NOTIFICATION_CHANNEL_ID;
+const notificationChannel = process.env.NOTIFICATION_CHANNEL_ID;
 const dailySeconds = 86400;
 
 module.exports = {
@@ -11,7 +11,7 @@ module.exports = {
         const now = Math.floor(Date.now() / 1000);
         const pets = await getAllPets();
 
-        const channel = await client.channels.cache.get(dailyCatChannelId);
+        const channel = await client.channels.cache.get(notificationChannel);
 
         for (const pet of pets) {
             const petConfigData = client.petSkins.get(pet.petId);

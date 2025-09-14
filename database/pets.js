@@ -6,19 +6,21 @@ const deletedPetsCollection = 'deletedPlayerPets';
 const petsDatabaseLock = new AsyncLock();
 
 async function registerPet(userId, petName, petId, pronoun) {
+    const now = Math.floor(Date.now() / 1000);
+
     const newPet = {
         userId,
         petName,
         pronoun,
         petId,
         relationshipPoints: 0,
-        petRegisteredEpoch: Math.floor(Date.now() / 1000),
+        petRegisteredEpoch: now,
         lastFed: 0,
         lastBathed: 0,
         lastToilet: 0,
         lastPlayed: 0,
         lastSlept: 0,
-        lastCareComplete: 0,
+        lastCareComplete: now,
         careWarnings: {
             'day1': false,
             'day2': false,
