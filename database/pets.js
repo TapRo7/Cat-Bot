@@ -30,6 +30,7 @@ async function registerPet(userId, petName, petId, pronoun) {
             'day6': false,
         },
         awakeNotification: false,
+        ownedSkins: [],
         collectedCoins: 0,
         lastCoinCollection: 0
     };

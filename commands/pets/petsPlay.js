@@ -80,13 +80,13 @@ module.exports = async (interaction) => {
     const petCareStatusFull = await getPetCareStatus(userPetData, petConfigData, interaction.client.petConfig.rarityCareConfig);
     const dueCareCount = Object.values(petCareStatusFull.careStatus).filter(c => c.due).length;
 
-    const needsSleep = Object.entries(petCareStatusFull.careStatus)
-        .filter(([need, data]) => data.due && need === 'sleep')
-        .map(([_, data]) => data.title);
-
-    if (needsSleep.length > 0) {
-        return await interaction.editReply({ content: `${petNameEmojiString} is tired, ${userPetData.pronoun} doesn't want to play! ${capitalizeFirstLetter(userPetData.pronoun)} needs to **Sleep** before being able to play!` });
-    }
+    //const needsSleep = Object.entries(petCareStatusFull.careStatus)
+    //    .filter(([need, data]) => data.due && need === 'sleep')
+    //    .map(([_, data]) => data.title);
+    //
+    //if (needsSleep.length > 0) {
+    //    return await interaction.editReply({ content: `${petNameEmojiString} is tired, ${userPetData.pronoun} doesn't want to play! ${capitalizeFirstLetter(userPetData.pronoun)} needs to **Sleep** before being able to play!` });
+    //}
 
     const petCareStatus = petCareStatusFull.careStatus.play;
 

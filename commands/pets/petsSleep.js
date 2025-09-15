@@ -88,7 +88,7 @@ module.exports = async (interaction) => {
     const dueCareCount = Object.values(petCareStatusFull.careStatus).filter(c => c.due).length;
 
     const requiredUnmetNeeds = Object.entries(petCareStatusFull.careStatus)
-        .filter(([need, data]) => data.due && need !== 'play' && need !== 'sleep')
+        .filter(([need, data]) => data.due && need !== 'sleep')
         .map(([_, data]) => data.title);
 
     if (requiredUnmetNeeds.length > 0) {
