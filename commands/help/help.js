@@ -151,14 +151,18 @@ const petHelpString1 = `## Registering
 You can register a pet using the </pet register:1416420485721362433> command
 You need to choose the \`name\` and \`gender\` of your pet while registering, you cannot change these later`;
 
-const petHelpString3 = `## Skins
+const petHelpString3 = `## Editing
+You can edit your pet using the </pet edit:1416420485721362433> command
+You need to choose the new \`name\` of the pet in the command`;
+
+const petHelpString4 = `## Skins
 You can roll for a new pet skin by using the </pet skin:1416420485721362433> command
 You need to choose the \`rarity\` you want to roll for, and pay the amount of coins needed for a reroll`;
 
-const petHelpString4 = `## Viewing
+const petHelpString5 = `## Viewing
 You can view your pet and its current status by using the </pet view:1416420485721362433> command`;
 
-const petHelpString5 = `## Pet Care
+const petHelpString6 = `## Pet Care
 Your pet will have various needs, you can use the following commands to take care of your pet and all its needs:
 - </pet feed:1416420485721362433>
 - </pet bath:1416420485721362433>
@@ -232,7 +236,9 @@ ${rarityCatsString(interaction.client.petConfig)}`;
                     .addSeparatorComponents(largeSeparator)
                     .addTextDisplayComponents(textDisplay => textDisplay.setContent(petHelpString4))
                     .addSeparatorComponents(largeSeparator)
-                    .addTextDisplayComponents(textDisplay => textDisplay.setContent(petHelpString5));
+                    .addTextDisplayComponents(textDisplay => textDisplay.setContent(petHelpString5))
+                    .addSeparatorComponents(largeSeparator)
+                    .addTextDisplayComponents(textDisplay => textDisplay.setContent(petHelpString6));
 
                 return await interaction.editReply({ components: [petsContainer], flags: MessageFlags.IsComponentsV2 });
             default:
