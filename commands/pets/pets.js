@@ -3,6 +3,7 @@ const { SlashCommandBuilder, MessageFlags, TextChannel } = require('discord.js')
 const petsRegister = require('./petsRegister');
 const petsSkin = require('./petsSkin');
 const petsView = require('./petsView');
+const petsEdit = require('./petsEdit');
 const petsFeed = require('./petsFeed');
 const petsBath = require('./petsBath');
 const petsToilet = require('./petsToilet');
@@ -46,6 +47,16 @@ module.exports = {
             .setDescription('View your cat!')
         )
         .addSubcommand(subcommand => subcommand
+            .setName('edit')
+            .setDescription('Edit your cat!')
+            .addStringOption(option => option
+                .setName('name')
+                .setDescription('Name for your pet')
+                .setMaxLength(10)
+                .setMinLength(3)
+                .setRequired(true))
+        )
+        .addSubcommand(subcommand => subcommand
             .setName('feed')
             .setDescription('Feed your cat!')
         )
@@ -86,6 +97,8 @@ module.exports = {
                 return await petsSkin(interaction);
             case 'view':
                 return await petsView(interaction);
+            case 'edit':
+                return await petsEdit(interaction);
             case 'feed':
                 return await petsFeed(interaction);
             case 'bath':
