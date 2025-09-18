@@ -41,7 +41,7 @@ function rarityCatsString(petsConfig) {
     return result.trim();
 }
 
-async function getPetCareStatus(userPetData, petConfigData, rarityCareConfig, returnCosts = false) {
+async function getPetCareStatus(userPetData, petConfigData, rarityCareConfig) {
     const rarity = petConfigData.rarityNumber;
     const now = Math.floor(Date.now() / 1000);
 

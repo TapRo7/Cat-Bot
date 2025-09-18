@@ -1,6 +1,7 @@
 const { ContainerBuilder, MessageFlags } = require('discord.js');
 const { getAllPets, deleteUserPet, updateUserPet } = require('../database/pets');
 const { customUpdateCatCoinsUser } = require('../database/catCoins');
+const { getPetCareStatus } = require('../utils/pets');
 
 const notificationChannel = process.env.NOTIFICATION_CHANNEL_ID;
 const dailySeconds = 86400;
@@ -26,6 +27,12 @@ module.exports = {
             const daysNeglected = Math.floor(timeSinceCare / dailySeconds);
 
             if (daysNeglected >= 7) {
+                const petCareStatus = await getPetCareStatus(pet, petConfigData, client.petConfig.rarityCareConfig);
+
+                if (petCareStatus.completed === petCareStatus.total) {
+                    await updateUserPet(pet.userId, { lastCareComplete: now });
+                    continue;
+                }
 
                 const neglectPenalty = penalties['day7'];
 
@@ -47,6 +54,13 @@ module.exports = {
             }
 
             if (daysNeglected >= 1 && daysNeglected <= 6) {
+                const petCareStatus = await getPetCareStatus(pet, petConfigData, client.petConfig.rarityCareConfig);
+
+                if (petCareStatus.completed === petCareStatus.total) {
+                    await updateUserPet(pet.userId, { lastCareComplete: now });
+                    continue;
+                }
+
                 const dayKey = `day${daysNeglected}`;
                 if (!pet.careWarnings[dayKey]) {
                     const dayWord = daysNeglected === 1 ? 'day' : 'days';
