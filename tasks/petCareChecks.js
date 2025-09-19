@@ -4,7 +4,7 @@ const { customUpdateCatCoinsUser } = require('../database/catCoins');
 const { getPetCareStatus } = require('../utils/pets');
 
 const notificationChannel = process.env.NOTIFICATION_CHANNEL_ID;
-const dailySeconds = 86400;
+const dailySeconds = 86400 + (6 * 3600);
 const catCoinEmoji = '<:CatCoin:1401235223831642133>';
 
 module.exports = {
