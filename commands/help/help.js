@@ -101,11 +101,17 @@ const gamesHelpString3 = `## Tic Tac Toe
 You can challange other players to Tic Tac Toe and bet Cat Coins by using the </games tic-tac-toe:1402095106969833563> command
 You need to enter the \`user\` you want to challange, and the amount of coins you want to \`bet\`
 
-**Note:** You must finish all games, even if it is an obvious draw, abandoning a game in the middle will be considered a loss.`;
+**Note:** You must finish all games, even if it is an obvious draw, abandoning a game in the middle will be considered a loss after 60 seconds of not making a move.`;
 
 const gamesHelpString4 = `## Crack the Vault
 You can play Crack the Vault by using the </games vault:1402095106969833563> command
 You need to select the \`difficulty\` you want to play at, each difficulty has different rewards and loss amounts, exact amounts will be shown when you run the command.`;
+
+const gamesHelpString5 = `## Connect 4
+You can challange other players to Connect 4 and bet Cat Coins by using the </games connect4:1402095106969833563> command
+You need to enter the \`user\` you want to challange, and the amount of coins you want to \`bet\`
+
+**Note:** You must finish all games, even if it is an obvious draw, abandoning a game in the middle will be considered a loss after 60 seconds of not making a move.`;
 
 const gamesContainer = new ContainerBuilder()
     .setAccentColor(0xFFC0CB)
@@ -127,6 +133,10 @@ const gamesContainer = new ContainerBuilder()
     .addSeparatorComponents(largeSeparator)
     .addTextDisplayComponents(
         textDisplay => textDisplay.setContent(gamesHelpString4)
+    )
+    .addSeparatorComponents(largeSeparator)
+    .addTextDisplayComponents(
+        textDisplay => textDisplay.setContent(gamesHelpString5)
     );
 
 // Fun Help

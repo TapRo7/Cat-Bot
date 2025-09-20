@@ -165,10 +165,6 @@ module.exports = async (interaction) => {
         return await interaction.editReply({ content: `You cannot bet **0 Cat Coins!** ${catCoinEmoji}` });
     }
 
-    if (betAmount > 1) {
-        return await interaction.editReply({ content: `You cannot bet more than **1 Cat Coin** ${catCoinEmoji} in the beta` });
-    }
-
     if (betAmount > interaction.client.maxBet) {
         return await interaction.editReply({ content: `You cannot bet more than ${interaction.client.maxBet} in one game!` });
     }

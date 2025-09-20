@@ -25,8 +25,8 @@ for (const folder of commandFolders) {
         const command = require(filePath);
         if ('data' in command && 'execute' in command) {
             client.commands.set(command.data.name, command);
-        } else {
-            console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
+        } else if (!file.startsWith(file)) {
+            console.log(`[WARNING] The command at ${file} is missing a required "data" or "execute" property and does not appear to be a sub-command.`);
         }
     }
 }
