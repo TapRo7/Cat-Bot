@@ -45,6 +45,7 @@ module.exports = {
         .addSubcommand(subcommand => subcommand
             .setName('view')
             .setDescription('View your cat!')
+            .addUserOption(option => option.setName('user').setDescription('Select a user to check the pet of'))
         )
         .addSubcommand(subcommand => subcommand
             .setName('edit')
