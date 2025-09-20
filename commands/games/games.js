@@ -3,6 +3,7 @@ const { SlashCommandBuilder, MessageFlags, TextChannel } = require('discord.js')
 const gameRps = require('./gamesRps');
 const gameHangman = require('./gamesHangman');
 const gameTicTacToe = require('./gamesTicTacToe');
+const gameConnect4 = require('./gamesConnect4');
 const gameVault = require('./gamesVault');
 
 module.exports = {
@@ -32,6 +33,12 @@ module.exports = {
         .addSubcommand(subcommand => subcommand
             .setName('tic-tac-toe')
             .setDescription('Challenge someone to Tic Tac Toe!')
+            .addUserOption(option => option.setName('user').setDescription('Select the user you want to challenge!').setRequired(true))
+            .addIntegerOption(option => option.setName('bet').setDescription('Enter how many Cat Coins you want to bet').setRequired(true))
+        )
+        .addSubcommand(subcommand => subcommand
+            .setName('connect4')
+            .setDescription('Challenge someone to Connect 4!')
             .addUserOption(option => option.setName('user').setDescription('Select the user you want to challenge!').setRequired(true))
             .addIntegerOption(option => option.setName('bet').setDescription('Enter how many Cat Coins you want to bet').setRequired(true))
         )
@@ -69,6 +76,8 @@ module.exports = {
                 return await gameHangman(interaction);
             case 'tic-tac-toe':
                 return await gameTicTacToe(interaction);
+            case 'connect4':
+                return await gameConnect4(interaction);
             case 'vault':
                 return await gameVault(interaction);
             default:

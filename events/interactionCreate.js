@@ -1,6 +1,6 @@
 const { Events, MessageFlags, Collection } = require('discord.js');
 
-const expectedNoHandlers = ['acceptRps', 'rejectRps', 'rpsChoice', 'acceptHangman', 'rejectHangman', 'acceptTicTacToe', 'rejectTicTacToe', 'acceptVault', 'rejectVault', 'catCareButton', 'acceptCatAction', 'rejectCatAction'];
+const expectedNoHandlers = ['acceptRps', 'rejectRps', 'rpsChoice', 'acceptHangman', 'rejectHangman', 'acceptTicTacToe', 'rejectTicTacToe', 'acceptVault', 'rejectVault', 'catCareButton', 'acceptCatAction', 'rejectCatAction', 'acceptConnect4', 'rejectConnect4'];
 
 module.exports = {
     name: Events.InteractionCreate,
@@ -93,7 +93,7 @@ module.exports = {
                 } catch (error) {
                     console.error(error);
                 }
-                if (!expectedNoHandlers.includes(interaction.customId) && !interaction.customId.startsWith('ttt_') && !interaction.customId.startsWith('answer_')) {
+                if (!expectedNoHandlers.includes(interaction.customId) && !interaction.customId.startsWith('ttt_') && !interaction.customId.startsWith('answer_') && !interaction.customId.startsWith('c4_')) {
                     console.log(`No handler found for Button Custom ID: ${interaction.customId}`);
                 }
                 return;
