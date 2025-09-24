@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, MessageFlags, TextChannel } = require('discord.js');
+const { startCare, endCare } = require('../../utils/petCareLock');
 
 const petsRegister = require('./petsRegister');
 const petsSkin = require('./petsSkin');
@@ -9,6 +10,8 @@ const petsBath = require('./petsBath');
 const petsToilet = require('./petsToilet');
 const petsPlay = require('./petsPlay');
 const petsSleep = require('./petsSleep');
+
+const petCareCommands = ['feed', 'bath', 'toilet', 'play', 'sleep'];
 
 module.exports = {
     cooldown: 20,
@@ -91,6 +94,10 @@ module.exports = {
 
         const sub = interaction.options.getSubcommand();
 
+        if (petCareCommands.includes(sub) && !startCare(interaction.user.id)) {
+            return await interaction.editReply({ content: 'You are already using a care command, please only use one at a time.', flags: MessageFlags.Ephemeral });
+        }
+
         switch (sub) {
             case 'register':
                 return await petsRegister(interaction);
@@ -101,15 +108,40 @@ module.exports = {
             case 'edit':
                 return await petsEdit(interaction);
             case 'feed':
-                return await petsFeed(interaction);
+                try {
+                    await petsFeed(interaction);
+                } finally {
+                    endCare(interaction.user.id);
+                }
+                return;
             case 'bath':
-                return await petsBath(interaction);
+                try {
+                    await petsBath(interaction);
+                } finally {
+                    endCare(interaction.user.id);
+                }
+                return;
             case 'toilet':
-                return await petsToilet(interaction);
+                try {
+                    await petsToilet(interaction);
+                } finally {
+                    endCare(interaction.user.id);
+                }
+                return;
             case 'play':
-                return await petsPlay(interaction);
+                try {
+                    await petsPlay(interaction);
+                } finally {
+                    endCare(interaction.user.id);
+                }
+                return;
             case 'sleep':
-                return await petsSleep(interaction);
+                try {
+                    await petsSleep(interaction);
+                } finally {
+                    endCare(interaction.user.id);
+                }
+                return;
             default:
                 return await interaction.editReply({ content: 'Unknown subcommand.', flags: MessageFlags.Ephemeral });
         }
