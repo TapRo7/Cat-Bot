@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
-const { getRandomCatUrl } = require('../catAPI/catPictures');
+const { getRandomCatUrl } = require('../utils/catPictures');
 const { getTasksConfig, updateTasksConfig } = require('../database/config');
 
 const dailyCatChannelId = process.env.DAILY_CAT_CHANNEL_ID;
