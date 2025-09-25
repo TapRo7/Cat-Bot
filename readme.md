@@ -20,6 +20,7 @@ The variables required are as following:
 - STAFF_NOTIFY_CHANNEL_ID
 - MAX_BET
 - PUNISHMENT_ROLE_ID
+- GUILD_ID
 
 ## First Time Setup
 - Run `node deployCommands.js` after setting environment variables
