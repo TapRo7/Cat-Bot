@@ -1,6 +1,5 @@
 const { MongoClient } = require('mongodb');
 const { criticalErrorNotify } = require('../utils/errorNotifier');
-require('dotenv').config();
 
 const uri = process.env.MONGO_URI;
 const requiredCollections = ['catCoinPlayers', 'Config', 'pendingInviteTracking', 'playerPets', 'deletedPlayerPets'];

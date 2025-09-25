@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, TextChannel } = require('discord.js');
-const { getRandomCatUrl } = require('../../catAPI/catPictures');
+const { getRandomCatUrl } = require('../../utils/catPictures');
 
 module.exports = {
     cooldown: 30,

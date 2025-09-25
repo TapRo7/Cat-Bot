@@ -1,5 +1,4 @@
 const { updateShopConfig } = require('../../database/config');
-require('dotenv').config();
 
 const allowedIdChars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const idLength = 6;

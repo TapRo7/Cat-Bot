@@ -1,7 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const { getPendingTrackings, deletePendingTracking, updatePendingTracking } = require('../database/inviteTracking');
 const { fetchInviteInfo } = require('../utils/inviteApi');
-require('dotenv').config();
 
 const inviteLogChannelId = process.env.INVITE_LOG_CHANNEL_ID;
 const maxAttempts = 5;

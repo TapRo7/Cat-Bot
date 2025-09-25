@@ -1,7 +1,6 @@
 const { Events, EmbedBuilder } = require('discord.js');
 const { getRandomCatUrl } = require('../catAPI/catPictures');
 const { addPendingTracking } = require('../database/inviteTracking');
-require('dotenv').config();
 
 const welcomeChannelId = process.env.WELCOME_CHANNEL_ID;
 const inviteLogChannelId = process.env.INVITE_LOG_CHANNEL_ID;

@@ -1,5 +1,4 @@
 const { getCatCoinsUser, customUpdateCatCoinsUser } = require('../../database/catCoins');
-require('dotenv').config();
 
 const staffNotifyChannelId = process.env.STAFF_NOTIFY_CHANNEL_ID;
 

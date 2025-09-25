@@ -1,5 +1,3 @@
-require('dotenv').config();
-
 const catApiUrl = 'https://api.thecatapi.com/v1';
 const catApiKey = process.env.CAT_API_KEY;
 

@@ -1,7 +1,6 @@
 const { Events, MediaGalleryBuilder, SeparatorSpacingSize, ContainerBuilder, MessageFlags, ButtonStyle, EmbedBuilder, ButtonBuilder, ActionRowBuilder } = require('discord.js');
 const { getCatCoinsUser, customUpdateCatCoinsUser } = require('../database/catCoins');
 const { fetchInviteInfo } = require('../utils/inviteApi');
-require('dotenv').config();
 
 const whitelistedUsers = JSON.parse(process.env.WHITELISTED_USERS);
 const generalChatId = process.env.GENERAL_CHAT_ID;

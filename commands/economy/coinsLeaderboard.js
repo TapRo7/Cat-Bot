@@ -1,6 +1,5 @@
 const { ContainerBuilder, SeparatorBuilder, SeparatorSpacingSize, MessageFlags, ContainerComponent } = require('discord.js');
 const { getTopCatCoinUsers } = require('../../database/catCoins');
-require('dotenv').config();
 
 const catCoinEmoji = '<:CatCoin:1401235223831642133>';
 const defaultAvatarUrl = process.env.DEFAULT_AVATAR_URL;
