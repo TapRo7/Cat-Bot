@@ -21,7 +21,7 @@ module.exports = {
             }
 
             try {
-                const member = await guild.members.get(entry.userId);
+                const member = await guild.members.cache.get(entry.userId);
 
                 if (!member) {
                     console.log(`[Role Removal] Member ${entry.userId} not found, removing entry.`);
