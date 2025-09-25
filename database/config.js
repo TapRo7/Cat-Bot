@@ -26,4 +26,12 @@ async function getPetsConfig(configKey = 'pets') {
     return await findOne(configCollection, { configKey });
 }
 
-module.exports = { getTasksConfig, updateTasksConfig, getShopConfig, updateShopConfig, getHangmanConfig, getPetsConfig };
+async function getTemprolesConfig(configKey = 'temproles') {
+    return await findOne(configCollection, { configKey });
+}
+
+async function updateTemprolesConfig(updates, configKey = 'temproles') {
+    return await customUpdateOne(configCollection, { configKey }, updates);
+}
+
+module.exports = { getTasksConfig, updateTasksConfig, getShopConfig, updateShopConfig, getHangmanConfig, getPetsConfig, getTemprolesConfig, updateTemprolesConfig };

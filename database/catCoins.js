@@ -16,7 +16,9 @@ async function registerCatCoinsUser(userId) {
         gamesWonStreak: 0,
         inventory: [],
         inventoryItemNames: [],
-        usedInventory: []
+        usedInventory: [],
+        totalPetAbandons: 0,
+        lastPetAbandon: 0
     };
 
     return await insertOne(catCoinsCollection, newUser);

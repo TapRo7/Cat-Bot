@@ -19,6 +19,7 @@ The variables required are as following:
 - DEFAULT_AVATAR_URL
 - STAFF_NOTIFY_CHANNEL_ID
 - MAX_BET
+- PUNISHMENT_ROLE_ID
 
 ## First Time Setup
 - Run `node deployCommands.js` after setting environment variables

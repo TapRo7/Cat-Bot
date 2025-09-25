@@ -1,9 +1,12 @@
 const { ContainerBuilder, MessageFlags } = require('discord.js');
 const { getAllPets, deleteUserPet, updateUserPet } = require('../database/pets');
 const { customUpdateCatCoinsUser } = require('../database/catCoins');
+const { updateTemprolesConfig } = require('../database/config');
 const { getPetCareStatus } = require('../utils/pets');
 
 const notificationChannel = process.env.NOTIFICATION_CHANNEL_ID;
+const punishmentRoleId = process.env.PUNISHMENT_ROLE_ID;
+const punishmentSeconds = 86400 * 7;
 const dailySeconds = 86400 + (6 * 3600);
 const catCoinEmoji = '<:CatCoin:1401235223831642133>';
 
@@ -15,6 +18,7 @@ module.exports = {
         const pets = await getAllPets();
         const penalties = client.petConfig.neglectPenalties;
         const channel = await client.channels.cache.get(notificationChannel);
+        const guild = channel.guild;
 
         for (const pet of pets) {
             const petConfigData = client.petSkins.get(pet.petId);
@@ -37,16 +41,32 @@ module.exports = {
                 const neglectPenalty = penalties['day7'];
 
                 const container = new ContainerBuilder()
-                    .addTextDisplayComponents(textDisplay => textDisplay.setContent(`<@${pet.userId}> **${pet.petName} ${petConfigData.emoji}** has run away due to neglect after 7 days without care.\n\nYou have been charged a fine of **${neglectPenalty} Cat Coins** ${catCoinEmoji} by the **Alberto Cat Federation** for neglecting your cat.`));
+                    .addTextDisplayComponents(textDisplay => textDisplay.setContent(`<@${pet.userId}> **${pet.petName} ${petConfigData.emoji}** has run away due to neglect after 7 days without care.\n\nYou have been charged a fine of **${neglectPenalty} Cat Coins** ${catCoinEmoji} and banned from gambling for 1 week by the **Alberto Cat Federation** for neglecting your cat.`));
 
                 const userUpdate = {
                     $inc: {
-                        coins: -neglectPenalty
+                        coins: -neglectPenalty,
+                        totalPetAbandons: 1
+                    },
+                    $set: {
+                        lastPetAbandon: now
+                    }
+                };
+                await customUpdateCatCoinsUser(pet.userId, userUpdate);
+                await deleteUserPet(pet.userId);
+
+                const configUpdate = {
+                    $push: {
+                        rolesToRemove: {
+                            userId: pet.userId,
+                            removeAt: now + punishmentSeconds,
+                            roleId: punishmentRoleId
+                        }
                     }
                 };
 
-                await customUpdateCatCoinsUser(pet.userId, userUpdate);
-                await deleteUserPet(pet.userId);
+                await guild.members.addRole({ user: pet.userId, role: punishmentRoleId });
+                await updateTemprolesConfig(configUpdate);
 
                 await channel.send({ components: [container], flags: MessageFlags.IsComponentsV2 });
 
