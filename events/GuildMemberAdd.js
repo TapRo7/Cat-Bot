@@ -1,5 +1,5 @@
 const { Events, EmbedBuilder } = require('discord.js');
-const { getRandomCatUrl } = require('../catAPI/catPictures');
+const { getRandomCatUrl } = require('../utils/catPictures');
 const { addPendingTracking } = require('../database/inviteTracking');
 
 const welcomeChannelId = process.env.WELCOME_CHANNEL_ID;
