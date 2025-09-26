@@ -60,10 +60,14 @@ module.exports = async (interaction) => {
         return await interaction.editReply({ content: `You have not registered a pet yet, please use </pet register:1416420485721362433> to register before using other commands!` });
     }
 
-    let now = Math.floor(Date.now() / 1000);
-
     const petConfigData = interaction.client.petSkins.get(userPetData.petId);
     const petNameEmojiString = `**${userPetData.petName} ${petConfigData.emoji}**`;
+
+    if (userPetData.isInHotel) {
+        return await interaction.editReply({ content: `${petNameEmojiString} is at the hotel! ${capitalizeFirstLetter(userPetData.pronoun)} is being looked after by the hotel, you can relax.\n${capitalizeFirstLetter(userPetData.pronoun)} will return from the hotel <t:${userPetData.hotelUntil}:R>` });
+    }
+
+    let now = Math.floor(Date.now() / 1000);
 
     const petSleepHours = interaction.client.petConfig.rarityCareConfig.sleepHours[petConfigData.rarityNumber];
     const petSleepSeconds = petSleepHours * 60 * 60;

@@ -116,6 +116,28 @@ async function getPetCareStatus(userPetData, petConfigData, rarityCareConfig) {
 
 
 async function petDisplayBuilder(userPetData, petConfigData, rarityCareConfig) {
+    if (userPetData.isInHotel) {
+        const total = 5;
+        const catHappiness = 'Overjoyed';
+        const pendingCare = '- Your cat is fully cared for while staying at the hotel!';
+
+        const petContainer = new ContainerBuilder()
+            .setAccentColor(0x00FF00)
+            .addTextDisplayComponents(textDisplay => textDisplay
+                .setContent(`# ${userPetData.petName}`)
+            )
+            .addSeparatorComponents(largeSeparator)
+            .addTextDisplayComponents(textDisplay => textDisplay
+                .setContent('# ' + petConfigData.emoji)
+            )
+            .addSeparatorComponents(largeSeparator)
+            .addTextDisplayComponents(textDisplay => textDisplay
+                .setContent(`## Cat Type\n- **${petConfigData.rarityName}** - ${petConfigData.name}\n## Cat Mood\n- ${catHappiness} (${total}/${total})\n## Cat Needs\n${pendingCare}\n## Relationship Points\n- ${userPetData.relationshipPoints}`)
+            );
+
+        return petContainer;
+    }
+
     const { catHappiness, completed, total, pendingCare } = await getPetCareStatus(userPetData, petConfigData, rarityCareConfig);
     const petContainer = new ContainerBuilder()
         .setAccentColor(0xFFC0CB)
