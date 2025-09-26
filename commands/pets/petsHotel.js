@@ -11,6 +11,7 @@ const catRejectEmoji = '<a:no:1403153353407725710>';
 
 const dailySeconds = 86400;
 const hotelCooldownSeconds = dailySeconds * 3;
+const maxHotelDays = 4;
 
 const acceptButton = new ButtonBuilder()
     .setCustomId('acceptCatAction')
@@ -26,6 +27,14 @@ const rejectButton = new ButtonBuilder()
 
 module.exports = async (interaction) => {
     const days = interaction.options.getInteger('days');
+
+    if (days < 1) {
+        return await interaction.editReply({ content: 'You cannot book the pet hotel for 0 days!' });
+    }
+
+    if (days > maxHotelDays) {
+        return await interaction.editReply({ content: 'The pet hotel only has booking available for 4 days! Please try a lower amount of days.' });
+    }
 
     const userPetData = await getUserPet(interaction.user.id);
 
