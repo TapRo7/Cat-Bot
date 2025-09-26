@@ -23,6 +23,38 @@ module.exports = {
         for (const pet of pets) {
             const petConfigData = client.petSkins.get(pet.petId);
 
+            if (pet.isInHotel) {
+                if (pet.hotelUntil < now) {
+                    const petUpdate = {
+                        lastFed: now,
+                        lastBathed: now,
+                        lastToilet: now,
+                        lastPlayed: now,
+                        lastSlept: now,
+                        lastCareComplete: now,
+                        careWarnings: {
+                            'day1': false,
+                            'day2': false,
+                            'day3': false,
+                            'day4': false,
+                            'day5': false,
+                            'day6': false,
+                        },
+                        isInHotel: false,
+                        hotelUntil: 0,
+                        lastHotel: now
+                    };
+                    await updateUserPet(pet.userId, petUpdate);
+
+                    const container = new ContainerBuilder()
+                        .setAccentColor(0x00FF00)
+                        .addTextDisplayComponents(textDisplay => textDisplay.setContent(`<@${pet.userId}> **${pet.petName} ${petConfigData.emoji}** is back from the hotel!\n\nThank you for using our hotel services! Your pet has been returned fully refreshed and cared for.`));
+
+                    await channel.send({ components: [container], flags: MessageFlags.IsComponentsV2 });
+                }
+                continue;
+            }
+
             if (!pet.lastCareComplete) {
                 continue;
             }
@@ -41,6 +73,7 @@ module.exports = {
                 const neglectPenalty = penalties['day7'];
 
                 const container = new ContainerBuilder()
+                    .setAccentColor(0xFF0000)
                     .addTextDisplayComponents(textDisplay => textDisplay.setContent(`<@${pet.userId}> **${pet.petName} ${petConfigData.emoji}** has run away due to neglect after 7 days without care.\n\nYou have been charged a fine of **${neglectPenalty} Cat Coins** ${catCoinEmoji} and banned from gambling for 1 week by the **Alberto Cat Federation** for neglecting your cat.`));
 
                 const userUpdate = {
@@ -88,6 +121,7 @@ module.exports = {
                     const neglectPenalty = penalties[dayKey];
 
                     const container = new ContainerBuilder()
+                        .setAccentColor(0xFFA500)
                         .addTextDisplayComponents(textDisplay => textDisplay.setContent(`<@${pet.userId}> you haven't completed care for **${pet.petName} ${petConfigData.emoji}** in ${daysNeglected} ${dayWord}! Please look after your pet or ${pet.pronoun} may abandon you!\n\nYou have been charged a fine of **${neglectPenalty} Cat Coins** ${catCoinEmoji} by the **Alberto Cat Federation** for neglecting your cat.`));
 
                     const userUpdate = {

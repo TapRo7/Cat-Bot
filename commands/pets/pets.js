@@ -5,6 +5,7 @@ const petsRegister = require('./petsRegister');
 const petsSkin = require('./petsSkin');
 const petsView = require('./petsView');
 const petsEdit = require('./petsEdit');
+const petsHotel = require('./petsHotel');
 const petsFeed = require('./petsFeed');
 const petsBath = require('./petsBath');
 const petsToilet = require('./petsToilet');
@@ -49,6 +50,14 @@ module.exports = {
             .setName('view')
             .setDescription('View your cat!')
             .addUserOption(option => option.setName('user').setDescription('Select a user to check the pet of'))
+        )
+        .addSubcommand(subcommand => subcommand
+            .setName('hotel')
+            .setDescription('Send your cat to the hotel!')
+            .addIntegerOption(option => option
+                .setName('days')
+                .setDescription('The number of days to send your cat away for')
+                .setRequired(true))
         )
         .addSubcommand(subcommand => subcommand
             .setName('edit')
@@ -107,6 +116,8 @@ module.exports = {
                 return await petsView(interaction);
             case 'edit':
                 return await petsEdit(interaction);
+            case 'hotel':
+                return await petsHotel(interaction);
             case 'feed':
                 try {
                     await petsFeed(interaction);
