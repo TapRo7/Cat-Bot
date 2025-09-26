@@ -103,7 +103,7 @@ module.exports = async (interaction) => {
                 return await petMessage.edit({ components: [petContainer] });
             }
 
-            petUpdate = {
+            const petUpdate = {
                 hotelUntil: now
             };
             await updateUserPet(interaction.user.id, petUpdate);
