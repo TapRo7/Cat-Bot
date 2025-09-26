@@ -178,7 +178,13 @@ Your pet will have various needs, you can use the following commands to take car
 - </pet bath:1416420485721362433>
 - </pet toilet:1416420485721362433>
 - </pet play:1416420485721362433>
-- </pet sleep:1416420485721362433>`;
+- </pet sleep:1416420485721362433>
+
+## Pet Hotel
+If you are busy and cannot take care of your pet, you can send them to the pet hotel using the </pet hotel:1416420485721362433> command
+Depending on the pet's rarity and the number of days you send your pet away for, you will have to pay a hotel fee
+
+The pet will return fully cared for and you will not be fined for not caring for the pet while it is away!`;
 
 module.exports = {
     cooldown: 10,
