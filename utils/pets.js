@@ -122,7 +122,7 @@ async function petDisplayBuilder(userPetData, petConfigData, rarityCareConfig) {
         const pendingCare = '- Your cat is fully cared for while staying at the hotel!';
 
         const petContainer = new ContainerBuilder()
-            .setAccentColor(0x00FF00)
+            .setAccentColor(0xFFC0CB)
             .addTextDisplayComponents(textDisplay => textDisplay
                 .setContent(`# ${userPetData.petName}`)
             )
