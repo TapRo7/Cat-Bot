@@ -27,6 +27,96 @@ const rejectButton = new ButtonBuilder()
 
 module.exports = async (interaction) => {
     const days = interaction.options.getInteger('days');
+    const petReturn = interaction.options.getString('return');
+
+    if (!days && !petReturn) {
+        return await interaction.editReply({ content: 'Please provide either the number of days to book the hotel, or select **Yes** to return your pet early.' });
+    }
+
+    if (days && petReturn) {
+        return await interaction.editReply({ content: 'You cannot select both a number of days and the return option. Please choose one action.' });
+    }
+
+    const userPetData = await getUserPet(interaction.user.id);
+    const petConfigData = interaction.client.petSkins.get(userPetData.petId);
+    const petNameEmojiString = `**${userPetData.petName} ${petConfigData.emoji}**`;
+    const now = Math.floor(Date.now() / 1000);
+
+    if (petReturn) {
+        if (userPetData.isInHotel) {
+            const petContainer = new ContainerBuilder()
+                .setAccentColor(0xFFC0CB)
+                .addTextDisplayComponents(textDisplay => textDisplay
+                    .setContent(`# ${userPetData.petName}`)
+                )
+                .addSeparatorComponents(largeSeparator)
+                .addTextDisplayComponents(textDisplay => textDisplay
+                    .setContent('# ' + petConfigData.emoji)
+                )
+                .addSeparatorComponents(largeSeparator)
+                .addTextDisplayComponents(textDisplay => textDisplay
+                    .setContent(`Are you sure you want to bring back ${userPetData.petName} from the hotel?\nYour hotel fees will not be refunded!`)
+                )
+                .addActionRowComponents(actionRow => actionRow
+                    .addComponents(acceptButton, rejectButton)
+                );
+
+            const petMessage = await interaction.editReply({ components: [petContainer], flags: MessageFlags.IsComponentsV2 });
+
+            const confirmFilter = btnInt => {
+                return (btnInt.customId === 'acceptCatAction' || btnInt.customId === 'rejectCatAction') && btnInt.user.id === interaction.user.id;
+            };
+
+            const confirmResult = await new Promise((resolve) => {
+                const collector = petMessage.createMessageComponentCollector({
+                    filter: confirmFilter,
+                    time: 60_000,
+                    max: 1
+                });
+
+                collector.on('collect', async btnInt => {
+                    resolve(btnInt.customId === 'acceptCatAction');
+                });
+
+                collector.on('end', async (collected, reason) => {
+                    if (reason === 'time') {
+                        resolve('timeout');
+                    }
+                });
+            });
+
+            if (confirmResult === false) {
+                petContainer.spliceComponents(petContainer.components.length - 2, 2);
+                petContainer.addTextDisplayComponents(
+                    textDisplay => textDisplay.setContent(`You cancelled the return`)
+                );
+
+                return await petMessage.edit({ components: [petContainer] });
+            }
+
+            if (confirmResult === 'timeout') {
+                petContainer.spliceComponents(petContainer.components.length - 2, 2);
+                petContainer.addTextDisplayComponents(
+                    textDisplay => textDisplay.setContent(`You did not confirm the return in time`)
+                );
+
+                return await petMessage.edit({ components: [petContainer] });
+            }
+
+            petUpdate = {
+                hotelUntil: now
+            };
+            await updateUserPet(interaction.user.id, petUpdate);
+            petContainer.spliceComponents(petContainer.components.length - 2, 2);
+            petContainer.addTextDisplayComponents(
+                textDisplay => textDisplay.setContent(`${petNameEmojiString} is on the way back from the hotel! ${capitalizeFirstLetter(userPetData.pronoun)} will return home soon.`)
+            );
+
+            return await petMessage.edit({ components: [petContainer] });
+        }
+
+        return await interaction.editReply({ content: `${petNameEmojiString} can't be returned, beacause ${userPetData.pronoun} is not at the hotel!` });
+    }
 
     if (days < 1) {
         return await interaction.editReply({ content: 'You cannot book the pet hotel for 0 days!' });
@@ -36,23 +126,16 @@ module.exports = async (interaction) => {
         return await interaction.editReply({ content: 'The pet hotel only has booking available for 4 days! Please try a lower amount of days.' });
     }
 
-    const userPetData = await getUserPet(interaction.user.id);
-
     if (!userPetData) {
         return await interaction.editReply({ content: `You have not registered a pet yet, please use </pet register:1416420485721362433> to register before using other commands!` });
     }
 
-    const petConfigData = interaction.client.petSkins.get(userPetData.petId);
-    const petNameEmojiString = `**${userPetData.petName} ${petConfigData.emoji}**`;
-
     if (userPetData.isInHotel) {
-        return await interaction.editReply({ content: `${petNameEmojiString} is already at the hotel! They will return at <t:${userPetData.hotelUntil}:F>` });
+        return await interaction.editReply({ content: `${petNameEmojiString} is already at the hotel! Your pet will return at <t:${userPetData.hotelUntil}:F>` });
     }
 
-    const now = Math.floor(Date.now() / 1000);
-
     if (userPetData.lastHotel + hotelCooldownSeconds > now) {
-        return await interaction.editReply({ content: `${petNameEmojiString} was sent to the hotel recently! You need to wait until <t:${userPetData.lastHotel + hotelCooldownSeconds}:F> to send them to the hotel again` });
+        return await interaction.editReply({ content: `${petNameEmojiString} was sent to the hotel recently! You need to wait until <t:${userPetData.lastHotel + hotelCooldownSeconds}:F> to send your pet to the hotel again` });
     }
 
     const dailyHotelCost = interaction.client.petConfig.rarityCareConfig.dailyHotelCosts[petConfigData.rarityNumber];

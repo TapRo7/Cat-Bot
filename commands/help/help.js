@@ -182,9 +182,12 @@ Your pet will have various needs, you can use the following commands to take car
 
 ## Pet Hotel
 If you are busy and cannot take care of your pet, you can send them to the pet hotel using the </pet hotel:1416420485721362433> command
-Depending on the pet's rarity and the number of days you send your pet away for, you will have to pay a hotel fee
+You can select the number of \`days\` you want to send your cat away for in the command
 
-The pet will return fully cared for and you will not be fined for not caring for the pet while it is away!`;
+Depending on the pet's rarity and the number of days you send your pet away for, you will have to pay a hotel fee
+The pet will return fully cared for and you will not be fined for not caring for the pet while it is away!
+
+If you want to bring your pet back early, you can select the \`return\` option in the command as **Yes**`;
 
 module.exports = {
     cooldown: 10,

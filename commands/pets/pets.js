@@ -56,8 +56,14 @@ module.exports = {
             .setDescription('Send your cat to the hotel!')
             .addIntegerOption(option => option
                 .setName('days')
-                .setDescription('The number of days to send your cat away for')
-                .setRequired(true))
+                .setDescription('The number of days to send your cat away for'))
+            .addStringOption(option => option
+                .setName('return')
+                .setDescription('Select Yes if you want to return your pet from the hotel')
+                .addChoices(
+                    { name: 'Yes', value: 'Yes' }
+                )
+            )
         )
         .addSubcommand(subcommand => subcommand
             .setName('edit')
