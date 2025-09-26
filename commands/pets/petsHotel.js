@@ -30,11 +30,11 @@ module.exports = async (interaction) => {
     const petReturn = interaction.options.getString('return');
 
     if (!days && !petReturn) {
-        return await interaction.editReply({ content: 'Please provide either the number of days to book the hotel, or select **Yes** to return your pet early.' });
+        return await interaction.editReply({ content: 'Please provide either the number of `days` to book the hotel, or select **Yes** in the `return` to return your pet early.' });
     }
 
     if (days && petReturn) {
-        return await interaction.editReply({ content: 'You cannot select both a number of days and the return option. Please choose one action.' });
+        return await interaction.editReply({ content: 'You cannot select both a number of `days` and the `return` option. Please choose one action.' });
     }
 
     const userPetData = await getUserPet(interaction.user.id);
