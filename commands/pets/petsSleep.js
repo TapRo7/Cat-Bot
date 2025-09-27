@@ -226,7 +226,8 @@ module.exports = async (interaction) => {
     now = Math.floor(Date.now() / 1000);
 
     const petUpdateSet = {
-        lastSlept: now
+        lastSlept: now,
+        awakeNotification: true
     };
 
     if (dueCareCount === 1) {

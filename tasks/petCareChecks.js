@@ -2,7 +2,7 @@ const { ContainerBuilder, MessageFlags } = require('discord.js');
 const { getAllPets, deleteUserPet, updateUserPet } = require('../database/pets');
 const { customUpdateCatCoinsUser } = require('../database/catCoins');
 const { updateTemprolesConfig } = require('../database/config');
-const { getPetCareStatus } = require('../utils/pets');
+const { getPetCareStatus, capitalizeFirstLetter } = require('../utils/pets');
 
 const notificationChannel = process.env.NOTIFICATION_CHANNEL_ID;
 const punishmentRoleId = process.env.PUNISHMENT_ROLE_ID;
@@ -47,7 +47,7 @@ module.exports = {
                     await updateUserPet(pet.userId, petUpdate);
 
                     const container = new ContainerBuilder()
-                        .setAccentColor(0x00FF00)
+                        .setAccentColor(0xFFB347)
                         .addTextDisplayComponents(textDisplay => textDisplay.setContent(`<@${pet.userId}> **${pet.petName} ${petConfigData.emoji}** is back from the hotel!\n\nThank you for using our hotel services! Your pet has been returned fully refreshed and cared for.`));
 
                     await channel.send({ components: [container], flags: MessageFlags.IsComponentsV2 });
@@ -55,8 +55,22 @@ module.exports = {
                 continue;
             }
 
-            if (!pet.lastCareComplete) {
-                continue;
+            if (pet.awakeNotification) {
+                const petSleepHours = client.petConfig.rarityCareConfig.sleepHours[petConfigData.rarityNumber];
+                const petSleepSeconds = petSleepHours * 60 * 60;
+
+                if (pet.lastSlept <= now - petSleepSeconds) {
+                    const petUpdate = {
+                        awakeNotification: false
+                    };
+                    await updateUserPet(pet.userId, petUpdate);
+
+                    const container = new ContainerBuilder()
+                        .setAccentColor(0x4FC3F7)
+                        .addTextDisplayComponents(textDisplay => textDisplay.setContent(`<@${pet.userId}> **${pet.petName} ${petConfigData.emoji}** is awake!\n\n${capitalizeFirstLetter(pet.pronoun)} had an amazing nap, the eepy allegations are no more.`));
+
+                    await channel.send({ components: [container], flags: MessageFlags.IsComponentsV2 });
+                }
             }
 
             const timeSinceCare = now - pet.lastCareComplete;
