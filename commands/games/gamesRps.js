@@ -73,14 +73,6 @@ module.exports = async (interaction) => {
     const targetUser = interaction.options.getUser('user');
     const betAmount = interaction.options.getInteger('bet');
 
-    if (betAmount <= 0) {
-        return await interaction.editReply({ content: 'You cannot bet 0 coins!' });
-    }
-
-    if (betAmount > interaction.client.maxBet) {
-        return await interaction.editReply({ content: `You cannot bet more than ${interaction.client.maxBet} in one game!` });
-    }
-
     if (targetUser.id === interaction.user.id) {
         return await interaction.editReply({ content: 'You cannot challenge yourself!' });
     }

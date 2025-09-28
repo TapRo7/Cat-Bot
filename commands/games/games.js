@@ -6,6 +6,8 @@ const gameTicTacToe = require('./gamesTicTacToe');
 const gameConnect4 = require('./gamesConnect4');
 const gameVault = require('./gamesVault');
 
+const maxBet = parseInt(process.env.MAX_BET);
+
 module.exports = {
     cooldown: 30,
     subCooldowns: {
@@ -19,7 +21,13 @@ module.exports = {
             .setName('rps')
             .setDescription('Challenge someone to Rock Paper Scissors!')
             .addUserOption(option => option.setName('user').setDescription('Select the user you want to challenge!').setRequired(true))
-            .addIntegerOption(option => option.setName('bet').setDescription('Enter how many Cat Coins you want to bet').setRequired(true))
+            .addIntegerOption(option => option
+                .setName('bet')
+                .setDescription('Enter how many Cat Coins you want to bet')
+                .setRequired(true)
+                .setMaxValue(maxBet)
+                .setMinValue(1)
+            )
         )
         .addSubcommand(subcommand => subcommand
             .setName('hangman')
@@ -34,13 +42,25 @@ module.exports = {
             .setName('tic-tac-toe')
             .setDescription('Challenge someone to Tic Tac Toe!')
             .addUserOption(option => option.setName('user').setDescription('Select the user you want to challenge!').setRequired(true))
-            .addIntegerOption(option => option.setName('bet').setDescription('Enter how many Cat Coins you want to bet').setRequired(true))
+            .addIntegerOption(option => option
+                .setName('bet')
+                .setDescription('Enter how many Cat Coins you want to bet')
+                .setRequired(true)
+                .setMaxValue(maxBet)
+                .setMinValue(1)
+            )
         )
         .addSubcommand(subcommand => subcommand
             .setName('connect4')
             .setDescription('Challenge someone to Connect 4!')
             .addUserOption(option => option.setName('user').setDescription('Select the user you want to challenge!').setRequired(true))
-            .addIntegerOption(option => option.setName('bet').setDescription('Enter how many Cat Coins you want to bet').setRequired(true))
+            .addIntegerOption(option => option
+                .setName('bet')
+                .setDescription('Enter how many Cat Coins you want to bet')
+                .setRequired(true)
+                .setMaxValue(maxBet)
+                .setMinValue(1)
+            )
         )
         .addSubcommand(subcommand => subcommand
             .setName('vault')
