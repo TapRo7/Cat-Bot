@@ -68,6 +68,6 @@ module.exports = {
         client.user.setPresence({ status: 'dnd' });
         client.user.setActivity('Cat Videos', { type: ActivityType.Watching });
 
-        startTasks(client);
+        await startTasks(client);
     }
 };
