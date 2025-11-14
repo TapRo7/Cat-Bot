@@ -87,6 +87,14 @@ module.exports = {
             }
         }
 
+        if (message.content.includes('-drop')) {
+            try {
+                await message.channel.send({ content: `Lucky Drop! First one to click the button will earn free **Cat Coins** ${catCoinEmoji}`, components: [claimDropRow] });
+            } catch (error) {
+                console.error(`Error in Cat Coin Drops: ${error}`);
+            }
+        }
+
         if (message.content.includes('-invite')) {
             try {
                 await message.delete();

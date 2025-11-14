@@ -13,7 +13,7 @@ module.exports = {
         try {
             await interaction.deferUpdate();
 
-            await winnerLock.acquire('dropClaimed', async () => {
+            await winnerLock.acquire(interaction.message.id, async () => {
                 if (processedDropIds.has(interaction.message.id)) {
                     return;
                 }
@@ -50,7 +50,7 @@ module.exports = {
             });
         }
         finally {
-            setTimeout(() => processedDropIds.delete(interaction.message.id), 10_000);
+            setTimeout(() => processedDropIds.delete(interaction.message.id), 60_000);
         }
     },
 };
