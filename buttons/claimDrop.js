@@ -13,7 +13,7 @@ module.exports = {
         try {
             await interaction.deferUpdate();
 
-            await winnerLock.acquire(interaction.message.id, async () => {
+            await winnerLock.acquire('dropClaimed', async () => {
                 if (processedDropIds.has(interaction.message.id)) {
                     return;
                 }
