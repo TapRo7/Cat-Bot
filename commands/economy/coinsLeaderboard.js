@@ -23,9 +23,9 @@ module.exports = async (interaction) => {
     for (let i = 0; i < topUsers.length; i++) {
         const user = topUsers[i];
 
-        if (ignoredUsers.includes(user.userId)) {
-            continue;
-        }
+        if (ignoredUsers.includes(user.userId)) continue;
+
+        if (positionNumber > 10) break;
 
         const member = interaction.guild.members.cache.get(user.userId);
         const memberIconUrl = member?.displayAvatarURL() ?? defaultAvatarUrl;
