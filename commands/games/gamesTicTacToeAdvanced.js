@@ -103,10 +103,6 @@ module.exports = async (interaction) => {
         return await interaction.editReply({ content: `You have not registered in the Cat Coins System yet, please use </coins register:1401243483649605752> to register before using other commands!` });
     }
 
-    if (betAmount > 1) {
-        return await interaction.editReply({ contnet: 'Game is in testing phase, you can only bet 1 coin for now.' });
-    }
-
     const targetUserData = await getCatCoinsUser(targetUser.id);
 
     if (targetUserData) {
