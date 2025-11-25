@@ -5,6 +5,7 @@ const gameHangman = require('./gamesHangman');
 const gameTicTacToe = require('./gamesTicTacToe');
 const gameConnect4 = require('./gamesConnect4');
 const gameVault = require('./gamesVault');
+const gameTicTacToeAdvanced = require('./gamesTicTacToeAdvanced');
 
 const maxBet = parseInt(process.env.MAX_BET);
 
@@ -74,6 +75,18 @@ module.exports = {
                 { name: 'Sequence', value: 'Sequence' },
                 { name: 'Math Equations', value: 'Math Equations' }
             ))
+        )
+        .addSubcommand(subcommand => subcommand
+            .setName('tic-tac-toe-advanced')
+            .setDescription('Challenge someone to Tic Tac Toe Advanced!')
+            .addUserOption(option => option.setName('user').setDescription('Select the user you want to challenge!').setRequired(true))
+            .addIntegerOption(option => option
+                .setName('bet')
+                .setDescription('Enter how many Cat Coins you want to bet')
+                .setRequired(true)
+                .setMaxValue(maxBet)
+                .setMinValue(1)
+            )
         ),
 
     async execute(interaction) {
@@ -100,6 +113,8 @@ module.exports = {
                 return await gameConnect4(interaction);
             case 'vault':
                 return await gameVault(interaction);
+            case 'tic-tac-toe-advanced':
+                return await gameTicTacToeAdvanced(interaction);
             default:
                 return await interaction.editReply({ content: 'Unknown subcommand.', flags: MessageFlags.Ephemeral });
         }

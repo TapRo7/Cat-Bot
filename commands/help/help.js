@@ -113,6 +113,13 @@ You need to enter the \`user\` you want to challange, and the amount of coins yo
 
 **Note:** You must finish all games, even if it is an obvious draw, abandoning a game in the middle will be considered a loss after 60 seconds of not making a move.`;
 
+const gamesHelpString6 = `## Tic Tac Toe Advanced
+You can challange other players to Tic Tac Toe Advanced and bet Cat Coins by using the </games tic-tac-toe:1402095106969833563> command
+You need to enter the \`user\` you want to challange, and the amount of coins you want to \`bet\`
+This is an Advanced version of normal Tic-Tac-Toe where a player can only have 3 moves on the board at once, on your 4th move, your first move gets removed and so on
+
+**Note:** You must finish all games, even if it is an obvious draw, abandoning a game in the middle will be considered a loss after 60 seconds of not making a move.`;
+
 const gamesContainer = new ContainerBuilder()
     .setAccentColor(0xFFC0CB)
     .addTextDisplayComponents(
@@ -137,6 +144,10 @@ const gamesContainer = new ContainerBuilder()
     .addSeparatorComponents(largeSeparator)
     .addTextDisplayComponents(
         textDisplay => textDisplay.setContent(gamesHelpString5)
+    )
+    .addSeparatorComponents(largeSeparator)
+    .addTextDisplayComponents(
+        textDisplay => textDisplay.setContent(gamesHelpString6)
     );
 
 // Fun Help
