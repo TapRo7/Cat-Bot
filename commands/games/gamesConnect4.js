@@ -50,7 +50,7 @@ function createConnect4ColumnButtons(gameEnded = false, gameState) {
 
         const button = new ButtonBuilder()
             .setCustomId(`c4_${col}`)
-            .setLabel(`Column ${col + 1}`)
+            .setLabel(`${col + 1}`)
             .setEmoji('⬇️')
             .setStyle(ButtonStyle.Primary)
             .setDisabled(isColumnFull || gameEnded);
