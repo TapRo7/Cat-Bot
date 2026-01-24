@@ -13,18 +13,18 @@ module.exports = {
         try {
             await interaction.deferUpdate();
 
+            const userData = await getCatCoinsUser(interaction.user.id);
+
+            if (!userData) {
+                return;
+            }
+
             await winnerLock.acquire('dropClaimed', async () => {
                 if (processedDropIds.has(interaction.message.id)) {
                     return;
                 }
 
                 processedDropIds.add(interaction.message.id);
-
-                const userData = await getCatCoinsUser(interaction.user.id);
-
-                if (!userData) {
-                    return;
-                }
 
                 let coinsToAdd;
 
