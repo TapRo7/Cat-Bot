@@ -132,7 +132,7 @@ module.exports = {
                     await message.channel.send({
                         components: [sentBy, instagramMedia],
                         flags: MessageFlags.IsComponentsV2,
-                        allowedMentions: { repliedUser: false }
+                        allowedMentions: {}
                     });
                     await message.delete();
                 }
