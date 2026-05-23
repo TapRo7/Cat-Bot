@@ -21,14 +21,11 @@ const claimDropButton = new ButtonBuilder()
 
 const claimDropRow = new ActionRowBuilder().addComponents(claimDropButton);
 
-function parseInstagramLinks(message) {
-    const regex = /https?:\/\/(?:www\.)?instagram\.com\/[^\s]+/gi;
+function parseSocialLinks(message) {
+    const regex = /https?:\/\/[^\s]+/gi;
 
     const matches = message.match(regex);
-
-    if (!matches) {
-        return false;
-    }
+    if (!matches) return false;
 
     const results = [];
     const seen = new Set();
@@ -36,19 +33,27 @@ function parseInstagramLinks(message) {
     for (const url of matches) {
         if (results.length >= 10) break;
 
-        let cleanUrl = url
-            .split("?")[0]
-            .replace(/\/+$/, "");
+        let cleanUrl = url.split("?")[0].replace(/\/+$/, "");
 
-        if (
-            /^https?:\/\/(?:www\.)?instagram\.com\/[A-Za-z0-9._/-]+$/i.test(cleanUrl)
-        ) {
-            cleanUrl = cleanUrl.replace("instagram.com", "kkinstagram.com");
+        let normalized = null;
 
-            if (!seen.has(cleanUrl)) {
-                seen.add(cleanUrl);
-                results.push(cleanUrl);
-            }
+        if (/https?:\/\/(?:www\.)?instagram\.com/i.test(cleanUrl)) {
+            normalized = cleanUrl.replace(
+                /https?:\/\/(?:www\.)?instagram\.com/i,
+                "https://kkinstagram.com"
+            );
+        }
+
+        else if (/https?:\/\/(?:www\.|vm\.|m\.)?tiktok\.com/i.test(cleanUrl)) {
+            normalized = cleanUrl.replace(
+                /https?:\/\/(?:www\.|vm\.|m\.)?tiktok\.com/i,
+                "https://d.tnktok.com"
+            );
+        }
+
+        if (normalized && !seen.has(normalized)) {
+            seen.add(normalized);
+            results.push(normalized);
         }
     }
 
