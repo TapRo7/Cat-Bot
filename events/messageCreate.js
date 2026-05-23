@@ -115,7 +115,7 @@ module.exports = {
         // Embed Fix
         try {
             if (message.channel.id === mediaChatId) {
-                const instagramLinks = parseInstagramLinks(message.content);
+                const instagramLinks = parseSocialLinks(message.content);
 
                 if (instagramLinks) {
                     const instagramMedia = new MediaGalleryBuilder();
