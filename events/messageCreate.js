@@ -44,9 +44,9 @@ function parseSocialLinks(message) {
             );
         }
 
-        else if (/https?:\/\/(?:www\.|vm\.|m\.)?tiktok\.com/i.test(cleanUrl)) {
+        else if (/https?:\/\/([a-z0-9-]+\.)*tiktok\.com/i.test(cleanUrl)) {
             normalized = cleanUrl.replace(
-                /https?:\/\/(?:www\.|vm\.|m\.)?tiktok\.com/i,
+                /https?:\/\/([a-z0-9-]+\.)*tiktok\.com/i,
                 "https://d.tnktok.com"
             );
         }
@@ -131,6 +131,7 @@ module.exports = {
                         flags: MessageFlags.IsComponentsV2,
                         allowedMentions: { repliedUser: false }
                     });
+                    await message.suppressEmbeds();
                 }
             }
         } catch (error) {
