@@ -110,22 +110,26 @@ module.exports = {
         // Embed Fix
         try {
             if (message.channel.id === mediaChatId) {
-                const instagramLinks = parseInstagramLinks(message.content)
+                const instagramLinks = parseInstagramLinks(message.content);
+
                 if (instagramLinks) {
-                    const instagramMedia = new MediaGalleryBuilder()
-                    const mediaItems = [];
+                    const instagramMedia = new MediaGalleryBuilder();
 
-                    for (const url of instagramLinks) {
-                        mediaItems.push(new MediaGalleryItem().setURL(url));
-                    }
+                    instagramMedia.addItems(
+                        ...instagramLinks.map(url =>
+                            item => item.setURL(url)
+                        )
+                    );
 
-                    instagramMedia.addItems(...mediaItems);
-
-                    await message.reply({components: [instagramMedia]});
+                    await message.reply({
+                        components: [instagramMedia],
+                        flags: MessageFlags.IsComponentsV2,
+                        allowedMentions: { repliedUser: false }
+                    });
                 }
             }
         } catch (error) {
-            console.error(`Error in Instagram Embed Fix: ${error}`);
+            console.error(`Error in Instagram Embed Fix:`, error);
         }
 
 
