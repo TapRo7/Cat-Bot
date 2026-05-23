@@ -1,4 +1,4 @@
-const { Events, MediaGalleryBuilder, SeparatorSpacingSize, ContainerBuilder, MessageFlags, ButtonStyle, EmbedBuilder, ButtonBuilder, ActionRowBuilder, MediaGalleryItem } = require('discord.js');
+const { Events, MediaGalleryBuilder, SeparatorSpacingSize, ContainerBuilder, MessageFlags, ButtonStyle, EmbedBuilder, ButtonBuilder, ActionRowBuilder, MediaGalleryItem, TextDisplayBuilder } = require('discord.js');
 const { getCatCoinsUser, customUpdateCatCoinsUser } = require('../database/catCoins');
 const { fetchInviteInfo } = require('../utils/inviteApi');
 
@@ -118,6 +118,9 @@ module.exports = {
                 const instagramLinks = parseSocialLinks(message.content);
 
                 if (instagramLinks) {
+                    const sentBy = new TextDisplayBuilder({
+                        content: `Sent By <@${message.author.id}>`
+                    })
                     const instagramMedia = new MediaGalleryBuilder();
 
                     instagramMedia.addItems(
@@ -126,12 +129,12 @@ module.exports = {
                         )
                     );
 
-                    await message.reply({
-                        components: [instagramMedia],
+                    await message.channel.send({
+                        components: [sentBy, instagramMedia],
                         flags: MessageFlags.IsComponentsV2,
                         allowedMentions: { repliedUser: false }
                     });
-                    await message.suppressEmbeds();
+                    await message.delete();
                 }
             }
         } catch (error) {
