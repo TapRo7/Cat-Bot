@@ -1,9 +1,10 @@
-const { Events, MediaGalleryBuilder, SeparatorSpacingSize, ContainerBuilder, MessageFlags, ButtonStyle, EmbedBuilder, ButtonBuilder, ActionRowBuilder } = require('discord.js');
+const { Events, MediaGalleryBuilder, SeparatorSpacingSize, ContainerBuilder, MessageFlags, ButtonStyle, EmbedBuilder, ButtonBuilder, ActionRowBuilder, MediaGalleryItem } = require('discord.js');
 const { getCatCoinsUser, customUpdateCatCoinsUser } = require('../database/catCoins');
 const { fetchInviteInfo } = require('../utils/inviteApi');
 
 const whitelistedUsers = JSON.parse(process.env.WHITELISTED_USERS);
 const generalChatId = process.env.GENERAL_CHAT_ID;
+const mediaChatId = process.env.MEDIA_CHAT_ID;
 const catCoinEmoji = '<:CatCoin:1401235223831642133>';
 const luckyMessageCoins = 100;
 const boosterMultiplier = 2;
@@ -19,6 +20,40 @@ const claimDropButton = new ButtonBuilder()
     .setEmoji(catCoinEmoji);
 
 const claimDropRow = new ActionRowBuilder().addComponents(claimDropButton);
+
+function parseInstagramLinks(message) {
+    const regex = /https?:\/\/(?:www\.)?instagram\.com\/[^\s]+/gi;
+
+    const matches = message.match(regex);
+
+    if (!matches) {
+        return false;
+    }
+
+    const results = [];
+    const seen = new Set();
+
+    for (const url of matches) {
+        if (results.length >= 10) break;
+
+        let cleanUrl = url
+            .split("?")[0]
+            .replace(/\/+$/, "");
+
+        if (
+            /^https?:\/\/(?:www\.)?instagram\.com\/[A-Za-z0-9._/-]+$/i.test(cleanUrl)
+        ) {
+            cleanUrl = cleanUrl.replace("instagram.com", "kkinstagram.com");
+
+            if (!seen.has(cleanUrl)) {
+                seen.add(cleanUrl);
+                results.push(cleanUrl);
+            }
+        }
+    }
+
+    return results.length ? results : false;
+}
 
 module.exports = {
     name: Events.MessageCreate,
@@ -70,6 +105,27 @@ module.exports = {
             }
         } catch (error) {
             console.error(`Error in Cat Coin Drops: ${error}`);
+        }
+
+        // Embed Fix
+        try {
+            if (message.channel.id === mediaChatId) {
+                const instagramLinks = parseInstagramLinks(message.content)
+                if (instagramLinks) {
+                    const instagramMedia = new MediaGalleryBuilder()
+                    const mediaItems = [];
+
+                    for (const url of instagramLinks) {
+                        mediaItems.push(new MediaGalleryItem().setURL(url));
+                    }
+
+                    instagramMedia.addItems(...mediaItems);
+
+                    await message.reply({components: [instagramMedia]});
+                }
+            }
+        } catch (error) {
+            console.error(`Error in Instagram Embed Fix: ${error}`);
         }
 
 
