@@ -40,7 +40,7 @@ function parseSocialLinks(message) {
         if (/https?:\/\/(?:www\.)?instagram\.com/i.test(cleanUrl)) {
             normalized = cleanUrl.replace(
                 /https?:\/\/(?:www\.)?instagram\.com/i,
-                "https://kkinstagram.com"
+                "https://d.oginstagram.com"
             );
         }
 
